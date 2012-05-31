@@ -1,7 +1,7 @@
 package lunch.main;
 
 import skype.ChatId;
-import skype.shell.SkypeBridge;
+import skype.SkypeBridge;
 
 public class SkypeBridgeImpl implements SkypeBridge {
 

@@ -1,6 +1,7 @@
 package skype.lunch;
 
 import skype.ChatId;
+import skype.shell.ShellCommandFactory;
 
 public class LunchRequestFactory implements ShellCommandFactory {
 

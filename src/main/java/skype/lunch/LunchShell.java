@@ -1,9 +1,9 @@
 package skype.lunch;
 
+import skype.SkypeBridge;
 import skype.shell.CommandInterpreter;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandVisitor;
-import skype.shell.SkypeBridge;
 
 import com.skype.ChatMessage;
 import com.skype.ChatMessageListener;

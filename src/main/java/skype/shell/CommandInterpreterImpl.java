@@ -1,8 +1,7 @@
-package skype.lunch;
+package skype.shell;
 
 import skype.ChatId;
-import skype.shell.CommandInterpreter;
-import skype.shell.ShellCommand;
+import skype.lunch.UnrecognizedCommand;
 
 public class CommandInterpreterImpl implements CommandInterpreter {
 	private final ShellCommandFactory[] factories;

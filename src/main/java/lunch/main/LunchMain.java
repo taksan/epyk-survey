@@ -1,8 +1,8 @@
 package lunch.main;
 
-import skype.lunch.CommandInterpreterImpl;
 import skype.lunch.LunchRequestFactory;
 import skype.lunch.LunchShell;
+import skype.shell.CommandInterpreterImpl;
 
 import com.skype.Skype;
 import com.skype.SkypeException;

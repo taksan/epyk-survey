@@ -1,7 +1,7 @@
 package skype.lunch.mocks;
 
 import skype.ChatId;
-import skype.shell.SkypeBridge;
+import skype.SkypeBridge;
 
 public final class SkypeBridgeMock implements SkypeBridge {
 	public String sentMessage="";

@@ -5,7 +5,7 @@ import skype.shell.ShellCommandVisitor;
 
 public class UnrecognizedCommand implements ShellCommand {
 
-	UnrecognizedCommand(String chatId, String command) {
+	public UnrecognizedCommand(String chatId, String command) {
 		
 	}
 	
@@ -16,6 +16,6 @@ public class UnrecognizedCommand implements ShellCommand {
 	
 	@Override
 	public void acceptSentRequest(ShellCommandVisitor visitor) {
-		// dont relay to visitor
+		// dont accept visitor
 	}
 }

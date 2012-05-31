@@ -1,6 +1,5 @@
-package skype.shell;
+package skype;
 
-import skype.ChatId;
 
 public interface SkypeBridge {
 	public void sendMessage(ChatId chatId, String message);
