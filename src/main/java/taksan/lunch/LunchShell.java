@@ -1,24 +1,25 @@
 package taksan.lunch;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import taksan.skype.SkypeMessageListener;
+import taksan.skype.SkypeMessageProvider;
+import taksan.skype.shell.CommandInterpreter;
 
+public class LunchShell implements SkypeMessageListener {
 
-public class LunchShell {
-	Set<LunchParticipant> participants = new LinkedHashSet<LunchParticipant>();
+	private final CommandInterpreter interpreter;
 
-	public void addParticipant(LunchParticipant lunchParticipant) {
-		participants.add(lunchParticipant);
+	public LunchShell(SkypeMessageProvider skypeProvider, CommandInterpreter interpreter) {
+		this.interpreter = interpreter;
+		skypeProvider.addMessageListener(this);
 	}
 
-	public void accept(ParticipantVisitor participantVisitor) {
-		for (LunchParticipant participant  : participants) {
-			participantVisitor.visit(participant);
-		}
+	public void onReceivedMessage(String message) {
+		interpreter.processMessage(message);
 	}
 
-	public void requestLunchDecision() {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	@Override
+	public void onSentMessage(String message) {
+		interpreter.processMessage(message);
 	}
 
 }

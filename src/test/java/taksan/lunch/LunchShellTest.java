@@ -1,37 +1,44 @@
 package taksan.lunch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import taksan.skype.shell.CommandInterpreter;
+import taksan.skype.shell.ShellCommand;
+
 public class LunchShellTest {
-	LunchShell subject = new LunchShell();
+	final AtomicReference<Boolean> messageProcessed = new AtomicReference<Boolean>(false);
+	CommandInterpreter commandInterpreter = new CommandInterpreterMock(messageProcessed);
+	private final class CommandInterpreterMock implements
+			CommandInterpreter {
+		private final AtomicReference<Boolean> messageProcessed;
+
+		private CommandInterpreterMock(
+				AtomicReference<Boolean> messageProcessed) {
+			this.messageProcessed = messageProcessed;
+		}
+
+		public ShellCommand processMessage(String message) {
+			messageProcessed.set(true);
+			return null;
+		}
+	}
+
+	SkypeProviderMock skypeProvider = new SkypeProviderMock();
+	LunchShell subject = new LunchShell(skypeProvider, commandInterpreter );
 	
 	@Test
-	public void onAddParticipant_ShouldAddParticipant()
-	{
-		subject.addParticipant(new LunchParticipant("foosan"));
-		subject.addParticipant(new LunchParticipant("foosan2"));
-		
-		ParticipantVisitor participantListener = new ParticipantVisitor();
-		subject.accept(participantListener);
-		
-		String actual = participantListener.getListOfParticipants();
-		String expected = 
-				"foosan\n" +
-				"foosan2";
-		assertEquals(expected, actual);
+	public void onMessageReceived_ShouldProcessNotification() {
+		skypeProvider.messageReceived("foo");
+		assertTrue(messageProcessed.get());
 	}
 	
 	@Test
-	public void onLunchRequest_ShouldNotifyAllPartipants() {
-		LunchParticipant lunchParticipant1 = new LunchParticipant("foosan");
-		LunchParticipant lunchParticipant2 = new LunchParticipant("foosan2");
-		
-		subject.addParticipant(lunchParticipant1);
-		subject.addParticipant(lunchParticipant2);
-		
-		subject.requestLunchDecision();
-		
+	public void onMessageSent_ShouldProcessNotification() {
+		skypeProvider.messageSent("foo");
+		assertTrue(messageProcessed.get());
 	}
 }
