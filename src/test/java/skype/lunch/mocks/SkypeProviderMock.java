@@ -1,7 +1,7 @@
-package taksan.lunch;
+package skype.lunch.mocks;
 
-import taksan.skype.SkypeMessageListener;
-import taksan.skype.SkypeMessageProvider;
+import skype.SkypeMessageListener;
+import skype.SkypeMessageProvider;
 
 public class SkypeProviderMock implements SkypeMessageProvider {
 	

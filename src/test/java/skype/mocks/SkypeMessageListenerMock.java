@@ -1,6 +1,6 @@
-package taksan.skype.mocks;
+package skype.mocks;
 
-import taksan.skype.SkypeMessageListener;
+import skype.SkypeMessageListener;
 
 public class SkypeMessageListenerMock implements SkypeMessageListener {
 

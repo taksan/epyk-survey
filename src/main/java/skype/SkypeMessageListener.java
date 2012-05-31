@@ -1,4 +1,4 @@
-package taksan.skype;
+package skype;
 
 public interface SkypeMessageListener {
 	void onReceivedMessage(String message);
