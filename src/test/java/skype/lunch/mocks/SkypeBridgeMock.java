@@ -1,15 +1,23 @@
 package skype.lunch.mocks;
 
-import skype.ChatId;
+import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
+import skype.shell.mocks.ChatBridgeMock;
+
+import com.skype.ChatMessage;
 
 public final class SkypeBridgeMock implements SkypeBridge {
 	public String sentMessage="";
 	public String toChatId="";
 	
 	@Override
-	public void sendMessage(ChatId chatId, String message) {
+	public void sendMessage(ChatAdapterInterface chatId, String message) {
 		this.sentMessage = message;
-		this.toChatId = chatId.chatId;
+		this.toChatId = chatId.toString();
+	}
+
+	@Override
+	public ChatAdapterInterface getChatAdapter(ChatMessage sentChatMessage) {
+		return new ChatBridgeMock("mocked");
 	}
 }

@@ -4,17 +4,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import skype.ChatId;
+import skype.shell.mocks.ChatBridgeMock;
 
 public class LunchRequestFactoryTest {
 	@Test
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
 		LunchRequestFactory subject = new LunchRequestFactory();
-		LunchRequest message = subject.produce(new ChatId("#42"), "#lunch verdinho,garbo");
+		ChatBridgeMock chat = new ChatBridgeMock("#42");
+		LunchRequest request = subject.produce(chat, "#lunch verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		
-		message.accept(
+		request.accept(
 				new LunchRequestVisitor() {
 					public void visit(LunchOption option) {
 						sb.append(option.getName()+"\n");

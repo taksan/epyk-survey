@@ -1,7 +1,7 @@
 package skype.shell;
 
-import skype.ChatId;
+import skype.ChatAdapterInterface;
 
 public interface ShellCommandFactory {
-	public ShellCommand produce(ChatId chatId, String message);
+	public ShellCommand produce(ChatAdapterInterface chat, String message);
 }

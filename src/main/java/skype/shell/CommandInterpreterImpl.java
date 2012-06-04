@@ -1,7 +1,6 @@
 package skype.shell;
 
-import skype.ChatId;
-import skype.lunch.UnrecognizedCommand;
+import skype.ChatAdapterInterface;
 
 public class CommandInterpreterImpl implements CommandInterpreter {
 	private final ShellCommandFactory[] factories;
@@ -11,13 +10,13 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 	}
 
 	@Override
-	public ShellCommand processMessage(String chatId, String message) {
+	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
 		for (ShellCommandFactory aFactory : factories) {
-			ShellCommand shellCommand = aFactory.produce(new ChatId(chatId), message);
+			ShellCommand shellCommand = aFactory.produce(chat, message);
 			if (shellCommand != null)
 				return shellCommand;
 		}
 		
-		return new UnrecognizedCommand(chatId, message);
+		return new UnrecognizedCommand(chat, message);
 	}
 }

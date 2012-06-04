@@ -1,12 +1,12 @@
 package skype.shell;
 
-import skype.ChatId;
+import skype.ChatAdapterInterface;
 
 public abstract class AbstractShellCommand implements ShellCommand {
 	private final String text;
-	private final ChatId chatId;
-	protected AbstractShellCommand(ChatId chatId, String command) {
-		this.chatId = chatId;
+	private final ChatAdapterInterface chat;
+	protected AbstractShellCommand(ChatAdapterInterface chat, String command) {
+		this.chat = chat;
 		this.text = command;
 		
 	}
@@ -14,7 +14,7 @@ public abstract class AbstractShellCommand implements ShellCommand {
 		return text;
 	}
 	
-	public ChatId getChatId() {
-		return chatId;
+	public ChatAdapterInterface getChat() {
+		return chat;
 	}
 }

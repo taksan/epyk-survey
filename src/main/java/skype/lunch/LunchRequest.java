@@ -3,23 +3,23 @@ package skype.lunch;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import skype.ChatId;
+import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
-import skype.shell.ShellCommandVisitor;
+import skype.shell.CommandProcessor;
 
 
 public class LunchRequest extends AbstractShellCommand {
 	private Set<LunchOption> lunchOptions = new LinkedHashSet<LunchOption>();
-	public LunchRequest(ChatId chatId, String command) {
-		super(chatId,command);
+	LunchRequest(ChatAdapterInterface chat, String command) {
+		super(chat,command);
 		buildRequest(command);
 	}
 	
-	LunchRequest() {
-		super(new ChatId("autoid"), "auto");
+	LunchRequest(ChatAdapterInterface chat) {
+		super(chat, "auto");
 	}
 	
-	void add(LunchOption anOption) {
+	public void add(LunchOption anOption) {
 		lunchOptions.add(anOption);
 	}
 
@@ -39,7 +39,16 @@ public class LunchRequest extends AbstractShellCommand {
 	}
 
 	@Override
-	public void acceptSentRequest(ShellCommandVisitor visitor) {
-		visitor.processSentRequest(this);
+	public void acceptProcessorForSentMessages(CommandProcessor processor) {
+		processor.processLunchRequest(this);
+	}
+
+	@Override
+	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
+		processor.processLunchRequest(this);
+	}
+
+	public int getOptionCount() {
+		return lunchOptions.size();
 	}
 }

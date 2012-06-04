@@ -1,5 +1,7 @@
 package skype.shell;
 
+import skype.ChatAdapterInterface;
+
 public interface CommandInterpreter {
-	public ShellCommand processMessage(String chatId, String message);
+	public ShellCommand processMessage(ChatAdapterInterface chat, String message);
 }
