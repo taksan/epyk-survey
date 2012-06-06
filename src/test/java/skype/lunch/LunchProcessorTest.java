@@ -55,7 +55,7 @@ public class LunchProcessorTest {
 		VoteRequest voteRequest = new VoteRequest("_foo_user_", 2);
 		subject.processVoteRequest(voteRequest);
 		
-		assertEquals("_foo_user_ votou em baz", reply.get()+"");
+		assertEquals("Votes: foo: 0 ; baz: 1", reply.get()+"");
 	}
 
 	private void buildLunchRequest() {
