@@ -3,8 +3,6 @@ package skype.lunch;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.UnrecognizedCommand;
@@ -12,27 +10,31 @@ import skype.shell.UnrecognizedCommand;
 public class LunchProcessor implements CommandProcessor {
 
 	private ReplyListener listener;
+	VotingSession votingSession = new VotingSession();
 
 	@Override
 	public void processLunchRequest(LunchRequest lunchRequest) {
+		votingSession.initWith(lunchRequest);
+		
 		String reply = buildVotingMenu(lunchRequest);
 		listener.onReply(lunchRequest.getChat(), reply);
 	}
 
-	String [] lunchOptions=new String[0];
 	private String buildVotingMenu(LunchRequest lunchRequest) {
-		lunchOptions = new String[lunchRequest.getOptionCount()];
 		final StringBuffer msg = new StringBuffer();
 		msg.append("Almoço!\n");
 		lunchRequest.accept(new LunchRequestVisitor() {
 			int count=1;
 			@Override
-			public void visit(LunchOption option) {
-				lunchOptions[count-1]= option.getName();
+			public void visitOption(LunchOption option) {
 				msg.append(count+") ");
 				msg.append(option.getName());
 				msg.append("\n");
 				count++;
+			}
+			@Override
+			public void visitParticipant(String participantName) {
+				throw new RuntimeException("NOT IMPLEMENTED");
 			}
 		});
 		String reply = "\n"+msg.toString().trim();
@@ -57,22 +59,20 @@ public class LunchProcessor implements CommandProcessor {
 	Map<String, Integer> votesByOption = new LinkedHashMap<String, Integer>();
 	@Override
 	public void processVoteRequest(VoteRequest request) {
-		if (lunchOptions.length == 0)
-			return;
+		votingSession.vote(request);
 		
-		String optionName = lunchOptions[request.vote-1];
-		if (votesByOption.get(optionName) == null)
-			votesByOption.put(optionName, 0);
-		votesByOption.put(optionName, votesByOption.get(optionName)+1);
-		StringBuilder sb = new StringBuilder("Votes: ");
-		for (String option : lunchOptions) {
-			if (votesByOption.get(option) == null)
-				votesByOption.put(option, 0);
-			
-			sb.append(option+": " + votesByOption.get(option));
-			sb.append(" ; ");
-		}
-		String message = StringUtils.substring(sb.toString(), 0,-3);
-		listener.onReply(request.getChat(), message);
+		final StringBuilder sb = new StringBuilder();
+		votingSession.acceptVoteConsultant(new VotingConsultant() {
+			public void onVote(LunchOption option, Integer count) {
+				sb.append(option+": " + count);
+				sb.append(" ; ");
+			}
+		});
+		
+		String voteStatus = sb.toString().replaceAll(" ; $", "");
+		if (voteStatus.isEmpty())
+			return;
+		String reply = "Votes: " + voteStatus;
+		listener.onReply(request.getChat(), reply);
 	}
 }

@@ -11,20 +11,29 @@ public class LunchRequestFactoryTest {
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
 		LunchRequestFactory subject = new LunchRequestFactory();
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
+		chat.addParticipant("joe");
+		chat.addParticipant("moe");
 		LunchRequest request = subject.produce(chat, "#lunch verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		
 		request.accept(
 				new LunchRequestVisitor() {
-					public void visit(LunchOption option) {
-						sb.append(option.getName()+"\n");
+					public void visitOption(LunchOption option) {
+						sb.append("Option: "+option.getName()+"\n");
+					}
+
+					@Override
+					public void visitParticipant(String participantName) {
+						sb.append("Participant: " + participantName+"\n");
 					}
 				});
 		
 		String expected = 
-				"verdinho\n" +
-				"garbo";
+				"Option: verdinho\n" +
+				"Option: garbo\n" +
+				"Participant: joe\n" +
+				"Participant: moe";
 		assertEquals(expected, sb.toString().trim());
 	}
 }

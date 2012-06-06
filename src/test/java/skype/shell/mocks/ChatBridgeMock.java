@@ -1,5 +1,6 @@
 package skype.shell.mocks;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import skype.ChatAdapterInterface;
@@ -30,6 +31,11 @@ public class ChatBridgeMock implements ChatAdapterInterface {
 
 	@Override
 	public List<String> getPartipantNames() {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return participants;
 	}
+
+	public void addParticipant(String participantName) {
+		participants.add(participantName);
+	}
+	List<String> participants = new LinkedList<String>();
 }

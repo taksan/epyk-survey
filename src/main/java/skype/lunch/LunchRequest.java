@@ -10,9 +10,9 @@ import skype.shell.CommandProcessor;
 
 public class LunchRequest extends AbstractShellCommand {
 	private Set<LunchOption> lunchOptions = new LinkedHashSet<LunchOption>();
+	private Set<String> participants = new LinkedHashSet<String>();
 	LunchRequest(ChatAdapterInterface chat, String command) {
 		super(chat,command);
-		buildRequest(command);
 	}
 	
 	LunchRequest(ChatAdapterInterface chat) {
@@ -23,18 +23,12 @@ public class LunchRequest extends AbstractShellCommand {
 		lunchOptions.add(anOption);
 	}
 
-	private void buildRequest(String command) {
-		command = command.replaceAll("#lunch[ ]*","");
-		String[] optionNames = command.split(",");
-		for (String aPlace : optionNames) {
-			add(new LunchOption(aPlace));
-		}
-	}
-
-
 	public void accept(LunchRequestVisitor visitor){
 		for (LunchOption anOption : lunchOptions) {
-			visitor.visit(anOption);
+			visitor.visitOption(anOption);
+		}
+		for (String participantName : participants) {
+			visitor.visitParticipant(participantName);
 		}
 	}
 
@@ -50,5 +44,9 @@ public class LunchRequest extends AbstractShellCommand {
 
 	public int getOptionCount() {
 		return lunchOptions.size();
+	}
+
+	public void addParticipant(String participantName) {
+		participants.add(participantName);
 	}
 }

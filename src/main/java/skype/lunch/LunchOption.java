@@ -12,4 +12,7 @@ public class LunchOption {
 		return placeName;
 	}
 
+	public String toString() {
+		return placeName;
+	}
 }
