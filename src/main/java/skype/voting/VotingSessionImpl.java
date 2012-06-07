@@ -1,20 +1,22 @@
 package skype.voting;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+
+import skype.voting.requests.VoteRequest;
+import skype.voting.requests.VotingPollRequest;
 
 public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	Vector<VotingPollOption> optionByIndex = null;
 	Map<String, VotingPollOption> participants = new LinkedHashMap<String, VotingPollOption>();
 	Map<VotingPollOption, Integer> voteStatus = new LinkedHashMap<VotingPollOption, Integer>();
 	
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionInterface#initWith(skype.voting.VotingPollRequest)
-	 */
 	@Override
 	public void initWith(VotingPollRequest request) {
 		optionByIndex = new Vector<VotingPollOption>();
@@ -24,9 +26,6 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		request.accept(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionInterface#vote(skype.voting.VoteRequest)
-	 */
 	@Override
 	public void vote(VoteRequest voteRequest) {
 		if (optionByIndex == null)
@@ -35,9 +34,6 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		participants.put(voteRequest.sender, lunchOption);
 	}
 	
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionInterface#acceptVoteConsultant(skype.voting.VotingConsultant)
-	 */
 	@Override
 	public void acceptVoteConsultant(VotingConsultant consultant){
 		Map<VotingPollOption, Integer> updatedVotingStatus = getUpdatedVotingStatus();
@@ -45,6 +41,34 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 			consultant.onVote(optionVoteCount.getKey(), optionVoteCount.getValue());
 		}
 	}
+
+	@Override
+	public void acceptWinnerCheckerVisitor(WinnerConsultant consultant) {
+		Map<VotingPollOption, Integer> status = getUpdatedVotingStatus();
+		if (status.entrySet().size() == 0)
+			return;
+		
+		VotingPollOption top = status.keySet().iterator().next();
+		Set<VotingPollOption> tied = new LinkedHashSet<VotingPollOption>();
+		int bestCount = 0;
+		for (Entry<VotingPollOption, Integer> voteCount : status.entrySet()) {
+			VotingPollOption currentOption = voteCount.getKey();
+			if (voteCount.getValue() > bestCount) {
+				bestCount = voteCount.getValue();
+				top = currentOption;
+				tied.clear();
+			}
+			if (voteCount.getValue() == bestCount) {
+				tied.add(currentOption);
+			}
+		}
+		tied.add(top);
+		if (tied.size() > 1)
+			consultant.onTie(tied, bestCount);
+		else
+			consultant.onWinner(new VoteOptionAndCount(top.getName(), bestCount));
+	}
+		
 	
 	@Override
 	public void visitOption(VotingPollOption option) {
@@ -57,8 +81,6 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		participants.put(participantName, null);
 	}
 
-	
-	
 	String getParticipants() {
 		return StringUtils.join(participants.keySet(),",");
 	}
@@ -76,5 +98,6 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		}
 		return voteStatus;
 	}
+
 
 }

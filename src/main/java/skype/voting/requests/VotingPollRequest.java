@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.requests;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -6,16 +6,18 @@ import java.util.Set;
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
 import skype.shell.CommandProcessor;
+import skype.voting.VotingPollOption;
+import skype.voting.VotingPollVisitor;
 
 
 public class VotingPollRequest extends AbstractShellCommand {
 	private Set<VotingPollOption> lunchOptions = new LinkedHashSet<VotingPollOption>();
 	private Set<String> participants = new LinkedHashSet<String>();
-	VotingPollRequest(ChatAdapterInterface chat, String command) {
+	public VotingPollRequest(ChatAdapterInterface chat, String command) {
 		super(chat,command);
 	}
 	
-	VotingPollRequest(ChatAdapterInterface chat) {
+	public VotingPollRequest(ChatAdapterInterface chat) {
 		super(chat, "auto");
 	}
 	

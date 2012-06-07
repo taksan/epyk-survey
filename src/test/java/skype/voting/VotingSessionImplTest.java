@@ -2,19 +2,23 @@ package skype.voting;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollRequest;
-import skype.voting.VoteRequest;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingSessionImpl;
+import skype.voting.requests.VoteRequest;
+import skype.voting.requests.VotingPollRequest;
 
 
-public class VotingSessionTest {
+public class VotingSessionImplTest {
 	VotingSessionImpl subject = new VotingSessionImpl();
-	public VotingSessionTest() {
+	public VotingSessionImplTest() {
 		subject.initWith(buildVotingPollRequest());
 	}
 	
@@ -61,6 +65,62 @@ public class VotingSessionTest {
 				"baz:1";
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void onAcceptWinnerConsultantInEmptySession_ShouldNotAcceptAnything()
+	{
+		VotingSessionImpl subject = new VotingSessionImpl();
+		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+			public void onWinner(VoteOptionAndCount winnerStats) {
+				throw new IllegalStateException("Should not accept anything on uninitialized session");
+			}
+			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
+				throw new IllegalStateException("Should not accept anything on uninitialized session");
+			}
+		});
+	}
+	
+	@Test
+	public void onAcceptWinnerConsultantInSessionWithoutVotes_ShouldSendNoWinner()
+	{
+		final AtomicReference<String> actual = new AtomicReference<String>("");
+		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+			@Override
+			public void onWinner(VoteOptionAndCount winnerStats) {
+				actual.set("This is wrong. Saying winner is " + winnerStats.toString());
+			}
+
+			@Override
+			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
+				String tied = StringUtils.join(tiedOptions,",");
+				actual.set(tied+" "+tieCount+" votes"); 
+			}
+		});
+		
+		String expected="foo,baz 0 votes";
+		assertEquals(expected, actual.get());
+	}
+	
+	
+	@Test
+	public void onAcceptWinnerConsultant_ShouldReturnCurrentWinner()
+	{
+		subject.initWith(buildVotingPollRequest());
+		subject.vote(new VoteRequest("john doe", 2));
+		
+		final AtomicReference<VoteOptionAndCount> actual = new AtomicReference<VoteOptionAndCount>(); 
+		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+			public void onWinner(VoteOptionAndCount winnerStats) {
+				actual.set(winnerStats);
+			}
+			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
+				throw new IllegalStateException("This is not a tied poll");
+			}
+		});
+		
+		VoteOptionAndCount expected = new VoteOptionAndCount("baz", 1);
+		assertEquals(expected.toString(), actual.toString());
 	}
 	
 	private String getVotingTableFor(VotingSession session) {

@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.requests;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,9 +6,7 @@ import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollFactory;
 import skype.voting.VotingPollVisitor;
-import skype.voting.VotingPollRequest;
 
 public class VotingPollFactoryTest {
 	@Test

@@ -1,9 +1,10 @@
-package skype.voting;
+package skype.voting.requests;
 
 import java.util.List;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandFactory;
+import skype.voting.VotingPollOption;
 
 public class VotingPollFactory implements ShellCommandFactory {
 

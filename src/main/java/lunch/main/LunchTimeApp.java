@@ -4,7 +4,7 @@ import skype.SkypeBridgeImpl;
 import skype.shell.CommandInterpreterImpl;
 import skype.voting.VotingPollBroker;
 import skype.voting.VotingPollProcessor;
-import skype.voting.VotingPollFactory;
+import skype.voting.requests.VotingPollFactory;
 
 import com.skype.Skype;
 import com.skype.SkypeException;

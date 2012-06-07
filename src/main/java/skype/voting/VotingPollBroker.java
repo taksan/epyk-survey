@@ -17,13 +17,17 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 	private final SkypeBridge skypeBridge;
 	private final CommandProcessor processor;
 
-	public VotingPollBroker(SkypeBridge skypeBridge, CommandInterpreter interpreter, CommandProcessor processor) {
+	public VotingPollBroker(
+			SkypeBridge skypeBridge, 
+			CommandInterpreter interpreter, 
+			CommandProcessor processor) {
 		this.interpreter = interpreter;
 		this.skypeBridge = skypeBridge;
 		this.processor = processor;
 		processor.addReplyListener(this);
 	}
 
+	@Override
 	public void chatMessageReceived(ChatMessage receivedChatMessage)
 			throws SkypeException {
 		ShellCommand shellCommand = interpreter.processMessage(

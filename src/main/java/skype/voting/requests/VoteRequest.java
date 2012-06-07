@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.requests;
 
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
@@ -7,8 +7,8 @@ import skype.shell.mocks.ChatBridgeMock;
 
 public class VoteRequest extends AbstractShellCommand {
 
-	final int vote;
-	final String sender;
+	public final int vote;
+	public final String sender;
 
 	VoteRequest(ChatAdapterInterface chat, String command, int vote) {
 		super(chat, command);
@@ -16,7 +16,7 @@ public class VoteRequest extends AbstractShellCommand {
 		this.sender = chat.getSenderFullName();
 	}
 	
-	VoteRequest(String user, int vote) {
+	public VoteRequest(String user, int vote) {
 		this(new ChatBridgeMock("autoid", user), "#"+vote, vote);
 	}
 
