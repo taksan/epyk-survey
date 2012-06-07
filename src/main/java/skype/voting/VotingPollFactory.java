@@ -17,7 +17,7 @@ public class VotingPollFactory implements ShellCommandFactory {
 
 	private VotingPollRequest buildRequest(ChatAdapterInterface chat, String command) {
 		VotingPollRequest lunchRequest = new VotingPollRequest(chat, command);
-		command = command.replaceAll("#lunch[ ]*", "");
+		command = command.replaceAll("#startpoll[ ]*", "");
 		String[] optionNames = command.split(",");
 		for (String aPlace : optionNames) {
 			lunchRequest.add(new VotingPollOption(aPlace));
@@ -30,7 +30,7 @@ public class VotingPollFactory implements ShellCommandFactory {
 	}
 
 	private boolean understands(String message) {
-		return message.startsWith("#lunch");
+		return message.startsWith("#startpoll");
 	}
 
 }

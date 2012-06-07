@@ -9,11 +9,11 @@ import skype.voting.VotingPollOption;
 import skype.voting.VotingPollRequest;
 import skype.voting.VoteRequest;
 import skype.voting.VotingConsultant;
-import skype.voting.VotingSession;
+import skype.voting.VotingSessionImpl;
 
 
 public class VotingSessionTest {
-	VotingSession subject = new VotingSession();
+	VotingSessionImpl subject = new VotingSessionImpl();
 	public VotingSessionTest() {
 		subject.initWith(buildVotingPollRequest());
 	}
@@ -44,7 +44,7 @@ public class VotingSessionTest {
 	@Test
 	public void onVoteWithoutSession_ShouldDoNothing()
 	{
-		VotingSession subject = new VotingSession();
+		VotingSession subject = new VotingSessionImpl();
 		subject.vote(new VoteRequest("john doe", 2));
 		
 		

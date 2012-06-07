@@ -17,7 +17,7 @@ public class VotingPollFactoryTest {
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
 		chat.addParticipant("joe");
 		chat.addParticipant("moe");
-		VotingPollRequest request = subject.produce(chat, "#lunch verdinho,garbo");
+		VotingPollRequest request = subject.produce(chat, "#startpoll verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		
