@@ -1,10 +1,10 @@
-package skype.lunch;
+package skype.voting;
 
-public class LunchOption {
+public class VotingPollOption {
 
 	private final String placeName;
 
-	public LunchOption(String aPlace) {
+	public VotingPollOption(String aPlace) {
 		this.placeName = aPlace;
 	}
 

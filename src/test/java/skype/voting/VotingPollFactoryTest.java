@@ -1,25 +1,29 @@
-package skype.lunch;
+package skype.voting;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
+import skype.voting.VotingPollOption;
+import skype.voting.VotingPollFactory;
+import skype.voting.VotingPollVisitor;
+import skype.voting.VotingPollRequest;
 
-public class LunchRequestFactoryTest {
+public class VotingPollFactoryTest {
 	@Test
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
-		LunchRequestFactory subject = new LunchRequestFactory();
+		VotingPollFactory subject = new VotingPollFactory();
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
 		chat.addParticipant("joe");
 		chat.addParticipant("moe");
-		LunchRequest request = subject.produce(chat, "#lunch verdinho,garbo");
+		VotingPollRequest request = subject.produce(chat, "#lunch verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		
 		request.accept(
-				new LunchRequestVisitor() {
-					public void visitOption(LunchOption option) {
+				new VotingPollVisitor() {
+					public void visitOption(VotingPollOption option) {
 						sb.append("Option: "+option.getName()+"\n");
 					}
 

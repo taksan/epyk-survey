@@ -1,10 +1,10 @@
 package skype.shell;
 
-import skype.lunch.LunchRequest;
-import skype.lunch.VoteRequest;
+import skype.voting.VotingPollRequest;
+import skype.voting.VoteRequest;
 
 public interface CommandProcessor {
-	void processLunchRequest(LunchRequest lunchRequest);
+	void processLunchRequest(VotingPollRequest lunchRequest);
 	void processUnrecognizedCommand(UnrecognizedCommand visitor);
 	void addReplyListener(ReplyListener listener);
 	void processVoteRequest(VoteRequest request);

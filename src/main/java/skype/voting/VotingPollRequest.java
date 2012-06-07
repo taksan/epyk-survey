@@ -1,4 +1,4 @@
-package skype.lunch;
+package skype.voting;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -8,23 +8,23 @@ import skype.shell.AbstractShellCommand;
 import skype.shell.CommandProcessor;
 
 
-public class LunchRequest extends AbstractShellCommand {
-	private Set<LunchOption> lunchOptions = new LinkedHashSet<LunchOption>();
+public class VotingPollRequest extends AbstractShellCommand {
+	private Set<VotingPollOption> lunchOptions = new LinkedHashSet<VotingPollOption>();
 	private Set<String> participants = new LinkedHashSet<String>();
-	LunchRequest(ChatAdapterInterface chat, String command) {
+	VotingPollRequest(ChatAdapterInterface chat, String command) {
 		super(chat,command);
 	}
 	
-	LunchRequest(ChatAdapterInterface chat) {
+	VotingPollRequest(ChatAdapterInterface chat) {
 		super(chat, "auto");
 	}
 	
-	public void add(LunchOption anOption) {
+	public void add(VotingPollOption anOption) {
 		lunchOptions.add(anOption);
 	}
 
-	public void accept(LunchRequestVisitor visitor){
-		for (LunchOption anOption : lunchOptions) {
+	public void accept(VotingPollVisitor visitor){
+		for (VotingPollOption anOption : lunchOptions) {
 			visitor.visitOption(anOption);
 		}
 		for (String participantName : participants) {

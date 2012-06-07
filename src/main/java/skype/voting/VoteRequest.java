@@ -1,4 +1,4 @@
-package skype.lunch;
+package skype.voting;
 
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;

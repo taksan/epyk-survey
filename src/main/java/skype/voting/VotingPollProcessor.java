@@ -1,4 +1,4 @@
-package skype.lunch;
+package skype.voting;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,26 +7,26 @@ import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.UnrecognizedCommand;
 
-public class LunchProcessor implements CommandProcessor {
+public class VotingPollProcessor implements CommandProcessor {
 
 	private ReplyListener listener;
 	VotingSession votingSession = new VotingSession();
 
 	@Override
-	public void processLunchRequest(LunchRequest lunchRequest) {
+	public void processLunchRequest(VotingPollRequest lunchRequest) {
 		votingSession.initWith(lunchRequest);
 		
 		String reply = buildVotingMenu(lunchRequest);
 		listener.onReply(lunchRequest.getChat(), reply);
 	}
 
-	private String buildVotingMenu(LunchRequest lunchRequest) {
+	private String buildVotingMenu(VotingPollRequest lunchRequest) {
 		final StringBuffer msg = new StringBuffer();
 		msg.append("Almoço!\n");
-		lunchRequest.accept(new LunchRequestVisitor() {
+		lunchRequest.accept(new VotingPollVisitor() {
 			int count=1;
 			@Override
-			public void visitOption(LunchOption option) {
+			public void visitOption(VotingPollOption option) {
 				msg.append(count+") ");
 				msg.append(option.getName());
 				msg.append("\n");
@@ -63,7 +63,7 @@ public class LunchProcessor implements CommandProcessor {
 		
 		final StringBuilder sb = new StringBuilder();
 		votingSession.acceptVoteConsultant(new VotingConsultant() {
-			public void onVote(LunchOption option, Integer count) {
+			public void onVote(VotingPollOption option, Integer count) {
 				sb.append(option+": " + count);
 				sb.append(" ; ");
 			}

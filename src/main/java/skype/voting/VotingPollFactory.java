@@ -1,26 +1,26 @@
-package skype.lunch;
+package skype.voting;
 
 import java.util.List;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandFactory;
 
-public class LunchRequestFactory implements ShellCommandFactory {
+public class VotingPollFactory implements ShellCommandFactory {
 
 	@Override
-	public LunchRequest produce(ChatAdapterInterface chat, String message) {
+	public VotingPollRequest produce(ChatAdapterInterface chat, String message) {
 		if (understands(message)) {
 			return buildRequest(chat, message);
 		}
 		return null;
 	}
 
-	private LunchRequest buildRequest(ChatAdapterInterface chat, String command) {
-		LunchRequest lunchRequest = new LunchRequest(chat, command);
+	private VotingPollRequest buildRequest(ChatAdapterInterface chat, String command) {
+		VotingPollRequest lunchRequest = new VotingPollRequest(chat, command);
 		command = command.replaceAll("#lunch[ ]*", "");
 		String[] optionNames = command.split(",");
 		for (String aPlace : optionNames) {
-			lunchRequest.add(new LunchOption(aPlace));
+			lunchRequest.add(new VotingPollOption(aPlace));
 		}
 		List<String> partipantNames = chat.getPartipantNames();
 		for (String participantName : partipantNames) {

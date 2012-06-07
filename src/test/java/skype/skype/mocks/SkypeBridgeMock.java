@@ -1,4 +1,4 @@
-package skype.lunch.mocks;
+package skype.skype.mocks;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;

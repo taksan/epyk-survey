@@ -1,10 +1,10 @@
 package lunch.main;
 
 import skype.SkypeBridgeImpl;
-import skype.lunch.LunchProcessor;
-import skype.lunch.LunchRequestFactory;
-import skype.lunch.LunchBroker;
 import skype.shell.CommandInterpreterImpl;
+import skype.voting.VotingPollBroker;
+import skype.voting.VotingPollProcessor;
+import skype.voting.VotingPollFactory;
 
 import com.skype.Skype;
 import com.skype.SkypeException;
@@ -15,11 +15,11 @@ public class LunchTimeApp {
 	public void execute() throws SkypeException {
 		Connector.getInstance().setApplicationName("LunchTime");
 		
-		LunchBroker listener = new LunchBroker(new SkypeBridgeImpl(), getInterpreter(), new LunchProcessor());
+		VotingPollBroker listener = new VotingPollBroker(new SkypeBridgeImpl(), getInterpreter(), new VotingPollProcessor());
 		Skype.addChatMessageListener(listener);
 	}
 
 	private CommandInterpreterImpl getInterpreter() {
-		return new CommandInterpreterImpl(new LunchRequestFactory());
+		return new CommandInterpreterImpl(new VotingPollFactory());
 	}
 }

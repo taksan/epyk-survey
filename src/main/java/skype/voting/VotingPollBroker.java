@@ -1,4 +1,4 @@
-package skype.lunch;
+package skype.voting;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
@@ -11,13 +11,13 @@ import com.skype.ChatMessage;
 import com.skype.ChatMessageListener;
 import com.skype.SkypeException;
 
-public class LunchBroker implements ChatMessageListener, ReplyListener {
+public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	private final CommandInterpreter interpreter;
 	private final SkypeBridge skypeBridge;
 	private final CommandProcessor processor;
 
-	public LunchBroker(SkypeBridge skypeBridge, CommandInterpreter interpreter, CommandProcessor processor) {
+	public VotingPollBroker(SkypeBridge skypeBridge, CommandInterpreter interpreter, CommandProcessor processor) {
 		this.interpreter = interpreter;
 		this.skypeBridge = skypeBridge;
 		this.processor = processor;
