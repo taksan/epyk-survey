@@ -5,6 +5,7 @@ import skype.SkypeBridge;
 import skype.shell.mocks.ChatBridgeMock;
 
 import com.skype.ChatMessage;
+import com.skype.User;
 
 public final class SkypeBridgeMock implements SkypeBridge {
 	public String sentMessage="";
@@ -19,5 +20,10 @@ public final class SkypeBridgeMock implements SkypeBridge {
 	@Override
 	public ChatAdapterInterface getChatAdapter(ChatMessage sentChatMessage) {
 		return new ChatBridgeMock("mocked");
+	}
+
+	@Override
+	public String getUserFullNameOrId(User sender) {
+		return sender.getId();
 	}
 }

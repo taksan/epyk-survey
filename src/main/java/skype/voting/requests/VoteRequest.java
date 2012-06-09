@@ -10,10 +10,10 @@ public class VoteRequest extends AbstractShellCommand {
 	public final int vote;
 	public final String sender;
 
-	VoteRequest(ChatAdapterInterface chat, String command, int vote) {
+	public VoteRequest(ChatAdapterInterface chat, String command, int vote) {
 		super(chat, command);
 		this.vote = vote;
-		this.sender = chat.getSenderFullName();
+		this.sender = chat.getLasterSenderFullName();
 	}
 	
 	public VoteRequest(String user, int vote) {
@@ -21,12 +21,12 @@ public class VoteRequest extends AbstractShellCommand {
 	}
 
 	@Override
-	public void acceptProcessorForSentMessages(CommandProcessor visitor) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public void acceptProcessorForSentMessages(CommandProcessor processor) {
+		processor.processVoteRequest(this);
 	}
 
 	@Override
 	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		processor.processVoteRequest(this);
 	}
 }

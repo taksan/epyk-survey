@@ -13,27 +13,25 @@ import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VotingPollRequest;
 
 public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
-	Vector<VotingPollOption> optionByIndex = null;
-	Map<String, VotingPollOption> participants = new LinkedHashMap<String, VotingPollOption>();
-	Map<VotingPollOption, Integer> voteStatus = new LinkedHashMap<VotingPollOption, Integer>();
+	Vector<VotingPollOption> voteOptionByIndex = null;
+	Map<String, VotingPollOption> participantsAndVotes = new LinkedHashMap<String, VotingPollOption>();
 	
 	@Override
 	public void initWith(VotingPollRequest request) {
-		optionByIndex = new Vector<VotingPollOption>();
-		participants = new LinkedHashMap<String, VotingPollOption>();
-		voteStatus = new LinkedHashMap<VotingPollOption, Integer>();
+		voteOptionByIndex = new Vector<VotingPollOption>();
+		participantsAndVotes = new LinkedHashMap<String, VotingPollOption>();
 		
 		request.accept(this);
 	}
 
 	@Override
 	public void vote(VoteRequest voteRequest) {
-		if (optionByIndex == null)
+		if (isVotingSessionStarted())
 			return;
-		VotingPollOption lunchOption = optionByIndex.get(voteRequest.vote-1);
-		participants.put(voteRequest.sender, lunchOption);
+		VotingPollOption lunchOption = voteOptionByIndex.get(voteRequest.vote-1);
+		participantsAndVotes.put(voteRequest.sender, lunchOption);
 	}
-	
+
 	@Override
 	public void acceptVoteConsultant(VotingConsultant consultant){
 		Map<VotingPollOption, Integer> updatedVotingStatus = getUpdatedVotingStatus();
@@ -43,61 +41,92 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	}
 
 	@Override
-	public void acceptWinnerCheckerVisitor(WinnerConsultant consultant) {
+	public void acceptWinnerConsultant(WinnerConsultant consultant) {
 		Map<VotingPollOption, Integer> status = getUpdatedVotingStatus();
-		if (status.entrySet().size() == 0)
+		if (thereAreNoVotes(status))
 			return;
 		
 		VotingPollOption top = status.keySet().iterator().next();
-		Set<VotingPollOption> tied = new LinkedHashSet<VotingPollOption>();
+		Set<VotingPollOption> tiedOptions = new LinkedHashSet<VotingPollOption>();
 		int bestCount = 0;
 		for (Entry<VotingPollOption, Integer> voteCount : status.entrySet()) {
 			VotingPollOption currentOption = voteCount.getKey();
 			if (voteCount.getValue() > bestCount) {
 				bestCount = voteCount.getValue();
 				top = currentOption;
-				tied.clear();
+				tiedOptions.clear();
 			}
 			if (voteCount.getValue() == bestCount) {
-				tied.add(currentOption);
+				tiedOptions.add(currentOption);
 			}
 		}
-		tied.add(top);
-		if (tied.size() > 1)
-			consultant.onTie(tied, bestCount);
+		tiedOptions.add(top);
+		if (tiedOptions.size() > 1)
+			consultant.onTie(tiedOptions, bestCount);
 		else
 			consultant.onWinner(new VoteOptionAndCount(top.getName(), bestCount));
 	}
-		
-	
+
 	@Override
 	public void visitOption(VotingPollOption option) {
-		voteStatus.put(option, 0);
-		optionByIndex.add(option);
+		voteOptionByIndex.add(option);
 	}
 
 	@Override
 	public void visitParticipant(String participantName) {
-		participants.put(participantName, null);
+		addNewParticipant(participantName);
+	}
+	
+	@Override
+	public void onWelcomeMessage(String message) {
+		//　for now, the voting session does not require the welcome message
+	}
+	
+	@Override
+	public void addNewParticipant(String participant) {
+		participantsAndVotes.put(participant, null);
 	}
 
+	@Override
+	public void removeParticipant(String participant) {
+		participantsAndVotes.remove(participant);
+	}	
+
 	String getParticipants() {
-		return StringUtils.join(participants.keySet(),",");
+		return StringUtils.join(participantsAndVotes.keySet(),",");
 	}
 	
 	String getVoteOptions() {
-		return StringUtils.join(optionByIndex,",");
+		return StringUtils.join(voteOptionByIndex,",");
+	}
+
+	private boolean thereAreNoVotes(Map<VotingPollOption, Integer> status) {
+		return status.entrySet().size() == 0;
+	}
+
+	private boolean isVotingSessionStarted() {
+		return voteOptionByIndex == null;
 	}
 
 	private Map<VotingPollOption, Integer> getUpdatedVotingStatus() {
-		for (VotingPollOption participantVote : participants.values()) {
+		Map<VotingPollOption, Integer> voteStatus = new LinkedHashMap<VotingPollOption, Integer>();
+		if (isVotingSessionStarted())
+			return voteStatus;
+		initializeAllOptionVotesToZero(voteStatus);
+		for (VotingPollOption participantVote : participantsAndVotes.values()) {
 			if (participantVote == null)
 				continue;
 			Integer voteCount = voteStatus.get(participantVote);
+			if (voteCount == null)
+				voteCount = 0;
 			voteStatus.put(participantVote, voteCount+1);
 		}
 		return voteStatus;
 	}
 
-
+	private void initializeAllOptionVotesToZero(Map<VotingPollOption, Integer> voteStatus) {
+		for (VotingPollOption option : voteOptionByIndex) {
+			voteStatus.put(option, 0);
+		}
+	}	
 }

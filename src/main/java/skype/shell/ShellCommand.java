@@ -7,6 +7,6 @@ public interface ShellCommand {
 	public String getText();
 	public ChatAdapterInterface getChat();
 
-	public void acceptProcessorForSentMessages(CommandProcessor visitor);
+	public void acceptProcessorForSentMessages(CommandProcessor processor);
 	public void acceptProcessorForReceivedMessages(CommandProcessor processor);
 }

@@ -13,6 +13,7 @@ import skype.voting.VotingPollVisitor;
 public class VotingPollRequest extends AbstractShellCommand {
 	private Set<VotingPollOption> lunchOptions = new LinkedHashSet<VotingPollOption>();
 	private Set<String> participants = new LinkedHashSet<String>();
+	private String welcome;
 	public VotingPollRequest(ChatAdapterInterface chat, String command) {
 		super(chat,command);
 	}
@@ -26,6 +27,7 @@ public class VotingPollRequest extends AbstractShellCommand {
 	}
 
 	public void accept(VotingPollVisitor visitor){
+		visitor.onWelcomeMessage(welcome);
 		for (VotingPollOption anOption : lunchOptions) {
 			visitor.visitOption(anOption);
 		}
@@ -36,12 +38,12 @@ public class VotingPollRequest extends AbstractShellCommand {
 
 	@Override
 	public void acceptProcessorForSentMessages(CommandProcessor processor) {
-		processor.processLunchRequest(this);
+		processor.processVotingPollRequest(this);
 	}
 
 	@Override
 	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
-		processor.processLunchRequest(this);
+		processor.processVotingPollRequest(this);
 	}
 
 	public int getOptionCount() {
@@ -50,5 +52,9 @@ public class VotingPollRequest extends AbstractShellCommand {
 
 	public void addParticipant(String participantName) {
 		participants.add(participantName);
+	}
+
+	public void setWelcomeMessage(String welcome) {
+		this.welcome = welcome;
 	}
 }

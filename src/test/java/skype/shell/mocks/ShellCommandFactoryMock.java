@@ -34,7 +34,7 @@ public class ShellCommandFactoryMock implements ShellCommandFactory {
 		};
 	}
 
-	private boolean understands(String message) {
+	public boolean understands(String message) {
 		return message.startsWith("#understood_command");
 	}
 }

@@ -1,6 +1,9 @@
 package skype;
 
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.UnhandledException;
 
 import com.skype.Chat;
@@ -9,10 +12,26 @@ import com.skype.SkypeException;
 import com.skype.User;
 
 public class SkypeBridgeImpl implements SkypeBridge {
+	Map<Chat, ChatAdapterInterface> bridgeByChat = new LinkedHashMap<Chat, ChatAdapterInterface>();
+	
+	static SkypeBridgeImpl singleton = new SkypeBridgeImpl();
+	
+	private SkypeBridgeImpl(){}
+	
+	public static SkypeBridgeImpl get() {
+		return singleton;
+	}
 
 	@Override
 	public ChatAdapterInterface getChatAdapter(ChatMessage chatMessage) {
-		return new ChatBridge(getChatOrCry(chatMessage), getSenderFullNameOrId(chatMessage));
+		Chat actualChat = getChatOrCry(chatMessage);
+		ChatAdapterInterface chatBridge = bridgeByChat.get(actualChat);
+		if (bridgeByChat.get(actualChat) == null) {
+			chatBridge = new ChatBridge(actualChat);
+			bridgeByChat.put(actualChat, chatBridge);
+		}
+		chatBridge.setLastSender(getSenderFullNameOrId(chatMessage));
+		return chatBridge;
 	}
 	
 	@Override
@@ -21,7 +40,7 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		sendMessageOrCry(message, chat);
 	}
 
-	public static String getSenderFullNameOrId(ChatMessage chatMessage) {
+	public String getSenderFullNameOrId(ChatMessage chatMessage) {
 		try {
 			return getUserFullNameOrId(chatMessage.getSender());
 		} catch (SkypeException e) {
@@ -37,7 +56,8 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		}
 	}
 
-	public static String getUserFullNameOrId(User sender) {
+	@Override
+	public String getUserFullNameOrId(User sender) {
 		String fullName;
 		try {
 			fullName = sender.getFullName();

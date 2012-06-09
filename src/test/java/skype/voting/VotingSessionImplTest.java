@@ -1,6 +1,8 @@
 package skype.voting;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,6 +61,50 @@ public class VotingSessionImplTest {
 	public void onVote_ShouldCastToGivenOption() {
 		subject.initWith(buildVotingPollRequest());
 		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequest("jane doe", 1));
+		String actual = getVotingTableFor(subject);
+		String expected = 
+				"foo:1\n" +
+				"baz:1";
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void onAddNewParticipant_ShouldMakeItShowUpOnVisitor()
+	{
+		subject.initWith(buildVotingPollRequest());
+		subject.addNewParticipant("raskell");
+		String participants = subject.getParticipants();
+		
+		assertTrue(participants.contains("raskell"));
+	}
+	
+	@Test
+	public void onRemovePartipant_ShouldRemovePartipantVotesAndDeleteFromVisitor()
+	{
+		subject.initWith(buildVotingPollRequest());
+		subject.vote(new VoteRequest("john doe", 2));
+		subject.removeParticipant("john doe");
+		
+		String actual = getVotingTableFor(subject);
+		String expected = 
+				"foo:0\n" +
+				"baz:0";
+		
+		assertEquals(expected, actual);
+		String participants = subject.getParticipants();
+		
+		assertFalse(participants.contains("john doe"));
+	}
+	
+	@Test
+	public void invokeAcceptVoteConsultantTwice_ShouldNotChangeVotingStatus()
+	{
+		subject.initWith(buildVotingPollRequest());
+		subject.vote(new VoteRequest("john doe", 2));
+		getVotingTableFor(subject);
+		getVotingTableFor(subject);
 		String actual = getVotingTableFor(subject);
 		String expected = 
 				"foo:0\n" +
@@ -71,7 +117,7 @@ public class VotingSessionImplTest {
 	public void onAcceptWinnerConsultantInEmptySession_ShouldNotAcceptAnything()
 	{
 		VotingSessionImpl subject = new VotingSessionImpl();
-		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+		subject.acceptWinnerConsultant(new WinnerConsultant() {
 			public void onWinner(VoteOptionAndCount winnerStats) {
 				throw new IllegalStateException("Should not accept anything on uninitialized session");
 			}
@@ -85,7 +131,7 @@ public class VotingSessionImplTest {
 	public void onAcceptWinnerConsultantInSessionWithoutVotes_ShouldSendNoWinner()
 	{
 		final AtomicReference<String> actual = new AtomicReference<String>("");
-		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+		subject.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
 			public void onWinner(VoteOptionAndCount winnerStats) {
 				actual.set("This is wrong. Saying winner is " + winnerStats.toString());
@@ -110,7 +156,7 @@ public class VotingSessionImplTest {
 		subject.vote(new VoteRequest("john doe", 2));
 		
 		final AtomicReference<VoteOptionAndCount> actual = new AtomicReference<VoteOptionAndCount>(); 
-		subject.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+		subject.acceptWinnerConsultant(new WinnerConsultant() {
 			public void onWinner(VoteOptionAndCount winnerStats) {
 				actual.set(winnerStats);
 			}
@@ -122,6 +168,7 @@ public class VotingSessionImplTest {
 		VoteOptionAndCount expected = new VoteOptionAndCount("baz", 1);
 		assertEquals(expected.toString(), actual.toString());
 	}
+	
 	
 	private String getVotingTableFor(VotingSession session) {
 		final StringBuilder sb = new StringBuilder();

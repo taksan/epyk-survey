@@ -1,11 +1,11 @@
 package skype.voting.mocks;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 import skype.voting.VoteOptionAndCount;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingPollOption;
+import skype.voting.VotingPollVisitor;
 import skype.voting.VotingSession;
 import skype.voting.WinnerConsultant;
 import skype.voting.requests.VoteRequest;
@@ -16,6 +16,7 @@ public class VotingSessionMockAdapter implements VotingSession {
 	private final boolean isTie;
 	private VotingPollOption fooOption = new VotingPollOption("foo");
 	private VotingPollOption bazOption = new VotingPollOption("baz");
+	private String participants="";
 
 	public VotingSessionMockAdapter(boolean isTie) {
 		this.isTie = isTie;
@@ -24,6 +25,20 @@ public class VotingSessionMockAdapter implements VotingSession {
 	@Override
 	public void initWith(VotingPollRequest request) {
 		pollRequest = request;
+		request.accept(new VotingPollVisitor() {
+			@Override
+			public void visitParticipant(String participantName) {
+				addNewParticipant(participantName);
+			}
+			
+			@Override
+			public void visitOption(VotingPollOption option) {
+			}
+			
+			@Override
+			public void onWelcomeMessage(String message) {
+			}
+		});
 	}
 	
 	@Override
@@ -46,7 +61,7 @@ public class VotingSessionMockAdapter implements VotingSession {
 	}
 
 	@Override
-	public void acceptWinnerCheckerVisitor(WinnerConsultant consultant) {
+	public void acceptWinnerConsultant(WinnerConsultant consultant) {
 		if (pollRequest != null) {
 			if (isTie) {
 				LinkedHashSet<VotingPollOption> tied = new LinkedHashSet<VotingPollOption>();
@@ -57,5 +72,23 @@ public class VotingSessionMockAdapter implements VotingSession {
 			else
 				consultant.onWinner(new VoteOptionAndCount("baz", 3));
 		}
+	}
+
+	@Override
+	public void addNewParticipant(String participant) {
+		String comma=",";
+		if (participants.isEmpty())
+			comma="";
+		participants+=comma+participant;
+	}
+
+	@Override
+	public void removeParticipant(String participant) {
+		participants = participants.replace(participant, "").
+				replaceAll(",,",",").replaceFirst("^,", "");
+	}
+
+	public String getParticipants() {
+		return participants;
 	}
 }

@@ -19,16 +19,12 @@ import skype.voting.requests.VotingPollRequest;
 public class VotingPollProcessorTest {
 
 	VotingSessionFactoryMock votingSessionFactoryMock = new VotingSessionFactoryMock();
-	ReplyListener listener;
-	final AtomicReference<String> reply = new AtomicReference<String>();
+	ChatBridgeMock chatBridgeMock = new ChatBridgeMock("autoid");
+	ReplyListenerMock listener;
 
 	private VotingPollProcessor getSubject() {
 		VotingPollProcessor subject = new VotingPollProcessor(votingSessionFactoryMock);
-		listener = new ReplyListener() {
-			public void onReply(ChatAdapterInterface chat, String replyMessage) {
-				reply.set(replyMessage);
-			}
-		};
+		listener = new ReplyListenerMock();
 		subject.addReplyListener(listener);
 		return subject;
 	}
@@ -38,12 +34,54 @@ public class VotingPollProcessorTest {
 		VotingPollRequest pollRequest = buildVotingPollRequest();
 		
 		VotingPollProcessor subject = getSubject();
-		subject.processLunchRequest(pollRequest);
+		subject.processVotingPollRequest(pollRequest);
 		
 		assertEquals(votingSessionFactoryMock.session.pollRequest, pollRequest);
 
-		String expected = "\n" + "Almoço!\n" + "1) foo\n" + "2) baz";
-		assertEquals(expected, reply.get());
+		String expected = 
+				"\n" + "Almoço!\n" + 
+				"1) foo\n" + 
+				"2) baz\n"  +
+				"Voters: tatu,uruca";
+		assertEquals(expected, listener.reply.get());
+	}
+	
+	@Test
+	public void onNewUserOnGivenChat_ShouldAddUserToVotingSession()
+	{
+		getSubjectWithInitializedSession();
+		
+		assertEquals("tatu,uruca", votingSessionFactoryMock.session.getParticipants());
+		
+		chatBridgeMock.addParticipant("gamba");
+		
+		assertEquals("tatu,uruca,gamba", votingSessionFactoryMock.session.getParticipants());
+		votingSessionFactoryMock.session.getParticipants();
+
+		assertEquals("User 'gamba' added to the voting poll.", listener.reply.get());
+	}
+	
+	@Test
+	public void onUserLeftOnGiveChat_ShouldRemoveFromVotingSession()
+	{
+		getSubjectWithInitializedSession();
+		
+		chatBridgeMock.removeParticipant("tatu");
+		
+		assertEquals("uruca", votingSessionFactoryMock.session.getParticipants());
+		assertEquals(
+				"User 'tatu' left the voting poll.\n" +
+				"Update Votes: foo: 2 ; baz: 3", 
+				listener.reply.get());
+	}
+	
+	@Test
+	public void onUserLeftOnGivenChatAfterClosedPoll_NothingShouldHappen()
+	{
+		VotingPollProcessor subject = buildClosedPoll();
+		subject.addReplyListener(getListenerThatBreaksIfInvoked());
+		
+		chatBridgeMock.removeParticipant("tatu");
 	}
 
 	@Test
@@ -52,17 +90,38 @@ public class VotingPollProcessorTest {
 		
 		VoteRequest request = new VoteRequest("_foo_user_", 1);
 		subject.processVoteRequest(request);
-		assertNull(reply.get());
+		assertNull(listener.reply.get());
 	}
 
 	@Test
 	public void onProcessVoteWithLuncSession_ShouldIssueUserAndVoteMessage() {
 		VotingPollProcessor subject = getSubjectWithInitializedSession();
 
-		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequest(null, 42);
+		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequest(chatBridgeMock, null, 42);
 		subject.processVoteRequest(anyVoteRequestWillPrintCurrentResults);
 
-		assertEquals("Votes: foo: 2 ; baz: 3", reply.get() + "");
+		assertEquals("Votes: foo: 2 ; baz: 3", listener.reply.get() + "");
+	}
+
+	@Test
+	public void onProcessVoteWithDifferentChatThanCurrentVoteRequest_ShouldNotIssueVote()
+	{
+		VotingPollProcessor subject = getSubjectWithInitializedSession();
+		
+		subject.addReplyListener(getListenerThatBreaksIfInvoked());
+
+		ChatAdapterInterface chat2 = new ChatBridgeMock("anotherChat");
+		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequest(chat2 , null, 42);
+		subject.processVoteRequest(anyVoteRequestWillPrintCurrentResults);
+	}
+
+	private ReplyListener getListenerThatBreaksIfInvoked() {
+		return new ReplyListener() {
+			@Override
+			public void onReply(ChatAdapterInterface chatAdapterInterface, String reply) {
+				throw new RuntimeException("Should generate no reply");
+			}
+		};
 	}
 
 	@Test
@@ -72,7 +131,7 @@ public class VotingPollProcessorTest {
 		assertEquals(
 				"Votes: foo: 2 ; baz: 3\n" +
 				"WINNER: ***baz*** with 3 votes", 
-				reply.get());
+				listener.reply.get());
 	}
 
 	@Test
@@ -83,26 +142,24 @@ public class VotingPollProcessorTest {
 		assertEquals(
 				"Votes: foo: 3 ; baz: 3\n" +
 				"TIE: **foo and baz** tied with 3 votes", 
-				reply.get());
+				listener.reply.get());
 	}
 	
 	@Test
 	public void processVoteAfterClosePollRequest_ShouldGenerateNoReply(){
 		VotingPollProcessor subject = buildClosedPoll();
-		reply.set(null);
+		subject.addReplyListener(getListenerThatBreaksIfInvoked());
 		
 		VoteRequest thisRequestShouldDoNothing = new VoteRequest("foo", 42);
 		subject.processVoteRequest(thisRequestShouldDoNothing);
-		assertNull(reply.get());
 	}
 	
 	@Test
 	public void onClosePollAfterClosedPoll_ShouldGenerateNoReply()
 	{
 		VotingPollProcessor subject = buildClosedPoll();
-		reply.set(null);
-		subject.processClosePollRequest(null);
-		assertNull(reply.get());
+		subject.addReplyListener(getListenerThatBreaksIfInvoked());
+		subject.processClosePollRequest(new ClosePollRequest(chatBridgeMock, null));
 	}
 	
 	
@@ -111,30 +168,38 @@ public class VotingPollProcessorTest {
 		VotingPollProcessor subject = getSubject();
 		subject.processUnrecognizedCommand(new UnrecognizedCommand(null, "#commandfoo"));
 		String expected = "'#commandfoo' not recognized";
-		assertEquals(expected, reply.get());
+		assertEquals(expected, listener.reply.get());
 	}
 
 	@Test
 	public void onProcessUnrecognizedCommandWithoutLeadingSharp_ShouldDoNothing() {
 		VotingPollProcessor subject = getSubject();
 		subject.processUnrecognizedCommand(new UnrecognizedCommand(null, "commandfoo"));
-		assertNull(reply.get());
+		assertNull(listener.reply.get());
 	}
 	
 	private VotingPollProcessor getSubjectWithInitializedSession() {
 		VotingPollProcessor subject = getSubject();
-		subject.processLunchRequest(buildVotingPollRequest());
+		subject.processVotingPollRequest(buildVotingPollRequest());
 		return subject;
 	}	
 
 	private VotingPollProcessor buildClosedPoll() {
 		VotingPollProcessor subject = getSubjectWithInitializedSession();
-		subject.processClosePollRequest(new ClosePollRequest(null, null));
+		subject.processClosePollRequest(new ClosePollRequest(chatBridgeMock, null));
 		return subject;
 	}	
 
+	final class ReplyListenerMock implements ReplyListener {
+		final AtomicReference<String> reply = new AtomicReference<String>();
+
+		public void onReply(ChatAdapterInterface chat, String replyMessage) {
+			reply.set(replyMessage);
+		}
+	}
+
 	private final class VotingSessionFactoryMock implements VotingSessionFactory {
-		public VotingSessionMockAdapter session;
+		private VotingSessionMockAdapter session;
 		private boolean isTie;
 
 		public VotingSession produce() {
@@ -147,12 +212,15 @@ public class VotingPollProcessorTest {
 		}
 	}
 
-	private VotingPollRequest buildVotingPollRequest() {
-		ChatBridgeMock chat = new ChatBridgeMock("autoid");
 
-		VotingPollRequest request = new VotingPollRequest(chat);
+	private VotingPollRequest buildVotingPollRequest() {
+
+		VotingPollRequest request = new VotingPollRequest(chatBridgeMock);
+		request.setWelcomeMessage("Almoço!");
 		request.add(new VotingPollOption("foo"));
 		request.add(new VotingPollOption("baz"));
+		request.addParticipant("tatu");
+		request.addParticipant("uruca");
 		return request;
 	}
 }

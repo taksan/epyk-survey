@@ -1,7 +1,16 @@
 package skype.voting;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.skype.ChatListener;
+import com.skype.User;
+
+import skype.ChatAdapterInterface;
+import skype.SkypeBridge;
 import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.UnrecognizedCommand;
@@ -12,22 +21,23 @@ import skype.voting.requests.VotingPollRequest;
 public class VotingPollProcessor implements CommandProcessor {
 
 	private ReplyListener listener;
-	VotingSession votingSession = new VotingSessionImpl();
-	private final VotingSessionFactory votingSessionFactory;
+	final VotingSessionManager manager; 
+	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
+			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
 	public VotingPollProcessor() {
 		this(new VotingSessionFactoryImpl());
 	}
 	
 	VotingPollProcessor(VotingSessionFactory votingSessionFactory){
-		this.votingSessionFactory = votingSessionFactory;
-		votingSession = votingSessionFactory.produce();
+		manager = new VotingSessionManager(votingSessionFactory);
 	}
 
 	@Override
-	public void processLunchRequest(VotingPollRequest votePollRequest) {
-		votingSession = votingSessionFactory.produce();
-		votingSession.initWith(votePollRequest);
+	public void processVotingPollRequest(VotingPollRequest votePollRequest) {
+		VotingSession session = manager.makeNewVotingSession(votePollRequest);
+		ChatListenerForVotingSession listenerForSession = new ChatListenerForVotingSession(votePollRequest.getChat(), session);
+		listenersBySession.put(session, listenerForSession);
 		
 		String reply = buildVotingMenu(votePollRequest);
 		listener.onReply(votePollRequest.getChat(), reply);
@@ -35,22 +45,29 @@ public class VotingPollProcessor implements CommandProcessor {
 
 	@Override
 	public void processVoteRequest(VoteRequest request) {
+		VotingSession votingSession = manager.getSessionForRequest(request);
+		if (votingSession == null)
+			return;
 		votingSession.vote(request);
 		
-		String voteStatus = getVotingStatusMessage();
+		String voteStatus = getVotingStatusMessage(votingSession);
 		if (voteStatus.isEmpty())
 			return;
 		
 		String reply = "Votes: " + voteStatus;
 		listener.onReply(request.getChat(), reply);
 	}
-	
+
 	@Override
 	public void processClosePollRequest(final ClosePollRequest request) {
-		votingSession.acceptWinnerCheckerVisitor(new WinnerConsultant() {
+		final VotingSession votingSession = manager.getSessionForRequest(request);
+		if (votingSession == null)
+			return;
+		
+		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
 			public void onWinner(VoteOptionAndCount winnerStats) {
-				String voteStatus = getVotingStatusMessage();
+				String voteStatus = getVotingStatusMessage(votingSession);
 				String winnerMessage = 
 						String.format("WINNER: ***%s*** with %d vote%s",
 								winnerStats.optionName,
@@ -58,13 +75,13 @@ public class VotingPollProcessor implements CommandProcessor {
 								getPlural(winnerStats.voteCount)
 								);
 				String reply = "Votes: " + voteStatus + "\n" +	winnerMessage;
-				votingSession = votingSessionFactory.produce();
+				removeSessionForGivenRequst(request);
 				listener.onReply(request.getChat(), reply);
 			}
 
 			@Override
 			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
-				String voteStatus = getVotingStatusMessage();
+				String voteStatus = getVotingStatusMessage(votingSession);
 				StringBuilder winnerMessage = new StringBuilder();
 				for (VotingPollOption option : tiedOptions) {
 					winnerMessage.append(option.getName()+" and ");
@@ -78,7 +95,7 @@ public class VotingPollProcessor implements CommandProcessor {
 								getPlural(tieCount)
 								);
 				
-				votingSession = votingSessionFactory.produce();
+				removeSessionForGivenRequst(request);
 				listener.onReply(request.getChat(), reply);
 			}
 			
@@ -103,25 +120,22 @@ public class VotingPollProcessor implements CommandProcessor {
 	public void addReplyListener(ReplyListener listener) {
 		this.listener = listener;
 	}
-	
-	private String getVotingStatusMessage() {
-		final StringBuilder sb = new StringBuilder();
-		votingSession.acceptVoteConsultant(new VotingConsultant() {
-			public void onVote(VotingPollOption option, Integer count) {
-				sb.append(option+": " + count);
-				sb.append(" ; ");
-			}
-		});
-		
-		String voteStatus = sb.toString().replaceAll(" ; $", "");
-		return voteStatus;
+
+	protected String getVotingStatusMessage(VotingSession votingSession) {
+		VotingStatusMessageFormatter formatter = new VotingStatusMessageFormatter();
+		votingSession.acceptVoteConsultant(formatter);
+		return formatter.getFormattedStatus();
 	}
 
 	private String buildVotingMenu(VotingPollRequest lunchRequest) {
 		final StringBuffer msg = new StringBuffer();
-		msg.append("Almoço!\n");
 		lunchRequest.accept(new VotingPollVisitor() {
 			int count=1;
+			int voterCount=0;
+			@Override
+			public void onWelcomeMessage(String message) {
+				msg.append(message+"\n");
+			}
 			@Override
 			public void visitOption(VotingPollOption option) {
 				msg.append(count+") ");
@@ -131,11 +145,57 @@ public class VotingPollProcessor implements CommandProcessor {
 			}
 			@Override
 			public void visitParticipant(String participantName) {
-				throw new RuntimeException("NOT IMPLEMENTED");
+				if (voterCount == 0)
+					msg.append("Voters: ");
+				msg.append(participantName+",");
+				voterCount++;
 			}
 		});
-		String reply = "\n"+msg.toString().trim();
+		String reply = "\n"+StringUtils.substring(msg.toString(),0,-1);
 		return reply;
 	}
 
+	void onReply(ChatAdapterInterface chat, String reply) {
+		listener.onReply(chat, reply);
+	}
+
+	private void removeSessionForGivenRequst(final ClosePollRequest request) {
+		VotingSession votingSession = manager.getSessionForRequest(request);
+		request.getChat().removeListener(listenersBySession.get(votingSession));
+		listenersBySession.remove(votingSession);
+		manager.removeSessionForRequest(request);
+		System.gc();
+	}
+	
+	class ChatListenerForVotingSession implements ChatListener {
+
+		private final VotingSession targetSession;
+		private final ChatAdapterInterface chat;
+		private SkypeBridge bridge;
+		
+		public ChatListenerForVotingSession(ChatAdapterInterface chat, VotingSession delegate) {
+			this.chat = chat;
+			this.targetSession = delegate;
+			this.bridge = chat.getSkypeBridge();
+			chat.addListener(this);
+		}
+
+		@Override
+		public void userAdded(User user) {
+			String participant = bridge.getUserFullNameOrId(user);
+			targetSession.addNewParticipant(participant);
+			onReply(chat, String.format("User '%s' added to the voting poll.", participant));
+		}
+
+		@Override
+		public void userLeft(User user) {
+			String participant = bridge.getUserFullNameOrId(user);
+			targetSession.removeParticipant(participant);
+			
+			String status = getVotingStatusMessage(targetSession);
+			onReply(chat, String.format("User '%s' left the voting poll.\n" +
+					"Update Votes: "+status, 
+					participant));
+		}
+	}
 }

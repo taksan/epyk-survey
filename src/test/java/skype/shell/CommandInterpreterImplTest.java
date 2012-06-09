@@ -6,20 +6,28 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.shell.mocks.ShellCommandFactoryMock;
+import skype.voting.requests.ValidatedShellCommandFactory;
 
 
 public class CommandInterpreterImplTest {
+	ShellCommandFactory cmd1 = new ShellCommandFactoryMock();
+	CommandInterpreterImpl subject = new CommandInterpreterImpl(cmd1);
+	
+	@Test
+	public void onConstruction_ShouldDecorateFactoriesWithValidatorDecorator()
+	{
+		assertTrue("Internal factories must be decorated by ValidatedShellCommandFactory",
+				subject.factories[0] instanceof ValidatedShellCommandFactory);
+	}
+	
 	@Test
 	public void onUnrecognizedPattern_ShouldReturnUnrecognizedCommand() {
-		CommandInterpreterImpl subject = new CommandInterpreterImpl();
 		ShellCommand shellCommand = subject.processMessage(null, "#foo");
 		assertTrue(shellCommand instanceof UnrecognizedCommand);
 	}
 	
 	@Test
 	public void onRecognizedCommand_ShouldProduceGivenCommand() {
-		ShellCommandFactory cmd1 = new ShellCommandFactoryMock();
-		CommandInterpreterImpl subject = new CommandInterpreterImpl(cmd1);
 		ShellCommand shellCommand = subject.processMessage(null, "#understood_command");
 		assertEquals("Understood", shellCommand.getText());
 	}

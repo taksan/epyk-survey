@@ -5,7 +5,7 @@ import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VotingPollRequest;
 
 public interface CommandProcessor {
-	void processLunchRequest(VotingPollRequest lunchRequest);
+	void processVotingPollRequest(VotingPollRequest lunchRequest);
 	void processVoteRequest(VoteRequest request);
 	void processClosePollRequest(ClosePollRequest closePollRequest);
 	void processUnrecognizedCommand(UnrecognizedCommand visitor);

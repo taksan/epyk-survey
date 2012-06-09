@@ -3,16 +3,34 @@ package skype.shell.mocks;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.skype.ChatListener;
+import com.skype.User;
+
 import skype.ChatAdapterInterface;
+import skype.SkypeBridge;
+import skype.skype.mocks.SkypeBridgeMock;
 
-public class ChatBridgeMock implements ChatAdapterInterface {
+public class ChatBridgeMock implements ChatAdapterInterface 
+{
+	private final class DoNothingListener implements ChatListener {
+		@Override
+		public void userLeft(User user) {
+		}
 
+		@Override
+		public void userAdded(User user) {
+		}
+	}
+
+	List<String> participants = new LinkedList<String>();
+	ChatListener listener = new DoNothingListener();
 	private final String id;
-	private final String sender;
+	String sender;
+	SkypeBridge skypeBriddgeMock = new  SkypeBridgeMock();
 
 	public ChatBridgeMock(String id, String sender) {
 		this.id = id;
-		this.sender = sender;
+		setLastSender(sender);
 	}
 	
 	public ChatBridgeMock(String id){
@@ -25,7 +43,7 @@ public class ChatBridgeMock implements ChatAdapterInterface {
 	}
 
 	@Override
-	public String getSenderFullName() {
+	public String getLasterSenderFullName() {
 		return sender;
 	}
 
@@ -36,6 +54,36 @@ public class ChatBridgeMock implements ChatAdapterInterface {
 
 	public void addParticipant(String participantName) {
 		participants.add(participantName);
+		listener.userAdded(asUser(participantName));
+		
 	}
-	List<String> participants = new LinkedList<String>();
+
+	private User asUser(String participantName) {
+		return User.getInstance(participantName);
+	}
+	
+	public void removeParticipant(String participantName) {
+		participants.remove(participantName);
+		listener.userLeft(asUser(participantName));
+	}
+	
+	@Override
+	public void addListener(ChatListener listener) {
+		this.listener = listener;
+	}
+
+	@Override
+	public SkypeBridge getSkypeBridge() {
+		return skypeBriddgeMock;
+	}
+
+	@Override
+	public void removeListener(ChatListener weakReference) {
+		listener = new DoNothingListener();
+	}
+
+	@Override
+	public void setLastSender(String senderFullNameOrId) {
+		this.sender = senderFullNameOrId;
+	}
 }

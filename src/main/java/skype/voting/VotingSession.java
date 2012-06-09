@@ -9,8 +9,12 @@ public interface VotingSession {
 
 	public abstract void vote(VoteRequest voteRequest);
 
+	public abstract void addNewParticipant(String participant);
+	
+	public abstract void removeParticipant(String participant);
+	
 	public abstract void acceptVoteConsultant(VotingConsultant consultant);
 
-	public abstract void acceptWinnerCheckerVisitor(WinnerConsultant consultant);
+	public abstract void acceptWinnerConsultant(WinnerConsultant consultant);
 
 }

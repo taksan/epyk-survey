@@ -11,13 +11,12 @@ public class ClosePollRequest extends AbstractShellCommand {
 	}
 
 	@Override
-	public void acceptProcessorForSentMessages(CommandProcessor visitor) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public void acceptProcessorForSentMessages(CommandProcessor processor) {
+		processor.processClosePollRequest(this);
 	}
 
 	@Override
 	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		processor.processClosePollRequest(this);
 	}
-
 }
