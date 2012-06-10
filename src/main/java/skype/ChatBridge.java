@@ -87,7 +87,4 @@ public class ChatBridge implements ChatAdapterInterface  {
 	public void setLastSender(String senderFullNameOrId) {
 		lastSender = senderFullNameOrId;
 	}
-
-
-
 }

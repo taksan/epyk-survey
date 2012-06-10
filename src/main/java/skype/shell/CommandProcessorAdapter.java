@@ -1,5 +1,6 @@
 package skype.shell;
 
+import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
 import skype.voting.requests.VoteRequest;
@@ -40,6 +41,11 @@ public abstract class CommandProcessorAdapter implements CommandProcessor {
 	
 	@Override
 	public void processHelpCommand(HelpRequest helpRequest) {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	@Override
+	public void processAddVoteOption(AddVoteOptionRequest addVoteOptionRequest) {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 }

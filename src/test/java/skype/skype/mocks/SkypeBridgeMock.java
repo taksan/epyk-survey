@@ -26,4 +26,9 @@ public final class SkypeBridgeMock implements SkypeBridge {
 	public String getUserFullNameOrId(User sender) {
 		return sender.getId();
 	}
+
+	@Override
+	public String getContent(ChatMessage receivedChatMessage) {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
 }

@@ -76,4 +76,9 @@ public class SkypeBridgeImpl implements SkypeBridge {
 			throw new IllegalStateException(e);
 		}
 	}
+
+	@Override
+	public String getContent(ChatMessage chatMessage) throws SkypeException {
+		return chatMessage.getContent();
+	}
 }
