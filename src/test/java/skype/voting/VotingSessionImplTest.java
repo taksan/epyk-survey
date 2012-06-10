@@ -16,6 +16,7 @@ import skype.voting.VotingConsultant;
 import skype.voting.VotingSessionImpl;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VotingPollVisitor;
 
 
 public class VotingSessionImplTest {
@@ -62,6 +63,7 @@ public class VotingSessionImplTest {
 		subject.initWith(buildVotingPollRequest());
 		subject.vote(new VoteRequest("john doe", 2));
 		subject.vote(new VoteRequest("jane doe", 1));
+		
 		String actual = getVotingTableFor(subject);
 		String expected = 
 				"foo:1\n" +
@@ -111,6 +113,32 @@ public class VotingSessionImplTest {
 				"baz:1";
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void onAddOption_ShouldAddNewOption() {
+		subject.initWith(buildVotingPollRequest());
+		boolean isAdded = subject.addOption("non non sense ");
+		String actual = getVotingTableFor(subject);
+		String expected = 
+				"foo:0\n" + 
+				"baz:0\n" + 
+				"non non sense:0";
+		assertEquals(expected, actual);
+		assertTrue(isAdded);
+	}
+	
+	@Test
+	public void onAddAlreadyExistingOption_ShouldNotAddNewOption()
+	{
+		subject.initWith(buildVotingPollRequest());
+		boolean isAdded = subject.addOption("bAz ");
+		String actual = getVotingTableFor(subject);
+		String expected = 
+				"foo:0\n" + 
+				"baz:0";
+		assertEquals(expected, actual);
+		assertFalse(isAdded);
 	}
 	
 	@Test
@@ -167,6 +195,37 @@ public class VotingSessionImplTest {
 		
 		VoteOptionAndCount expected = new VoteOptionAndCount("baz", 1);
 		assertEquals(expected.toString(), actual.toString());
+	}
+	
+	@Test
+	public void onAcceptVisitor_ShouldVisitInCorrectSequence()
+	{
+		subject.initWith(buildVotingPollRequest());
+		final StringBuilder sb=new StringBuilder(); 
+		subject.accept(new VotingPollVisitor() {
+			@Override
+			public void onWelcomeMessage(String message) {
+				sb.append("onWelcomeMessage\n");
+			}
+			
+			@Override
+			public void visitOption(VotingPollOption option) {
+				sb.append("visitOption:"+option+"\n");
+			}
+			
+			@Override
+			public void visitParticipant(String participantName) {
+				sb.append("visitParticipant:"+participantName+"\n");
+			}
+		});
+		
+		String expected=
+				"onWelcomeMessage\n"+
+				"visitOption:foo\n"+
+				"visitOption:baz\n"+
+				"visitParticipant:john doe\n"+
+				"visitParticipant:jane doe\n";
+		assertEquals(expected, sb.toString());
 	}
 	
 	

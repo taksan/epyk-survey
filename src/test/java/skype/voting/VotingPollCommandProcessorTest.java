@@ -13,11 +13,12 @@ import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
+import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
-import skype.voting.requests.StartPollRequest;
 
 public class VotingPollCommandProcessorTest {
 
@@ -214,6 +215,40 @@ public class VotingPollCommandProcessorTest {
 		request.beProcessedAsReceivedMessage(subject);
 	}
 	
+	@Test
+	public void onProcessAddVoteOption_ShouldAddVotingOption(){
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
+		chatBridgeMock.setLastSender("tatu");
+		request.beProcessedAsReceivedMessage(subject);
+		
+		assertEquals("New option 'matre mia' added by tatu. Current options:\n" +
+				"Almoço!\n" +
+				"1) foo\n" + 
+				"2) baz\n" +
+				"3) matre mia\n"+
+				"Voters: tatu,uruca", 
+				listener.reply.get());
+	}
+	
+	@Test
+	public void onProcessAddVoteOptionWithClosedPoll_ShouldDoNothing(){
+		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
+		chatBridgeMock.setLastSender("tatu");
+		request.beProcessedAsReceivedMessage(subject);
+	}
+	
+	@Test
+	public void onProcessAddVoteOptionThatAlreadyExists_ShouldNotAddAndShouldWarnUser()
+	{
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "foo");
+		chatBridgeMock.setLastSender("tatu");
+		request.beProcessedAsReceivedMessage(subject);
+		
+		assertEquals("Option 'foo' already added.", listener.reply.get());
+	}
 	
 	private VotingPollCommandProcessor getSubjectWithInitializedSession() {
 		VotingPollCommandProcessor subject = getSubject();

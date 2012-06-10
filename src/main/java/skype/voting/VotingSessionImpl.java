@@ -9,13 +9,14 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import skype.voting.requests.VoteRequest;
 import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VotingPollVisitor;
 
 public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	Vector<VotingPollOption> voteOptionByIndex = null;
 	Map<String, VotingPollOption> participantsAndVotes = new LinkedHashMap<String, VotingPollOption>();
+	private String welcome;
 	
 	@Override
 	public void initWith(StartPollRequest request) {
@@ -80,7 +81,7 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	
 	@Override
 	public void onWelcomeMessage(String message) {
-		//　for now, the voting session does not require the welcome message
+		welcome = message;
 	}
 	
 	@Override
@@ -128,6 +129,28 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	private void initializeAllOptionVotesToZero(Map<VotingPollOption, Integer> voteStatus) {
 		for (VotingPollOption option : voteOptionByIndex) {
 			voteStatus.put(option, 0);
+		}
+	}
+
+	@Override
+	public boolean addOption(String name) {
+		for (VotingPollOption e : voteOptionByIndex) {
+			if (e.getName().trim().equalsIgnoreCase(name.trim()))
+				return false;
+		}
+		VotingPollOption option = new VotingPollOption(name.trim());
+		voteOptionByIndex.add(option);
+		return true;
+	}
+
+	@Override
+	public void accept(VotingPollVisitor visitor) {
+		visitor.onWelcomeMessage(welcome);
+		for (VotingPollOption e : voteOptionByIndex) {
+			visitor.visitOption(e);
+		}
+		for (String p : participantsAndVotes.keySet()) {
+			visitor.visitParticipant(p);
 		}
 	}	
 }

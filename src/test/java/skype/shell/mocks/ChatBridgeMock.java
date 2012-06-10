@@ -38,6 +38,10 @@ public class ChatBridgeMock implements ChatAdapterInterface
 	public ChatBridgeMock(String id){
 		this(id, "none");
 	}
+	
+	public ChatBridgeMock(){
+		this("#");
+	}
 
 	@Override
 	public String toString() {

@@ -6,21 +6,22 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.skype.ChatListener;
-import com.skype.User;
-
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
+import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
-import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VotingPollVisitor;
+
+import com.skype.ChatListener;
+import com.skype.User;
 
 public class VotingPollCommandProcessor implements CommandProcessor {
 
@@ -44,7 +45,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 				new ChatListenerForVotingSession(votePollRequest.getChat(), session);
 		listenersBySession.put(session, listenerForSession);
 		
-		String reply = buildVotingMenu(votePollRequest);
+		String reply = buildVotingMenu(votePollRequest.getChat(), session);
 		onReply(votePollRequest.getChat(), reply);
 	}
 
@@ -151,12 +152,12 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		return formatter.getFormattedStatus();
 	}
 
-	private String buildVotingMenu(StartPollRequest request) {
+	private String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
 		final StringBuffer msg = new StringBuffer();
 		final StringBuffer guideline = new StringBuffer();
 		guideline.append("Poll ");
 		
-		request.accept(new VotingPollVisitor() {
+		session.accept(new VotingPollVisitor() {
 			int count=1;
 			int voterCount=0;
 			@Override
@@ -180,7 +181,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 				voterCount++;
 			}
 		});
-		request.getChat().setGuidelines(guideline.toString().trim());
+		chat.setGuidelines(guideline.toString().trim());
 		String reply = "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 		return reply;
 	}
@@ -235,5 +236,25 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 					"Update Votes: "+status, 
 					participant));
 		}
+	}
+
+	@Override
+	public void processAddVoteOption(AddVoteOptionRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
+		VotingSession votingSession = manager.getSessionForRequest(request);
+		ChatAdapterInterface chat = request.getChat();
+		boolean added = votingSession.addOption(request.getName());
+		if (!added) {
+			onReply(chat, "Option '"+request.getName()+"' already added.");
+			return;
+		}
+		String header = String.format("New option '%s' added by %s. Current options:\n", 
+				request.getName(),chat.getLasterSenderFullName());
+		
+		String reply =
+				header+
+				buildVotingMenu(chat, votingSession).trim();
+		onReply(chat, reply);
 	}
 }
