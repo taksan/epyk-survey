@@ -228,6 +228,25 @@ public class VotingSessionImplTest {
 		assertEquals(expected, sb.toString());
 	}
 	
+	@Test
+	public void onAcceptParticipantConsultant_ShouldVisitAndTellWhetherUserVotedOrNot() {
+		subject.initWith(buildVotingPollRequest());
+		subject.vote(new VoteRequest("john doe", 2));
+		
+		final StringBuilder sb = new StringBuilder();
+		subject.acceptParticipantConsultant(new ParticipantConsultant() {
+			
+			@Override
+			public void visit(String participantName, boolean hasVoted) {
+				sb.append(participantName+":"+hasVoted+"\n");
+			}
+		});
+		String expected = 
+				"john doe:true\n" +
+				"jane doe:false\n";
+		
+		assertEquals(expected, sb.toString());
+	}
 	
 	private String getVotingTableFor(VotingSession session) {
 		final StringBuilder sb = new StringBuilder();

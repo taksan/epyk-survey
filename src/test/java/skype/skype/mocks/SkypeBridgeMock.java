@@ -31,4 +31,9 @@ public final class SkypeBridgeMock implements SkypeBridge {
 	public String getContent(ChatMessage receivedChatMessage) {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
+
+	@Override
+	public void sendMessageToUser(String fullname, String message) {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
 }

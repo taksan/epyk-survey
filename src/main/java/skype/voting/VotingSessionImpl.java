@@ -152,5 +152,13 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		for (String p : participantsAndVotes.keySet()) {
 			visitor.visitParticipant(p);
 		}
+	}
+
+	@Override
+	public void acceptParticipantConsultant(ParticipantConsultant consultant) {
+		for (Entry<String, VotingPollOption> vote : participantsAndVotes.entrySet()) {
+			boolean hasVoted = vote.getValue()!=null;
+			consultant.visit(vote.getKey(), hasVoted);
+		}
 	}	
 }

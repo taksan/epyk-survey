@@ -13,6 +13,7 @@ import com.skype.User;
 
 public class SkypeBridgeImpl implements SkypeBridge {
 	Map<Chat, ChatAdapterInterface> bridgeByChat = new LinkedHashMap<Chat, ChatAdapterInterface>();
+	Map<String,String> skypeIdByFullName = new LinkedHashMap<String,String>();
 	
 	static SkypeBridgeImpl singleton = new SkypeBridgeImpl();
 	
@@ -41,6 +42,7 @@ public class SkypeBridgeImpl implements SkypeBridge {
 	}
 
 	public String getSenderFullNameOrId(ChatMessage chatMessage) {
+		
 		try {
 			return getUserFullNameOrId(chatMessage.getSender());
 		} catch (SkypeException e) {
@@ -66,6 +68,7 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		}
 		if (fullName==null)
 			return sender.getId();
+		skypeIdByFullName.put(fullName, sender.getId());
 		return fullName;
 	}
 
@@ -80,5 +83,15 @@ public class SkypeBridgeImpl implements SkypeBridge {
 	@Override
 	public String getContent(ChatMessage chatMessage) throws SkypeException {
 		return chatMessage.getContent();
+	}
+
+	@Override
+	public void sendMessageToUser(String fullName, String message) {
+		String userid = skypeIdByFullName.get(fullName);
+		try {
+			User.getInstance(userid).send(message);
+		} catch (SkypeException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

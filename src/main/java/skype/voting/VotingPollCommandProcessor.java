@@ -15,6 +15,7 @@ import skype.shell.UnrecognizedCommand;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
@@ -118,7 +119,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		
 		final VotingSession votingSession = manager.getSessionForRequest(request);
 		String status = "Votes: "+getVotingStatusMessage(votingSession);
-		onReply(request.getChat(), status);
+		onReplyPrivate(request.getChat(), status);
 	}
 	
 	@Override
@@ -127,7 +128,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		
 		String helpMessage = request.getHelpMessage()+"\n" +
 				"Also, you can use '/get guidelines' to see the available voting options";
-		onReply(request.getChat(), helpMessage);
+		onReplyPrivate(request.getChat(), helpMessage);
 	}	
 	
 
@@ -136,7 +137,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		if (!unrecognizedCommand.getText().startsWith("#"))
 			return;
 		
-		listener.onReply(
+		listener.onReplyPrivate(
 				unrecognizedCommand.getChat(), 
 				String.format("'%s' not recognized", unrecognizedCommand.getText()));
 	}
@@ -186,8 +187,12 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		return reply;
 	}
 
-	void onReply(ChatAdapterInterface chat, String reply) {
+	private void onReply(ChatAdapterInterface chat, String reply) {
 		listener.onReply(chat, reply);
+	}
+	
+	private void onReplyPrivate(ChatAdapterInterface chat, String reply) {
+		listener.onReplyPrivate(chat, reply);
 	}
 
 	private void removeSessionForGivenRequest(final ClosePollRequest request) {
@@ -246,7 +251,7 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		ChatAdapterInterface chat = request.getChat();
 		boolean added = votingSession.addOption(request.getName());
 		if (!added) {
-			onReply(chat, "Option '"+request.getName()+"' already added.");
+			onReplyPrivate(chat, "Option '"+request.getName()+"' already added.");
 			return;
 		}
 		String header = String.format("New option '%s' added by %s. Current options:\n", 
@@ -256,5 +261,22 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 				header+
 				buildVotingMenu(chat, votingSession).trim();
 		onReply(chat, reply);
+	}
+
+	@Override
+	public void processMissingVoteRequest(MissingVotersRequest request) {
+		VotingSession votingSession = manager.getSessionForRequest(request);
+		final StringBuilder sb = new StringBuilder();
+		votingSession.acceptParticipantConsultant(new ParticipantConsultant() {
+
+			@Override
+			public void visit(String participantName, boolean hasVoted) {
+				if (!hasVoted)
+					sb.append(participantName+", ");
+			}
+		});
+		String withoutTrailingCommand = StringUtils.substring(sb.toString(),0,-2);
+		String reply = "Users that haven't voted yet:\n\t"+withoutTrailingCommand;
+		onReply(request.getChat(), reply);
 	}
 }

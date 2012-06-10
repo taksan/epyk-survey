@@ -52,4 +52,9 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 	public void onReply(ChatAdapterInterface chat, String reply) {
 		skypeBridge.sendMessage(chat, reply);
 	}
+
+	@Override
+	public void onReplyPrivate(ChatAdapterInterface chat, String reply) {
+		skypeBridge.sendMessageToUser(chat.getLasterSenderFullName(), reply);
+	}
 }

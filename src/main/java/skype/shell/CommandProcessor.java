@@ -3,6 +3,7 @@ package skype.shell;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
@@ -16,4 +17,5 @@ public interface CommandProcessor {
 	void processVoteStatusRequest(VoteStatusRequest voteStatusRequest);
 	void processHelpCommand(HelpRequest helpRequest);
 	void processAddVoteOption(AddVoteOptionRequest addVoteOptionRequest);
+	void processMissingVoteRequest(MissingVotersRequest missingVotersRequest);
 }

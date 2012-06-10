@@ -16,10 +16,13 @@ public interface VotingSession {
 	
 	public abstract void acceptVoteConsultant(VotingConsultant consultant);
 
+	public abstract void accept(VotingPollVisitor votingPollVisitor);
+	
 	public abstract void acceptWinnerConsultant(WinnerConsultant consultant);
 
 	public abstract boolean addOption(String name);
 
-	public abstract void accept(VotingPollVisitor votingPollVisitor);
+	public abstract void acceptParticipantConsultant(ParticipantConsultant consultant);
+
 
 }

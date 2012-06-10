@@ -14,6 +14,8 @@ import skype.shell.CommandProcessor;
 import skype.shell.CommandProcessorAdapter;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
+import skype.shell.mocks.ChatBridgeMock;
+import skype.voting.requests.MissingVotersRequest;
 
 import com.skype.ChatListener;
 import com.skype.ChatMessage;
@@ -28,6 +30,11 @@ public class VotingPollBrokerTest {
 		public void addReplyListener(ReplyListener listener) {
 			this.listener = listener;
 			operations.append("addReplyListener\n");
+		}
+
+		@Override
+		public void processMissingVoteRequest(MissingVotersRequest missingVotersRequest) {
+			throw new RuntimeException("NOT IMPLEMENTED");
 		}
 	}
 
@@ -70,6 +77,19 @@ public class VotingPollBrokerTest {
 		
 		assertEquals("addReplyListener\n" + 
 				"SkypeBridge: sendMessage: foo", 
+				operations.toString());
+	}
+	
+	@Test
+	public void onReplyListenerPrivateInvoke_ShouldInvokeSkypeBridgeSendMessageToSender()
+	{
+		CommandProcessorAdapterMock processor = getProcessor();
+		new VotingPollBroker(getBridge(), getInterpreter(), processor);
+		ChatAdapterInterface chat = new ChatBridgeMock("", "wauss");
+		processor.listener.onReplyPrivate(chat, "foo");
+		
+		assertEquals("addReplyListener\n" + 
+				"sendMessageToUser: wauss message:foo", 
 				operations.toString());
 	}
 
@@ -169,6 +189,11 @@ public class VotingPollBrokerTest {
 			public String getContent(ChatMessage receivedChatMessage) {
 				operations.append("getContent\n");
 				return "";
+			}
+
+			@Override
+			public void sendMessageToUser(String user, String message) {
+				operations.append("sendMessageToUser: " +user +" message:" + message);
 			}
 		};
 	}

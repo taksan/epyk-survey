@@ -9,13 +9,13 @@ import org.junit.Test;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ReplyListener;
-import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
@@ -162,7 +162,7 @@ public class VotingPollCommandProcessorTest {
 		VotingPollCommandProcessor subject = getSubject();
 		subject.processUnrecognizedCommand(new UnrecognizedCommand(null, "#commandfoo"));
 		String expected = "'#commandfoo' not recognized";
-		assertEquals(expected, listener.reply.get());
+		assertEquals(expected, listener.replyPrivate.get());
 	}
 
 	@Test
@@ -179,7 +179,17 @@ public class VotingPollCommandProcessorTest {
 		VoteStatusRequest voteStatusRequest = new VoteStatusRequest(chatBridgeMock, null);
 		subject.processVoteStatusRequest(voteStatusRequest);
 		
-		assertEquals("Votes: foo: 2 ; baz: 3", listener.reply.get() + "");
+		assertEquals("Votes: foo: 2 ; baz: 3", listener.replyPrivate.get() + "");
+	}
+	
+	@Test
+	public void onProcessMissingMissingVotersRequest_ShouldPrintWhoHasnVoted()
+	{
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		MissingVotersRequest request = new  MissingVotersRequest(chatBridgeMock, null);
+		subject.processMissingVoteRequest(request);
+		assertEquals("Users that haven't voted yet:\n" +
+				"	tatu, uruca", listener.reply.get() + "");
 	}
 	
 	@Test
@@ -194,16 +204,16 @@ public class VotingPollCommandProcessorTest {
 	public void onProcessHelpRequest_ShouldGenerateReplyWithHelpMessage()
 	{
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
-		ShellCommand request = new HelpRequest(chatBridgeMock, null){
+		HelpRequest request = new HelpRequest(chatBridgeMock, null){
 			@Override
 			public String getHelpMessage() {
 				return "help";
 			}
 		};
-		request.beProcessedAsReceivedMessage(subject);
+		subject.processHelpCommand(request);
 		assertEquals("help\n" +
 				"Also, you can use '/get guidelines' to see the available voting options", 
-				listener.reply.get());
+				listener.replyPrivate.get()+"");
 	}
 	
 	@Test
@@ -211,8 +221,8 @@ public class VotingPollCommandProcessorTest {
 	{
 		VotingPollCommandProcessor subject = getSubject();
 		subject.addReplyListener(getListenerThatBreaksIfInvoked());
-		ShellCommand request = new HelpRequest(null, null);
-		request.beProcessedAsReceivedMessage(subject);
+		HelpRequest request = new HelpRequest(null, null);
+		subject.processHelpCommand(request);
 	}
 	
 	@Test
@@ -220,7 +230,7 @@ public class VotingPollCommandProcessorTest {
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
 		chatBridgeMock.setLastSender("tatu");
-		request.beProcessedAsReceivedMessage(subject);
+		subject.processAddVoteOption(request);
 		
 		assertEquals("New option 'matre mia' added by tatu. Current options:\n" +
 				"Almoço!\n" +
@@ -232,22 +242,22 @@ public class VotingPollCommandProcessorTest {
 	}
 	
 	@Test
-	public void onProcessAddVoteOptionWithClosedPoll_ShouldDoNothing(){
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
-		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
-		chatBridgeMock.setLastSender("tatu");
-		request.beProcessedAsReceivedMessage(subject);
-	}
-	
-	@Test
 	public void onProcessAddVoteOptionThatAlreadyExists_ShouldNotAddAndShouldWarnUser()
 	{
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "foo");
 		chatBridgeMock.setLastSender("tatu");
-		request.beProcessedAsReceivedMessage(subject);
+		subject.processAddVoteOption(request);
 		
-		assertEquals("Option 'foo' already added.", listener.reply.get());
+		assertEquals("Option 'foo' already added.", listener.replyPrivate.get());
+	}
+	
+	@Test
+	public void onProcessAddVoteOptionWithClosedPoll_ShouldDoNothing(){
+		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
+		chatBridgeMock.setLastSender("tatu");
+		subject.processAddVoteOption(request);
 	}
 	
 	private VotingPollCommandProcessor getSubjectWithInitializedSession() {
@@ -269,15 +279,26 @@ public class VotingPollCommandProcessorTest {
 			public void onReply(ChatAdapterInterface chatAdapterInterface, String reply) {
 				throw new RuntimeException("Should generate no reply");
 			}
+
+			@Override
+			public void onReplyPrivate(ChatAdapterInterface chatAdapterInterface, String reply) {
+				throw new RuntimeException("NOT IMPLEMENTED");
+			}
 		};
 	}
 
 
 	final class ReplyListenerMock implements ReplyListener {
+		final AtomicReference<String> replyPrivate = new AtomicReference<String>();
 		final AtomicReference<String> reply = new AtomicReference<String>();
 
 		public void onReply(ChatAdapterInterface chat, String replyMessage) {
 			reply.set(replyMessage);
+		}
+
+		@Override
+		public void onReplyPrivate(ChatAdapterInterface chatAdapterInterface, String reply) {
+			replyPrivate.set(reply);
 		}
 	}
 

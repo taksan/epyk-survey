@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import skype.voting.ParticipantConsultant;
 import skype.voting.VoteOptionAndCount;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingPollOption;
@@ -124,6 +125,13 @@ public class VotingSessionMockAdapter implements VotingSession {
 		}
 		for (String participantName : participants) {
 			visitor.visitParticipant(participantName);
+		}
+	}
+
+	@Override
+	public void acceptParticipantConsultant(ParticipantConsultant consultant) {
+		for (String p : participants) {
+			consultant.visit(p, false);
 		}
 	}
 }

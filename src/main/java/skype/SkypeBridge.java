@@ -7,6 +7,7 @@ import com.skype.User;
 
 public interface SkypeBridge {
 	public void sendMessage(ChatAdapterInterface chatBridgeInterface, String message);
+	public void sendMessageToUser(String fullName, String message);
 
 	public ChatAdapterInterface getChatAdapter(ChatMessage sentChatMessage);
 	public String getContent(ChatMessage receivedChatMessage) throws SkypeException;
