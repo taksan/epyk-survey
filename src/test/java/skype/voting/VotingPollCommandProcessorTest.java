@@ -183,7 +183,7 @@ public class VotingPollCommandProcessorTest {
 	}
 	
 	@Test
-	public void onProcessMissingMissingVotersRequest_ShouldPrintWhoHasnVoted()
+	public void onProcessMissingVotersRequest_ShouldPrintWhoHasnVoted()
 	{
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
 		MissingVotersRequest request = new  MissingVotersRequest(chatBridgeMock, null);
@@ -191,6 +191,16 @@ public class VotingPollCommandProcessorTest {
 		assertEquals("Users that haven't voted yet:\n" +
 				"	tatu, uruca", listener.reply.get() + "");
 	}
+	
+	@Test
+	public void onProcessMissingVotersRequestWithoutAnyone_ShouldPrintEveryoneVoted(){
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		votingSessionFactoryMock.session.setEveryoneVoted();
+		MissingVotersRequest request = new  MissingVotersRequest(chatBridgeMock, null);
+		subject.processMissingVoteRequest(request);
+		assertEquals("Everyone already voted.", listener.reply.get() + "");
+	}
+	
 	
 	@Test
 	public void onProcessVoteStatusRequestWithClosedSession_ShouldNotGenerateReply()

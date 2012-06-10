@@ -275,6 +275,10 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 					sb.append(participantName+", ");
 			}
 		});
+		if (sb.toString().isEmpty()) {
+			onReply(request.getChat(), "Everyone already voted.");
+			return;
+		}
 		String withoutTrailingCommand = StringUtils.substring(sb.toString(),0,-2);
 		String reply = "Users that haven't voted yet:\n\t"+withoutTrailingCommand;
 		onReply(request.getChat(), reply);

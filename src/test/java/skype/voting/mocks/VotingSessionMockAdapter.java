@@ -94,6 +94,7 @@ public class VotingSessionMockAdapter implements VotingSession {
 	}
 
 	List<String> participants = new ArrayList<String>();
+	private boolean everyoneVoted = false;
 	@Override
 	public void addNewParticipant(String participant) {
 		participants.add(participant);
@@ -131,7 +132,11 @@ public class VotingSessionMockAdapter implements VotingSession {
 	@Override
 	public void acceptParticipantConsultant(ParticipantConsultant consultant) {
 		for (String p : participants) {
-			consultant.visit(p, false);
+			consultant.visit(p, everyoneVoted);
 		}
+	}
+
+	public void setEveryoneVoted() {
+		everyoneVoted = true;
 	}
 }
