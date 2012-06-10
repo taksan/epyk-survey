@@ -10,14 +10,15 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VotingPollVisitor;
 
 public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	Vector<VotingPollOption> voteOptionByIndex = null;
 	Map<String, VotingPollOption> participantsAndVotes = new LinkedHashMap<String, VotingPollOption>();
 	
 	@Override
-	public void initWith(VotingPollRequest request) {
+	public void initWith(StartPollRequest request) {
 		voteOptionByIndex = new Vector<VotingPollOption>();
 		participantsAndVotes = new LinkedHashMap<String, VotingPollOption>();
 		

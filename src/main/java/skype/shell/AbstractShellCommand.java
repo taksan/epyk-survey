@@ -10,11 +10,11 @@ public abstract class AbstractShellCommand implements ShellCommand {
 		this.text = command;
 		
 	}
-	public String getText() {
+	public final String getText() {
 		return text;
 	}
 	
-	public ChatAdapterInterface getChat() {
+	public final ChatAdapterInterface getChat() {
 		return chat;
 	}
 }

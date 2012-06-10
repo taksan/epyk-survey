@@ -5,14 +5,14 @@ import java.util.LinkedHashSet;
 import skype.voting.VoteOptionAndCount;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollVisitor;
 import skype.voting.VotingSession;
 import skype.voting.WinnerConsultant;
 import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VotingPollVisitor;
 
 public class VotingSessionMockAdapter implements VotingSession {
-	public VotingPollRequest pollRequest;
+	public StartPollRequest pollRequest;
 	private final boolean isTie;
 	private VotingPollOption fooOption = new VotingPollOption("foo");
 	private VotingPollOption bazOption = new VotingPollOption("baz");
@@ -23,7 +23,7 @@ public class VotingSessionMockAdapter implements VotingSession {
 	}
 
 	@Override
-	public void initWith(VotingPollRequest request) {
+	public void initWith(StartPollRequest request) {
 		pollRequest = request;
 		request.accept(new VotingPollVisitor() {
 			@Override

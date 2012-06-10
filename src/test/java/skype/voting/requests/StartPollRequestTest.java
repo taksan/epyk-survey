@@ -5,13 +5,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollVisitor;
 
-public class VotingPollRequestTest extends RequestTest {
+public class StartPollRequestTest extends RequestTest {
 	@Test
 	public void onAccept_ShouldPassAllOverRequiredFields()
 	{
-		VotingPollRequest subject = getSubject();
+		StartPollRequest subject = getSubject();
 		subject.setWelcomeMessage("WELCOME");
 		subject.add(new VotingPollOption("1"));
 		subject.add(new VotingPollOption("2"));
@@ -46,7 +45,7 @@ public class VotingPollRequestTest extends RequestTest {
 	}
 	
 	@Override
-	protected VotingPollRequest getSubject() {
-		return new VotingPollRequest(null);
+	protected StartPollRequest getSubject() {
+		return new StartPollRequest(null);
 	}
 }

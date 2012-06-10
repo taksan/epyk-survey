@@ -7,18 +7,17 @@ import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
 import skype.shell.CommandProcessor;
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollVisitor;
 
 
-public class VotingPollRequest extends AbstractShellCommand {
+public class StartPollRequest extends AbstractShellCommand {
 	private Set<VotingPollOption> lunchOptions = new LinkedHashSet<VotingPollOption>();
 	private Set<String> participants = new LinkedHashSet<String>();
 	private String welcome;
-	public VotingPollRequest(ChatAdapterInterface chat, String command) {
+	public StartPollRequest(ChatAdapterInterface chat, String command) {
 		super(chat,command);
 	}
 	
-	public VotingPollRequest(ChatAdapterInterface chat) {
+	public StartPollRequest(ChatAdapterInterface chat) {
 		super(chat, "auto");
 	}
 	
@@ -37,12 +36,12 @@ public class VotingPollRequest extends AbstractShellCommand {
 	}
 
 	@Override
-	public void acceptProcessorForSentMessages(CommandProcessor processor) {
+	public void beProcessedAsSentMessage(CommandProcessor processor) {
 		processor.processVotingPollRequest(this);
 	}
 
 	@Override
-	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
+	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
 		processor.processVotingPollRequest(this);
 	}
 

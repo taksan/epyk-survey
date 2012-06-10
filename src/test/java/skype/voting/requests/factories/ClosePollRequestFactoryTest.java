@@ -8,7 +8,6 @@ import org.junit.Test;
 import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.ClosePollRequest;
-import skype.voting.requests.factories.ClosePollRequestFactory;
 
 public class ClosePollRequestFactoryTest {
 	ClosePollRequestFactory subject = new ClosePollRequestFactory();
@@ -32,5 +31,5 @@ public class ClosePollRequestFactoryTest {
 	{
 		ClosePollRequest request = subject.produce(chat , "#cslosepoll");
 		assertNull(request);
-	}
+	}	
 }

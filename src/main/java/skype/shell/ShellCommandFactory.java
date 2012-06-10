@@ -2,7 +2,7 @@ package skype.shell;
 
 import skype.ChatAdapterInterface;
 
-public interface ShellCommandFactory {
+public interface ShellCommandFactory extends ShellCommandHelper {
 	public ShellCommand produce(ChatAdapterInterface chat, String message);
 	public boolean understands(String message);
 }

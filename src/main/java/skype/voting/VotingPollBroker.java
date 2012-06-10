@@ -34,7 +34,7 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 				skypeBridge.getChatAdapter(receivedChatMessage),
 				receivedChatMessage.getContent());
 		
-		shellCommand.acceptProcessorForReceivedMessages(processor);
+		shellCommand.beProcessedAsReceivedMessage(processor);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 				skypeBridge.getChatAdapter(sentChatMessage), 
 				sentChatMessage.getContent());
 		
-		shellCommand.acceptProcessorForSentMessages(processor);
+		shellCommand.beProcessedAsSentMessage(processor);
 	}
 
 	@Override

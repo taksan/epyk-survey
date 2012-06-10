@@ -6,17 +6,17 @@ import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.VotingPollOption;
-import skype.voting.VotingPollVisitor;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VotingPollVisitor;
 
-public class VotingPollFactoryTest {
+public class StartPollRequestTest {
 	@Test
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
-		VotingPollFactory subject = new VotingPollFactory();
+		StartPollRequestFactory subject = new StartPollRequestFactory();
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
 		chat.addParticipant("joe");
 		chat.addParticipant("moe");
-		VotingPollRequest request = subject.produce(chat, " #startpoll \"welcome here\" verdinho,garbo");
+		StartPollRequest request = subject.produce(chat, " #startpoll \"welcome here\" verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		

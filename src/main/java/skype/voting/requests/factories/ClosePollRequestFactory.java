@@ -15,5 +15,11 @@ public class ClosePollRequestFactory implements ShellCommandFactory {
 
 	public boolean understands(String message) {
 		return message.trim().equalsIgnoreCase("#closepoll");
+	}
+
+	@Override
+	public String getHelp() {
+		return "#closepoll\n" +
+				"	closes the poll and print the winner option";
 	} 
 }

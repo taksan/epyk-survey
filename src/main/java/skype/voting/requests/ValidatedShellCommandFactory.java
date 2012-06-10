@@ -23,8 +23,14 @@ public class ValidatedShellCommandFactory implements ShellCommandFactory {
 		return factory.understands(message);
 	}
 	
+	@Override
+	public String getHelp() {
+		return factory.getHelp();
+	}
+	
 	protected void validateMessage(String message) {
 		if (!understands(message))
 			throw new InvalidCommandException(message);
 	}
+
 }

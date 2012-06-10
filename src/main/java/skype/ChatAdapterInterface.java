@@ -12,4 +12,6 @@ public interface ChatAdapterInterface {
 	SkypeBridge getSkypeBridge();
 	void removeListener(ChatListener weakReference);
 	void setLastSender(String senderFullNameOrId);
+	void setGuidelines(String guidelines);
+	void setTopic(String topic);
 }

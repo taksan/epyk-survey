@@ -17,7 +17,7 @@ public class ShellCommandFactoryMock implements ShellCommandFactory {
 					return "Understood";
 				}
 				
-				@Override public void acceptProcessorForSentMessages(CommandProcessor visitor) {
+				@Override public void beProcessedAsSentMessage(CommandProcessor visitor) {
 					throw new RuntimeException("NOT IMPLEMENTED");
 				}
 
@@ -27,7 +27,7 @@ public class ShellCommandFactoryMock implements ShellCommandFactory {
 				}
 
 				@Override
-				public void acceptProcessorForReceivedMessages(
+				public void beProcessedAsReceivedMessage(
 						CommandProcessor processor) {
 					throw new RuntimeException("NOT IMPLEMENTED");
 				}
@@ -36,5 +36,10 @@ public class ShellCommandFactoryMock implements ShellCommandFactory {
 
 	public boolean understands(String message) {
 		return message.startsWith("#understood_command");
+	}
+
+	@Override
+	public String getHelp() {
+		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 }

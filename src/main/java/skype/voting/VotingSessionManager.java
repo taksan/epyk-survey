@@ -5,7 +5,7 @@ import java.util.Map;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.StartPollRequest;
 
 public class VotingSessionManager {
 	private final VotingSessionFactory votingSessionFactory;
@@ -14,7 +14,7 @@ public class VotingSessionManager {
 		this.votingSessionFactory = votingSessionFactory;
 	}
 
-	public VotingSession makeNewVotingSession(VotingPollRequest request) {
+	public VotingSession makeNewVotingSession(StartPollRequest request) {
 		VotingSession votingSession = votingSessionFactory.produce();
 		
 		votingSession.initWith(request);

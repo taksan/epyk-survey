@@ -11,5 +11,9 @@ public class VotingFactoriesRetrieverTest {
 	public void onGetFactories_ShouldReturnAtLeastOneFactory() {
 		ShellCommandFactory[] factories = VotingFactoriesRetriever.getFactories();
 		assertTrue(factories.length > 0);
+		
+		for (ShellCommandFactory factory : factories) {
+			factory.getHelp();
+		}
 	}
 }

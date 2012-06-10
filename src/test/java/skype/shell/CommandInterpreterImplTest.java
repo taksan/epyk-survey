@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.shell.mocks.ShellCommandFactoryMock;
+import skype.voting.requests.HelpRequest;
 import skype.voting.requests.ValidatedShellCommandFactory;
 
 
@@ -21,6 +22,12 @@ public class CommandInterpreterImplTest {
 	}
 	
 	@Test
+	public void onHelpCommand_ShouldReturnHelpRequest(){
+		ShellCommand shellCommand = subject.processMessage(null, "#help");
+		assertTrue(shellCommand instanceof HelpRequest);
+	}
+	
+	@Test
 	public void onUnrecognizedPattern_ShouldReturnUnrecognizedCommand() {
 		ShellCommand shellCommand = subject.processMessage(null, "#foo");
 		assertTrue(shellCommand instanceof UnrecognizedCommand);
@@ -31,4 +38,5 @@ public class CommandInterpreterImplTest {
 		ShellCommand shellCommand = subject.processMessage(null, "#understood_command");
 		assertEquals("Understood", shellCommand.getText());
 	}
+	
 }

@@ -15,5 +15,11 @@ public class VoteRequestFactory implements ShellCommandFactory {
 	@Override
 	public boolean understands(String message) {
 		return message.matches("#[0-9]+");
+	}
+
+	@Override
+	public String getHelp() {
+		return "#<1,2,3...>\n" +
+				"	issue your vote for the given option.";
 	} 
 }

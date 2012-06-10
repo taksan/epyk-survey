@@ -24,6 +24,11 @@ public class ValidatedShellCommandFactoryTest {
 			public ShellCommand produce(ChatAdapterInterface chat, String message) {
 				throw new RuntimeException("NOT IMPLEMENTED");
 			}
+
+			@Override
+			public String getHelp() {
+				throw new RuntimeException("NOT IMPLEMENTED");
+			}
 		};
 		ValidatedShellCommandFactory subject = new ValidatedShellCommandFactory(factory);
 		try {

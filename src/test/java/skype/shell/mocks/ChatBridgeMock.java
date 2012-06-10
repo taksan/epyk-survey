@@ -27,6 +27,8 @@ public class ChatBridgeMock implements ChatAdapterInterface
 	private final String id;
 	String sender;
 	SkypeBridge skypeBriddgeMock = new  SkypeBridgeMock();
+	private String lastGuidelines = "";
+	private String lastSetTopic="";
 
 	public ChatBridgeMock(String id, String sender) {
 		this.id = id;
@@ -85,5 +87,23 @@ public class ChatBridgeMock implements ChatAdapterInterface
 	@Override
 	public void setLastSender(String senderFullNameOrId) {
 		this.sender = senderFullNameOrId;
+	}
+
+	public String getLastSentGuidelines() {
+		return lastGuidelines ;
+	}
+
+	@Override
+	public void setGuidelines(String guidelines) {
+		lastGuidelines = guidelines;
+	}
+
+	public String getLastSetTopic() {
+		return lastSetTopic;
+	}
+
+	@Override
+	public void setTopic(String topic) {
+		lastSetTopic = topic;
 	}
 }

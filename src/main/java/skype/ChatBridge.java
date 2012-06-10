@@ -52,6 +52,26 @@ public class ChatBridge implements ChatAdapterInterface  {
 			throw new UnhandledException(e);
 		}
 	}
+	
+
+	@Override
+	public void setGuidelines(String guidelines) {
+		try {
+			chat.setGuidelines(guidelines);
+		} catch (SkypeException e) {
+			throw new UnhandledException(e);
+		}
+	}
+	
+	@Override
+	public void setTopic(String topic) {
+		try {
+			chat.setTopic(topic);
+		} catch (SkypeException e) {
+			throw new UnhandledException(e);
+		}
+	}
+
 
 	@Override
 	public SkypeBridge getSkypeBridge() {
@@ -67,5 +87,7 @@ public class ChatBridge implements ChatAdapterInterface  {
 	public void setLastSender(String senderFullNameOrId) {
 		lastSender = senderFullNameOrId;
 	}
+
+
 
 }

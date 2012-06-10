@@ -15,7 +15,7 @@ import skype.voting.VotingPollOption;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingSessionImpl;
 import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.StartPollRequest;
 
 
 public class VotingSessionImplTest {
@@ -182,9 +182,9 @@ public class VotingSessionImplTest {
 	}
 
 	ChatBridgeMock chat = new ChatBridgeMock("autoid");
-	private VotingPollRequest buildVotingPollRequest() {
+	private StartPollRequest buildVotingPollRequest() {
 		
-		VotingPollRequest request = new VotingPollRequest(chat);
+		StartPollRequest request = new StartPollRequest(chat);
 		request.add(new VotingPollOption("foo"));
 		request.add(new VotingPollOption("baz"));
 		request.addParticipant("john doe");
@@ -192,8 +192,8 @@ public class VotingSessionImplTest {
 		return request;
 	}
 	
-	private VotingPollRequest buildStartVotingRequest2() {
-		VotingPollRequest request = new VotingPollRequest(chat);
+	private StartPollRequest buildStartVotingRequest2() {
+		StartPollRequest request = new StartPollRequest(chat);
 		request.add(new VotingPollOption("mumbai"));
 		request.add(new VotingPollOption("bombay"));
 		request.addParticipant("homer");

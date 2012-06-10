@@ -18,12 +18,12 @@ public class UnrecognizedCommand implements ShellCommand {
 	}
 	
 	@Override
-	public void acceptProcessorForSentMessages(CommandProcessor processor) {
+	public void beProcessedAsSentMessage(CommandProcessor processor) {
 		processor.processUnrecognizedCommand(this);
 	}
 	
 	@Override
-	public void acceptProcessorForReceivedMessages(CommandProcessor processor) {
+	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
 		processor.processUnrecognizedCommand(this);
 	}
 

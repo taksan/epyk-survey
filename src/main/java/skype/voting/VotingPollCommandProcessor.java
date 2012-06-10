@@ -13,41 +13,46 @@ import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
+import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
 import skype.voting.requests.ClosePollRequest;
+import skype.voting.requests.HelpRequest;
 import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollRequest;
+import skype.voting.requests.VoteStatusRequest;
+import skype.voting.requests.StartPollRequest;
+import skype.voting.requests.VotingPollVisitor;
 
-public class VotingPollProcessor implements CommandProcessor {
+public class VotingPollCommandProcessor implements CommandProcessor {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
 	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
-	public VotingPollProcessor() {
+	public VotingPollCommandProcessor() {
 		this(new VotingSessionFactoryImpl());
 	}
 	
-	VotingPollProcessor(VotingSessionFactory votingSessionFactory){
+	VotingPollCommandProcessor(VotingSessionFactory votingSessionFactory){
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 
 	@Override
-	public void processVotingPollRequest(VotingPollRequest votePollRequest) {
+	public void processVotingPollRequest(StartPollRequest votePollRequest) {
 		VotingSession session = manager.makeNewVotingSession(votePollRequest);
-		ChatListenerForVotingSession listenerForSession = new ChatListenerForVotingSession(votePollRequest.getChat(), session);
+		ChatListenerForVotingSession listenerForSession = 
+				new ChatListenerForVotingSession(votePollRequest.getChat(), session);
 		listenersBySession.put(session, listenerForSession);
 		
 		String reply = buildVotingMenu(votePollRequest);
-		listener.onReply(votePollRequest.getChat(), reply);
+		onReply(votePollRequest.getChat(), reply);
 	}
 
 	@Override
 	public void processVoteRequest(VoteRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
 		VotingSession votingSession = manager.getSessionForRequest(request);
-		if (votingSession == null)
-			return;
 		votingSession.vote(request);
 		
 		String voteStatus = getVotingStatusMessage(votingSession);
@@ -60,9 +65,9 @@ public class VotingPollProcessor implements CommandProcessor {
 
 	@Override
 	public void processClosePollRequest(final ClosePollRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
 		final VotingSession votingSession = manager.getSessionForRequest(request);
-		if (votingSession == null)
-			return;
 		
 		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
@@ -75,7 +80,7 @@ public class VotingPollProcessor implements CommandProcessor {
 								getPlural(winnerStats.voteCount)
 								);
 				String reply = "Votes: " + voteStatus + "\n" +	winnerMessage;
-				removeSessionForGivenRequst(request);
+				removeSessionForGivenRequest(request);
 				listener.onReply(request.getChat(), reply);
 			}
 
@@ -95,7 +100,7 @@ public class VotingPollProcessor implements CommandProcessor {
 								getPlural(tieCount)
 								);
 				
-				removeSessionForGivenRequst(request);
+				removeSessionForGivenRequest(request);
 				listener.onReply(request.getChat(), reply);
 			}
 			
@@ -106,6 +111,25 @@ public class VotingPollProcessor implements CommandProcessor {
 		});
 	}
 	
+	@Override
+	public void processVoteStatusRequest(VoteStatusRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
+		final VotingSession votingSession = manager.getSessionForRequest(request);
+		String status = "Votes: "+getVotingStatusMessage(votingSession);
+		onReply(request.getChat(), status);
+	}
+	
+	@Override
+	public void processHelpCommand(HelpRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
+		String helpMessage = request.getHelpMessage()+"\n" +
+				"Also, you can use '/get guidelines' to see the available voting options";
+		onReply(request.getChat(), helpMessage);
+	}	
+	
+
 	@Override
 	public void processUnrecognizedCommand(UnrecognizedCommand unrecognizedCommand) {
 		if (!unrecognizedCommand.getText().startsWith("#"))
@@ -127,20 +151,25 @@ public class VotingPollProcessor implements CommandProcessor {
 		return formatter.getFormattedStatus();
 	}
 
-	private String buildVotingMenu(VotingPollRequest lunchRequest) {
+	private String buildVotingMenu(StartPollRequest request) {
 		final StringBuffer msg = new StringBuffer();
-		lunchRequest.accept(new VotingPollVisitor() {
+		final StringBuffer guideline = new StringBuffer();
+		guideline.append("Poll ");
+		
+		request.accept(new VotingPollVisitor() {
 			int count=1;
 			int voterCount=0;
 			@Override
 			public void onWelcomeMessage(String message) {
 				msg.append(message+"\n");
+				guideline.append("'"+message+"' undergoing. Options: ");
 			}
 			@Override
 			public void visitOption(VotingPollOption option) {
-				msg.append(count+") ");
-				msg.append(option.getName());
-				msg.append("\n");
+				String optionMsg = count+") "+option.getName();
+				msg.append(optionMsg+"\n");
+				guideline.append(optionMsg+" "); 
+				
 				count++;
 			}
 			@Override
@@ -151,7 +180,8 @@ public class VotingPollProcessor implements CommandProcessor {
 				voterCount++;
 			}
 		});
-		String reply = "\n"+StringUtils.substring(msg.toString(),0,-1);
+		request.getChat().setGuidelines(guideline.toString().trim());
+		String reply = "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 		return reply;
 	}
 
@@ -159,13 +189,16 @@ public class VotingPollProcessor implements CommandProcessor {
 		listener.onReply(chat, reply);
 	}
 
-	private void removeSessionForGivenRequst(final ClosePollRequest request) {
+	private void removeSessionForGivenRequest(final ClosePollRequest request) {
 		VotingSession votingSession = manager.getSessionForRequest(request);
 		request.getChat().removeListener(listenersBySession.get(votingSession));
 		listenersBySession.remove(votingSession);
 		manager.removeSessionForRequest(request);
-		System.gc();
 	}
+	
+	private boolean isInitializedSessionOnRequestChat(ShellCommand request) {
+		 return manager.getSessionForRequest(request) != null;
+	}	
 	
 	class ChatListenerForVotingSession implements ChatListener {
 
@@ -184,7 +217,12 @@ public class VotingPollProcessor implements CommandProcessor {
 		public void userAdded(User user) {
 			String participant = bridge.getUserFullNameOrId(user);
 			targetSession.addNewParticipant(participant);
-			onReply(chat, String.format("User '%s' added to the voting poll.", participant));
+			String status = getVotingStatusMessage(targetSession);
+			onReply(chat, 
+					String.format(
+							"User '%s' added to the voting poll.\n" +
+							"Votes: "+status, participant)
+					);
 		}
 
 		@Override

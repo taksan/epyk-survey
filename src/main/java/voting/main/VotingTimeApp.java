@@ -4,7 +4,7 @@ import skype.SkypeBridgeImpl;
 import skype.shell.CommandInterpreterImpl;
 import skype.shell.ShellCommandFactory;
 import skype.voting.VotingPollBroker;
-import skype.voting.VotingPollProcessor;
+import skype.voting.VotingPollCommandProcessor;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
 import com.skype.Skype;
@@ -19,7 +19,7 @@ public class VotingTimeApp {
 		VotingPollBroker listener = new VotingPollBroker(
 				SkypeBridgeImpl.get(), 
 				getInterpreter(), 
-				new VotingPollProcessor());
+				new VotingPollCommandProcessor());
 		
 		Skype.addChatMessageListener(listener);
 	}
