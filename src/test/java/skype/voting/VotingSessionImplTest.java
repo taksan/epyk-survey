@@ -11,10 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
-import skype.voting.VotingPollOption;
-import skype.voting.VotingConsultant;
-import skype.voting.VotingSessionImpl;
-import skype.voting.requests.VoteRequest;
+import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VotingPollVisitor;
 
@@ -52,7 +49,7 @@ public class VotingSessionImplTest {
 	public void onVoteWithoutSession_ShouldDoNothing()
 	{
 		VotingSession subject = new VotingSessionImpl();
-		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequestMocked("john doe", 2));
 		
 		
 		assertEquals("", getVotingTableFor(subject));
@@ -61,8 +58,8 @@ public class VotingSessionImplTest {
 	@Test
 	public void onVote_ShouldCastToGivenOption() {
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequest("john doe", 2));
-		subject.vote(new VoteRequest("jane doe", 1));
+		subject.vote(new VoteRequestMocked("john doe", 2));
+		subject.vote(new VoteRequestMocked("jane doe", 1));
 		
 		String actual = getVotingTableFor(subject);
 		String expected = 
@@ -86,7 +83,7 @@ public class VotingSessionImplTest {
 	public void onRemovePartipant_ShouldRemovePartipantVotesAndDeleteFromVisitor()
 	{
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequestMocked("john doe", 2));
 		subject.removeParticipant("john doe");
 		
 		String actual = getVotingTableFor(subject);
@@ -104,7 +101,7 @@ public class VotingSessionImplTest {
 	public void invokeAcceptVoteConsultantTwice_ShouldNotChangeVotingStatus()
 	{
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequestMocked("john doe", 2));
 		getVotingTableFor(subject);
 		getVotingTableFor(subject);
 		String actual = getVotingTableFor(subject);
@@ -181,7 +178,7 @@ public class VotingSessionImplTest {
 	public void onAcceptWinnerConsultant_ShouldReturnCurrentWinner()
 	{
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequestMocked("john doe", 2));
 		
 		final AtomicReference<VoteOptionAndCount> actual = new AtomicReference<VoteOptionAndCount>(); 
 		subject.acceptWinnerConsultant(new WinnerConsultant() {
@@ -231,7 +228,7 @@ public class VotingSessionImplTest {
 	@Test
 	public void onAcceptParticipantConsultant_ShouldVisitAndTellWhetherUserVotedOrNot() {
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequest("john doe", 2));
+		subject.vote(new VoteRequestMocked("john doe", 2));
 		
 		final StringBuilder sb = new StringBuilder();
 		subject.acceptParticipantConsultant(new ParticipantConsultant() {

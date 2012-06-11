@@ -12,6 +12,7 @@ import skype.shell.ReplyListener;
 import skype.shell.ReplyTextRequest;
 import skype.shell.UnrecognizedCommand;
 import skype.shell.mocks.ChatBridgeMock;
+import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.mocks.VotingSessionMockAdapter;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
@@ -96,7 +97,7 @@ public class VotingPollCommandProcessorTest {
 	public void onProcessVoteWithoutLunchSession_ShouldNotGenerateReply() {
 		VotingPollCommandProcessor subject = getSubject();
 		
-		VoteRequest request = new VoteRequest("_foo_user_", 1);
+		VoteRequest request = new VoteRequestMocked("_foo_user_", 1);
 		subject.processVoteRequest(request);
 		assertNull(listener.reply.get());
 	}
@@ -146,7 +147,7 @@ public class VotingPollCommandProcessorTest {
 	public void processVoteAfterClosePollRequest_ShouldGenerateNoReply(){
 		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		
-		VoteRequest thisRequestShouldNotGenerateReply = new VoteRequest("foo", 42);
+		VoteRequest thisRequestShouldNotGenerateReply = new VoteRequestMocked("foo", 42);
 		subject.processVoteRequest(thisRequestShouldNotGenerateReply);
 	}
 	

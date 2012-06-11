@@ -4,7 +4,6 @@ import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
 import skype.shell.CommandProcessor;
 import skype.shell.ShellCommand;
-import skype.shell.mocks.ChatBridgeMock;
 
 public class VoteRequest extends AbstractShellCommand implements ShellCommand {
 
@@ -20,10 +19,6 @@ public class VoteRequest extends AbstractShellCommand implements ShellCommand {
 		this(chat,command,0);
 	}
 	
-	public VoteRequest(String user, int vote) {
-		this(new ChatBridgeMock("autoid", user), "#"+vote, vote);
-	}
-
 	@Override
 	public void beProcessedAsSentMessage(CommandProcessor processor) {
 		processor.processVoteRequest(this);
