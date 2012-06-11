@@ -13,6 +13,7 @@ import skype.shell.CommandInterpreter;
 import skype.shell.CommandProcessor;
 import skype.shell.CommandProcessorAdapter;
 import skype.shell.ReplyListener;
+import skype.shell.ReplyTextRequest;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.MissingVotersRequest;
@@ -34,6 +35,11 @@ public class VotingPollBrokerTest {
 
 		@Override
 		public void processMissingVoteRequest(MissingVotersRequest missingVotersRequest) {
+			throw new RuntimeException("NOT IMPLEMENTED");
+		}
+
+		@Override
+		public void processReplyTextRequest(ReplyTextRequest replyTextRequest) {
 			throw new RuntimeException("NOT IMPLEMENTED");
 		}
 	}

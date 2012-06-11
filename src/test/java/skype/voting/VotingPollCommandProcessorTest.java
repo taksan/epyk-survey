@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ReplyListener;
+import skype.shell.ReplyTextRequest;
 import skype.shell.UnrecognizedCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
@@ -268,6 +269,23 @@ public class VotingPollCommandProcessorTest {
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
 		chatBridgeMock.setLastSender("tatu");
 		subject.processAddVoteOption(request);
+	}
+	
+	@Test
+	public void onProcessReplyTextRequest_ShouldReplyTextInRequest()
+	{
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		ReplyTextRequest request = new ReplyTextRequest(chatBridgeMock, null, "some text");
+		subject.processReplyTextRequest(request);
+		assertEquals("some text", listener.reply.get());
+	}
+	
+	@Test
+	public void onProcessReplyTextRequestWithoutInitializedSession_ShouldDoNothing()
+	{
+		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		ReplyTextRequest request = new ReplyTextRequest(chatBridgeMock, null, "some text");
+		subject.processReplyTextRequest(request);
 	}
 	
 	private VotingPollCommandProcessor getSubjectWithInitializedSession() {

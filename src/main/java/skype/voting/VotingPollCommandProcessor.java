@@ -9,7 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.CommandProcessor;
+import skype.shell.CommandProcessorAdapter;
 import skype.shell.ReplyListener;
+import skype.shell.ReplyTextRequest;
 import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
 import skype.voting.requests.AddVoteOptionRequest;
@@ -24,7 +26,7 @@ import skype.voting.requests.VotingPollVisitor;
 import com.skype.ChatListener;
 import com.skype.User;
 
-public class VotingPollCommandProcessor implements CommandProcessor {
+public class VotingPollCommandProcessor extends CommandProcessorAdapter implements CommandProcessor {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
@@ -282,5 +284,12 @@ public class VotingPollCommandProcessor implements CommandProcessor {
 		String withoutTrailingCommand = StringUtils.substring(sb.toString(),0,-2);
 		String reply = "Users that haven't voted yet:\n\t"+withoutTrailingCommand;
 		onReply(request.getChat(), reply);
+	}
+
+	@Override
+	public void processReplyTextRequest(ReplyTextRequest request) {
+		if (!isInitializedSessionOnRequestChat(request)) return;
+		
+		onReply(request.getChat(), request.getReplyText());
 	}
 }

@@ -8,8 +8,14 @@ import skype.voting.requests.ValidatedShellCommandFactory;
 
 public class CommandInterpreterImpl implements CommandInterpreter {
 	final ShellCommandFactory[] factories;
+	private final AliasProcessor aliasProcessor;
+	
+	public CommandInterpreterImpl(ShellCommandFactory ...factories) {
+		this(new AliasProcessorImpl(), factories);
+	}
 
-	public CommandInterpreterImpl(ShellCommandFactory ...factories){
+	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandFactory ...factories){
+		this.aliasProcessor = aliasProcessor;
 		Vector<ShellCommandFactory> decorated = new Vector<ShellCommandFactory>();
 		for (ShellCommandFactory inputFactory : factories) {
 			decorated.add(new ValidatedShellCommandFactory(inputFactory));
@@ -19,16 +25,21 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 
 	@Override
 	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
-		for (ShellCommandFactory aFactory : factories) {
-			if (aFactory.understands(message)) {
-				return aFactory.produce(chat, message);
-			}
-		}
-		if (isHelpRequest(message)){
-			return new HelpRequest(chat,message,factories);
+		String expandedMessage = aliasProcessor.expandMessage(message);
+		if (aliasProcessor.understands(message)){
+			return aliasProcessor.processMessage(chat, message);
 		}
 		
-		return new UnrecognizedCommand(chat, message);
+		for (ShellCommandFactory aFactory : factories) {
+			if (aFactory.understands(expandedMessage)) {
+				return aFactory.produce(chat, expandedMessage);
+			}
+		}
+		if (isHelpRequest(expandedMessage)){
+			return new HelpRequest(chat,expandedMessage,factories);
+		}
+		
+		return new UnrecognizedCommand(chat, expandedMessage);
 	}
 
 	private boolean isHelpRequest(String message) {

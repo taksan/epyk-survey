@@ -18,4 +18,5 @@ public interface CommandProcessor {
 	void processHelpCommand(HelpRequest helpRequest);
 	void processAddVoteOption(AddVoteOptionRequest addVoteOptionRequest);
 	void processMissingVoteRequest(MissingVotersRequest missingVotersRequest);
+	void processReplyTextRequest(ReplyTextRequest replyTextRequest);
 }
