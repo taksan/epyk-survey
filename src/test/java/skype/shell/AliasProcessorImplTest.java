@@ -10,20 +10,28 @@ public class AliasProcessorImplTest {
 	
 	@Test
 	public void onAliasCommand_ShouldGenerateAReplyTextRequest() {
-		String message = "#alias foo #understood_command";
+		String message = "#alias foo #startpoll \"some poll\"";
 		
 		assertTrue(subject.understands(message));
 		
 		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, message);
 		String reply = aliasRequest.getReplyText();
-		assertEquals("Alias '#foo' created to expand to <#understood_command>", reply);
+		assertEquals("Alias '#foo' created to expand to <#startpoll \"some poll\">", reply);
 	}
 	
 	@Test
 	public void onMessageThatMatchesAlias_ShouldExpandAlias(){
 		onAliasCommand_ShouldGenerateAReplyTextRequest();
 		String expandMessage = subject.expandMessage("#foo");
-		assertEquals("#understood_command", expandMessage);
+		assertEquals("#startpoll \"some poll\"", expandMessage);
+	}
+	
+	@Test
+	public void onMessageThatMatchesAliasAndHasArguments_ShouldExpandAliasWithArguments()
+	{
+		onAliasCommand_ShouldGenerateAReplyTextRequest();
+		String expandMessage = subject.expandMessage("#foo 123");
+		assertEquals("#startpoll \"some poll\" 123", expandMessage);
 	}
 	
 	@Test

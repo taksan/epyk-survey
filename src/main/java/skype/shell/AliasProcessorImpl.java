@@ -49,16 +49,18 @@ public class AliasProcessorImpl implements AliasProcessor {
 		return new ReplyTextRequest(chat, message, reply);
 	}
 	
-	private String expandMessageIfNeeded(String m) {
-		String expanded = aliases.get(m);
+	private String expandMessageIfNeeded(String message) {
+		String candidateAlias = message.replaceAll("(#[^ ]*)\\s.*", "$1");
+		String expanded = aliases.get(candidateAlias);
 		if (expanded == null)
-			return m;
-		return expanded;
+			return message;
+		String arguments = message.replace(candidateAlias, "");
+		return expanded+arguments;
 	}
 
 	private ShellCommand processAliasRequestAndGenerateReply(ChatAdapterInterface chat, String message) {
 		String msg = message.replaceAll("#alias\\s+", "");
-		String alias = msg.replaceAll("(.*)\\s.*", "$1");
+		String alias = msg.replaceAll("([^ ]*)\\s.*", "$1");
 		String expanded = msg.replace(alias, "").trim();
 		String actualAlias = "#"+alias;
 		aliases.put(actualAlias, expanded);
