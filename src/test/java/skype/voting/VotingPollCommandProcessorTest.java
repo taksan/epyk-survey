@@ -45,12 +45,12 @@ public class VotingPollCommandProcessorTest {
 		assertEquals(votingSessionFactoryMock.session.pollRequest, pollRequest);
 
 		String expected = 
-				"\n" + "AlmoÃ§o!\n" + 
+				"\n" + "Almoço!\n" + 
 				"1) foo\n" + 
 				"2) baz\n"  +
 				"Voters: tatu,uruca\n";
 		assertEquals(expected, listener.reply.get());
-		assertEquals("Poll 'AlmoÃ§o!' undergoing. Options: 1) foo 2) baz", 
+		assertEquals("Poll 'Almoço!' undergoing. Options: 1) foo 2) baz", 
 				chatBridgeMock.getLastSentGuidelines());
 	}
 	
@@ -106,10 +106,24 @@ public class VotingPollCommandProcessorTest {
 	public void onProcessVoteWithLuncSession_ShouldIssueUserAndVoteMessage() {
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
 
-		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequest(chatBridgeMock, null, 42);
+		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequestMocked(chatBridgeMock, 2);
 		subject.processVoteRequest(anyVoteRequestWillPrintCurrentResults);
 
 		assertEquals("Votes: foo: 2 ; baz: 3", listener.reply.get() + "");
+	}
+	
+	@Test
+	public void onProcessVoteWithLuncSession_ShouldIssueErrorIfVoteIsInvalid() {
+		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+
+		VoteRequest invalidVote = new VoteRequestMocked(chatBridgeMock, 42);
+		subject.processVoteRequest(invalidVote);
+
+		assertEquals("Invalid voting option 42. Valid options:\n" +
+				"Almoço!\n" + 
+				"1) foo\n" + 
+				"2) baz\n", 
+				listener.reply.get() + "");
 	}
 
 	@Test
@@ -118,7 +132,7 @@ public class VotingPollCommandProcessorTest {
 		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
 
 		ChatAdapterInterface chat2 = new ChatBridgeMock("anotherChat");
-		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequest(chat2 , null, 42);
+		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequestMocked(chat2 , 2);
 		subject.processVoteRequest(anyVoteRequestWillPrintCurrentResults);
 	}
 
@@ -147,7 +161,7 @@ public class VotingPollCommandProcessorTest {
 	public void processVoteAfterClosePollRequest_ShouldGenerateNoReply(){
 		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		
-		VoteRequest thisRequestShouldNotGenerateReply = new VoteRequestMocked("foo", 42);
+		VoteRequest thisRequestShouldNotGenerateReply = new VoteRequestMocked("foo", 2);
 		subject.processVoteRequest(thisRequestShouldNotGenerateReply);
 	}
 	
@@ -245,7 +259,7 @@ public class VotingPollCommandProcessorTest {
 		subject.processAddVoteOption(request);
 		
 		assertEquals("New option 'matre mia' added by tatu. Current options:\n" +
-				"AlmoÃ§o!\n" +
+				"Almoço!\n" +
 				"1) foo\n" + 
 				"2) baz\n" +
 				"3) matre mia\n"+
@@ -348,7 +362,7 @@ public class VotingPollCommandProcessorTest {
 	private StartPollRequest buildVotingPollRequest() {
 
 		StartPollRequest request = new StartPollRequest(chatBridgeMock);
-		request.setWelcomeMessage("AlmoÃ§o!");
+		request.setWelcomeMessage("Almoço!");
 		request.add(new VotingPollOption("foo"));
 		request.add(new VotingPollOption("baz"));
 		request.addParticipant("tatu");

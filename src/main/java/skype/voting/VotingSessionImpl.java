@@ -27,11 +27,21 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 	}
 
 	@Override
-	public void vote(VoteRequest voteRequest) {
+	public void vote(VoteRequest voteRequest, VoteFeedbackHandler handler) {
 		if (isVotingSessionStarted())
 			return;
-		VotingPollOption lunchOption = voteOptionByIndex.get(voteRequest.vote-1);
+		int index = voteRequest.vote-1;
+		if (index >= voteOptionByIndex.size() || index < 0) {
+			handler.handleError("Invalid voting option " + voteRequest.vote);
+			return;
+		}
+		VotingPollOption lunchOption = voteOptionByIndex.get(index);
 		participantsAndVotes.put(voteRequest.sender, lunchOption);
+	}
+	
+	@Override
+	public void vote(VoteRequest voteRequest) {
+		vote(voteRequest, new ThrowsFeedbackHandler());
 	}
 
 	@Override
@@ -160,5 +170,7 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 			boolean hasVoted = vote.getValue()!=null;
 			consultant.visit(vote.getKey(), hasVoted);
 		}
-	}	
+	}
+
+	
 }

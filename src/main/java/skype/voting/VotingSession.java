@@ -24,5 +24,6 @@ public interface VotingSession {
 
 	public abstract void acceptParticipantConsultant(ParticipantConsultant consultant);
 
+	public abstract void vote(VoteRequest voteRequest, VoteFeedbackHandler handler);
 
 }

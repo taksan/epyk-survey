@@ -70,6 +70,32 @@ public class VotingSessionImplTest {
 	}
 	
 	@Test
+	public void onInvalidVote_ShouldReject()
+	{
+		final AtomicReference<String> error = new AtomicReference<String>("");
+		subject.initWith(buildVotingPollRequest());
+		subject.vote(new VoteRequestMocked("john doe", 3), new VoteFeedbackHandler() {
+			@Override
+			public void handleError(String errorMessage) {
+				error.set(errorMessage);
+			}
+
+			@Override
+			public void handleSuccess() {
+				
+			}
+		});
+		String actual = getVotingTableFor(subject);
+		String expected = 
+				"foo:0\n" +
+				"baz:0";
+		
+		assertEquals(expected, actual);
+		
+		assertEquals("Invalid voting option 3", error.get());
+	}
+	
+	@Test
 	public void onAddNewParticipant_ShouldMakeItShowUpOnVisitor()
 	{
 		subject.initWith(buildVotingPollRequest());

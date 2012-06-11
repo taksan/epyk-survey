@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import skype.voting.ParticipantConsultant;
+import skype.voting.VoteFeedbackHandler;
 import skype.voting.VoteOptionAndCount;
 import skype.voting.VotingConsultant;
 import skype.voting.VotingPollOption;
@@ -75,8 +76,18 @@ public class VotingSessionMockAdapter implements VotingSession {
 	}
 
 	@Override
-	public void vote(VoteRequest voteRequest) {
-		//
+	public void vote(final VoteRequest voteRequest) {
+		vote(voteRequest, new VoteFeedbackHandler() {
+			
+			@Override
+			public void handleError(String errorMessage) {
+				throw new RuntimeException("Invalid vote attempted: " + voteRequest.vote);
+			}
+
+			@Override
+			public void handleSuccess() {
+			}
+		});
 	}
 
 	@Override
@@ -138,5 +149,15 @@ public class VotingSessionMockAdapter implements VotingSession {
 
 	public void setEveryoneVoted() {
 		everyoneVoted = true;
+	}
+
+	@Override
+	public void vote(VoteRequest voteRequest, VoteFeedbackHandler handler) {
+		if (voteRequest.vote > 3) {
+			handler.handleError("Error message here");
+		}
+		else {
+			handler.handleSuccess();
+		}
 	}
 }

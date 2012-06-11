@@ -11,6 +11,7 @@ public class VotingTimeMain {
 			System.exit(-1);
 		}
 		Skype.setDebug(true);
+		Skype.setDebugNative(true);
 		Skype.setDaemon(false);
 		new VotingTimeApp().execute();
 	}

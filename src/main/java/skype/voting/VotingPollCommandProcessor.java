@@ -53,18 +53,30 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 	}
 
 	@Override
-	public void processVoteRequest(VoteRequest request) {
+	public void processVoteRequest(final VoteRequest request) {
 		if (!isInitializedSessionOnRequestChat(request)) return;
 		
-		VotingSession votingSession = manager.getSessionForRequest(request);
-		votingSession.vote(request);
+		final VotingSession votingSession = manager.getSessionForRequest(request);
+		votingSession.vote(request, new VoteFeedbackHandler() {
+			@Override
+			public void handleError(String errorMessage) {
+//				String reply = errorMessage + "Valid options:\n"+
+//						buildVotingMenu(request.getChat(), votingSession);
+//
+//				listener.onReply(request.getChat(), reply);
+			}
+
+			@Override
+			public void handleSuccess() {
+				String voteStatus = getVotingStatusMessage(votingSession);
+				if (voteStatus.isEmpty())
+					return;
+				
+				String reply = "Votes: " + voteStatus;
+				listener.onReply(request.getChat(), reply);
+			}
+		});
 		
-		String voteStatus = getVotingStatusMessage(votingSession);
-		if (voteStatus.isEmpty())
-			return;
-		
-		String reply = "Votes: " + voteStatus;
-		listener.onReply(request.getChat(), reply);
 	}
 
 	@Override
