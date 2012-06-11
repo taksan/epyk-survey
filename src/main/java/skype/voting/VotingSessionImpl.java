@@ -37,6 +37,7 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 		}
 		VotingPollOption lunchOption = voteOptionByIndex.get(index);
 		participantsAndVotes.put(voteRequest.sender, lunchOption);
+		handler.handleSuccess();
 	}
 	
 	@Override

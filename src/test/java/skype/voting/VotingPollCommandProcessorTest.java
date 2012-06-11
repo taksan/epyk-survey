@@ -1,7 +1,6 @@
 package skype.voting;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -45,12 +44,12 @@ public class VotingPollCommandProcessorTest {
 		assertEquals(votingSessionFactoryMock.session.pollRequest, pollRequest);
 
 		String expected = 
-				"\n" + "Almoço!\n" + 
+				"\n" + "AlmoÃ§o!\n" + 
 				"1) foo\n" + 
 				"2) baz\n"  +
 				"Voters: tatu,uruca\n";
 		assertEquals(expected, listener.reply.get());
-		assertEquals("Poll 'Almoço!' undergoing. Options: 1) foo 2) baz", 
+		assertEquals("Poll 'AlmoÃ§o!' undergoing. Options: 1) foo 2) baz", 
 				chatBridgeMock.getLastSentGuidelines());
 	}
 	
@@ -99,7 +98,7 @@ public class VotingPollCommandProcessorTest {
 		
 		VoteRequest request = new VoteRequestMocked("_foo_user_", 1);
 		subject.processVoteRequest(request);
-		assertNull(listener.reply.get());
+		assertEquals("", listener.reply.get());
 	}
 
 	@Test
@@ -119,11 +118,12 @@ public class VotingPollCommandProcessorTest {
 		VoteRequest invalidVote = new VoteRequestMocked(chatBridgeMock, 42);
 		subject.processVoteRequest(invalidVote);
 
-		assertEquals("Invalid voting option 42. Valid options:\n" +
-				"Almoço!\n" + 
+		assertEquals("Error message here. Valid options:\n" +
+				"AlmoÃ§o!\n" + 
 				"1) foo\n" + 
-				"2) baz\n", 
-				listener.reply.get() + "");
+				"2) baz\n" +
+				"Voters: tatu,uruca\n", 
+				listener.reply.get());
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class VotingPollCommandProcessorTest {
 	public void onProcessUnrecognizedCommandWithoutLeadingSharp_ShouldNotGenerateReply() {
 		VotingPollCommandProcessor subject = getSubject();
 		subject.processUnrecognizedCommand(new UnrecognizedCommand(null, "commandfoo"));
-		assertNull(listener.reply.get());
+		assertEquals("", listener.reply.get());
 	}
 	
 	@Test
@@ -239,7 +239,7 @@ public class VotingPollCommandProcessorTest {
 		subject.processHelpCommand(request);
 		assertEquals("help\n" +
 				"Also, you can use '/get guidelines' to see the available voting options", 
-				listener.replyPrivate.get()+"");
+				listener.replyPrivate.get());
 	}
 	
 	@Test
@@ -259,7 +259,7 @@ public class VotingPollCommandProcessorTest {
 		subject.processAddVoteOption(request);
 		
 		assertEquals("New option 'matre mia' added by tatu. Current options:\n" +
-				"Almoço!\n" +
+				"AlmoÃ§o!\n" +
 				"1) foo\n" + 
 				"2) baz\n" +
 				"3) matre mia\n"+
@@ -333,7 +333,7 @@ public class VotingPollCommandProcessorTest {
 
 	final class ReplyListenerMock implements ReplyListener {
 		final AtomicReference<String> replyPrivate = new AtomicReference<String>();
-		final AtomicReference<String> reply = new AtomicReference<String>();
+		final AtomicReference<String> reply = new AtomicReference<String>("");
 
 		public void onReply(ChatAdapterInterface chat, String replyMessage) {
 			reply.set(replyMessage);
@@ -362,7 +362,7 @@ public class VotingPollCommandProcessorTest {
 	private StartPollRequest buildVotingPollRequest() {
 
 		StartPollRequest request = new StartPollRequest(chatBridgeMock);
-		request.setWelcomeMessage("Almoço!");
+		request.setWelcomeMessage("AlmoÃ§o!");
 		request.add(new VotingPollOption("foo"));
 		request.add(new VotingPollOption("baz"));
 		request.addParticipant("tatu");

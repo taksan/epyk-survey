@@ -44,12 +44,19 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 	@Override
 	public void processVotingPollRequest(StartPollRequest votePollRequest) {
 		VotingSession session = manager.makeNewVotingSession(votePollRequest);
+		ChatAdapterInterface chat = votePollRequest.getChat();
 		ChatListenerForVotingSession listenerForSession = 
-				new ChatListenerForVotingSession(votePollRequest.getChat(), session);
+				new ChatListenerForVotingSession(chat, session);
 		listenersBySession.put(session, listenerForSession);
 		
-		String reply = buildVotingMenu(votePollRequest.getChat(), session);
-		onReply(votePollRequest.getChat(), reply);
+		String reply = getUpdatedVotingMenu(chat, session);
+		onReply(chat, reply);
+	}
+
+	private String getUpdatedVotingMenu(ChatAdapterInterface chat, VotingSession session) {
+		chat.setGuidelines(buildGuidelineText(chat, session));
+		String reply = buildVotingMenu(chat, session);
+		return reply;
 	}
 
 	@Override
@@ -60,10 +67,10 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 		votingSession.vote(request, new VoteFeedbackHandler() {
 			@Override
 			public void handleError(String errorMessage) {
-//				String reply = errorMessage + "Valid options:\n"+
-//						buildVotingMenu(request.getChat(), votingSession);
-//
-//				listener.onReply(request.getChat(), reply);
+				String reply = errorMessage + ". Valid options:"+
+						buildVotingMenu(request.getChat(), votingSession);
+
+				listener.onReply(request.getChat(), reply);
 			}
 
 			@Override
@@ -167,10 +174,33 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 		return formatter.getFormattedStatus();
 	}
 
-	private String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
-		final StringBuffer msg = new StringBuffer();
+	private String buildGuidelineText(ChatAdapterInterface chat, VotingSession session)
+	{
 		final StringBuffer guideline = new StringBuffer();
 		guideline.append("Poll ");
+		
+		session.accept(new VotingPollVisitor() {
+			int count=1;
+			@Override
+			public void onWelcomeMessage(String message) {
+				guideline.append("'"+message+"' undergoing. Options: ");
+			}
+			@Override
+			public void visitOption(VotingPollOption option) {
+				String optionMsg = count+") "+option.getName();
+				guideline.append(optionMsg+" "); 
+				count++;
+			}
+			@Override
+			public void visitParticipant(String participantName) {
+				//
+			}
+		});
+		return guideline.toString().trim();
+	}
+	
+	private String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
+		final StringBuffer msg = new StringBuffer();
 		
 		session.accept(new VotingPollVisitor() {
 			int count=1;
@@ -178,13 +208,11 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 			@Override
 			public void onWelcomeMessage(String message) {
 				msg.append(message+"\n");
-				guideline.append("'"+message+"' undergoing. Options: ");
 			}
 			@Override
 			public void visitOption(VotingPollOption option) {
 				String optionMsg = count+") "+option.getName();
 				msg.append(optionMsg+"\n");
-				guideline.append(optionMsg+" "); 
 				
 				count++;
 			}
@@ -196,9 +224,7 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 				voterCount++;
 			}
 		});
-		chat.setGuidelines(guideline.toString().trim());
-		String reply = "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
-		return reply;
+		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 	}
 
 	private void onReply(ChatAdapterInterface chat, String reply) {
@@ -273,7 +299,7 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 		
 		String reply =
 				header+
-				buildVotingMenu(chat, votingSession).trim();
+				getUpdatedVotingMenu(chat, votingSession).trim();
 		onReply(chat, reply);
 	}
 

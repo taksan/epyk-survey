@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +59,20 @@ public class VotingSessionImplTest {
 	@Test
 	public void onVote_ShouldCastToGivenOption() {
 		subject.initWith(buildVotingPollRequest());
-		subject.vote(new VoteRequestMocked("john doe", 2));
+		final AtomicBoolean handled = new AtomicBoolean();
+		subject.vote(new VoteRequestMocked("john doe", 2), new VoteFeedbackHandler() {
+			@Override
+			public void handleSuccess() {
+				handled.set(true);
+			}
+			
+			@Override
+			public void handleError(String errorMessage) {
+				throw new RuntimeException("Invalid vote not expected");
+			}
+		});
+		assertTrue(handled.get());
+		
 		subject.vote(new VoteRequestMocked("jane doe", 1));
 		
 		String actual = getVotingTableFor(subject);

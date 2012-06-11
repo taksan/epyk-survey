@@ -30,8 +30,6 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 	@Override
 	public void chatMessageReceived(ChatMessage receivedChatMessage)
 			throws SkypeException {
-		System.out.println(skypeBridge.getContent(receivedChatMessage));
-		
 		ChatAdapterInterface chatAdapter = skypeBridge.getChatAdapter(receivedChatMessage);
 		ShellCommand shellCommand = interpreter.processMessage(
 				chatAdapter,
