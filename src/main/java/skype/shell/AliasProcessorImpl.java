@@ -11,7 +11,7 @@ public class AliasProcessorImpl implements AliasProcessor {
 
 	@Override
 	public boolean understands(String message) {
-		return isAddAlias(message) || isListAlias(message);
+		return isAddAlias(message) || isListAlias(message) || isRemoveAlias(message);
 	}
 	
 	@Override
@@ -28,8 +28,15 @@ public class AliasProcessorImpl implements AliasProcessor {
 			return processAliasRequestAndGenerateReply(chat, message);
 		if (isListAlias(message))
 			return processListAliasRequest(chat, message);
+		if (isRemoveAlias(message))
+			return processRemoveAliasRequest(chat, message);
 		
 		return processAliasRequestAndGenerateReply(chat, message);
+	}
+
+
+	private boolean isRemoveAlias(String message) {
+		return message.trim().toLowerCase().startsWith("#aliasdel");
 	}
 
 	private boolean isAddAlias(String message) {
@@ -48,15 +55,6 @@ public class AliasProcessorImpl implements AliasProcessor {
 		String reply = "Registered aliases:\n" + sb.toString().trim();
 		return new ReplyTextRequest(chat, message, reply);
 	}
-	
-	private String expandMessageIfNeeded(String message) {
-		String candidateAlias = message.replaceAll("(#[^ ]*)\\s.*", "$1");
-		String expanded = aliases.get(candidateAlias);
-		if (expanded == null)
-			return message;
-		String arguments = message.replace(candidateAlias, "");
-		return expanded+arguments;
-	}
 
 	private ShellCommand processAliasRequestAndGenerateReply(ChatAdapterInterface chat, String message) {
 		String msg = message.replaceAll("#alias\\s+", "");
@@ -68,6 +66,31 @@ public class AliasProcessorImpl implements AliasProcessor {
 		String reply = String.format("Alias '%s' created to expand to <%s>",actualAlias,expanded);
 		ReplyTextRequest request = new ReplyTextRequest(chat, message, reply);
 		return request;
+	}
+
+	private ShellCommand processRemoveAliasRequest(ChatAdapterInterface chat, String message) {
+		String aliasToRemove = message.replaceAll("#aliasdel[ ]*", "");
+		String aliasKey = "#"+aliasToRemove;
+		final String reply;
+		if (aliases.containsKey(aliasKey)){
+			aliases.remove(aliasKey);
+			reply = String.format("Alias '%s' removed.",aliasToRemove);
+		}
+		else {
+			reply = String.format("Alias '%s' doesn't exist.",aliasToRemove);
+		}
+		
+		ReplyTextRequest request = new ReplyTextRequest(chat, message, reply);
+		return request;
+	}
+	
+	private String expandMessageIfNeeded(String message) {
+		String candidateAlias = message.replaceAll("(#[^ ]*)\\s.*", "$1");
+		String expanded = aliases.get(candidateAlias);
+		if (expanded == null)
+			return message;
+		String arguments = message.replace(candidateAlias, "");
+		return expanded+arguments;
 	}
 
 }

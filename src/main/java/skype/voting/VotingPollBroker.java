@@ -21,8 +21,8 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 			SkypeBridge skypeBridge, 
 			CommandInterpreter interpreter, 
 			CommandProcessor processor) {
-		this.interpreter = interpreter;
 		this.skypeBridge = skypeBridge;
+		this.interpreter = interpreter;
 		this.processor = processor;
 		processor.addReplyListener(this);
 	}
@@ -31,9 +31,11 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 	public void chatMessageReceived(ChatMessage receivedChatMessage)
 			throws SkypeException {
 		ChatAdapterInterface chatAdapter = skypeBridge.getChatAdapter(receivedChatMessage);
+		String message = skypeBridge.getContent(receivedChatMessage);
+		
 		ShellCommand shellCommand = interpreter.processMessage(
 				chatAdapter,
-				skypeBridge.getContent(receivedChatMessage));
+				message);
 		
 		shellCommand.beProcessedAsReceivedMessage(processor);
 	}

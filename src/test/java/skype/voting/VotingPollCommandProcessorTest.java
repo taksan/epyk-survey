@@ -295,14 +295,6 @@ public class VotingPollCommandProcessorTest {
 		assertEquals("some text", listener.reply.get());
 	}
 	
-	@Test
-	public void onProcessReplyTextRequestWithoutInitializedSession_ShouldDoNothing()
-	{
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
-		ReplyTextRequest request = new ReplyTextRequest(chatBridgeMock, null, "some text");
-		subject.processReplyTextRequest(request);
-	}
-	
 	private VotingPollCommandProcessor getSubjectWithInitializedSession() {
 		VotingPollCommandProcessor subject = getSubject();
 		subject.processVotingPollRequest(buildVotingPollRequest());

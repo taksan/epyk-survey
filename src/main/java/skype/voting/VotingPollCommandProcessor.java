@@ -326,8 +326,6 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 
 	@Override
 	public void processReplyTextRequest(ReplyTextRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
 		onReply(request.getChat(), request.getReplyText());
 	}
 }

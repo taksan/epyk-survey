@@ -16,11 +16,7 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 
 	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandFactory ...factories){
 		this.aliasProcessor = aliasProcessor;
-		Vector<ShellCommandFactory> decorated = new Vector<ShellCommandFactory>();
-		for (ShellCommandFactory inputFactory : factories) {
-			decorated.add(new ValidatedShellCommandFactory(inputFactory));
-		}
-		this.factories = decorated.toArray(new ShellCommandFactory[0]);
+		this.factories = makeDecoratedFactories(factories);
 	}
 
 	@Override
@@ -45,4 +41,13 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 	private boolean isHelpRequest(String message) {
 		return message.trim().toLowerCase().equals("#help");
 	}
+	
+	private static ShellCommandFactory[] makeDecoratedFactories(ShellCommandFactory... factories) {
+		Vector<ShellCommandFactory> decorated = new Vector<ShellCommandFactory>();
+		for (ShellCommandFactory inputFactory : factories) {
+			decorated.add(new ValidatedShellCommandFactory(inputFactory));
+		}
+		ShellCommandFactory[] array = decorated.toArray(new ShellCommandFactory[0]);
+		return array;
+	}	
 }

@@ -46,4 +46,27 @@ public class AliasProcessorImplTest {
 				"#foo2 : expanded2", 
 				reply);
 	}
+	
+	@Test
+	public void onRemoveAliasCommand_ShouldRemoveTheAlias() {
+		subject.processMessage(null, "#alias foo1 expanded1");
+		subject.processMessage(null, "#alias foo2 expanded2");
+		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
+		String reply = removeRequest.getReplyText();
+		assertEquals("Alias 'foo1' removed.", reply);
+		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, "#aliaslist");
+		String reply2 = aliasRequest.getReplyText();
+		assertEquals(
+				"Registered aliases:\n" +
+				"#foo2 : expanded2", 
+				reply2);
+	}
+	
+	@Test
+	public void onRemoveAliasOnNonExistingAlias_ShouldReplyAliasDoesNotExist()
+	{
+		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
+		String reply = removeRequest.getReplyText();
+		assertEquals("Alias 'foo1' doesn't exist.", reply);
+	}
 }

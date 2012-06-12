@@ -3,6 +3,7 @@ package skype.shell;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
+import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
 import skype.voting.requests.StartPollRequest;
@@ -48,4 +49,15 @@ public abstract class CommandProcessorAdapter implements CommandProcessor {
 	public void processHelpCommand(HelpRequest helpRequest) {
 		// do nothing
 	}
+	
+	@Override
+	public void processMissingVoteRequest(MissingVotersRequest missingVotersRequest) {
+		//
+	}
+
+	@Override
+	public void processReplyTextRequest(ReplyTextRequest replyTextRequest) {
+		//
+	}
+
 }
