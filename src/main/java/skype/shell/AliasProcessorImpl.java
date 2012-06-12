@@ -1,13 +1,18 @@
 package skype.shell;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import skype.ChatAdapterInterface;
 
 public class AliasProcessorImpl implements AliasProcessor {
-	final private Map<String, String> aliases = new LinkedHashMap<String, String>();	
+	final private Map<String, String> aliases;
+	private final Persistence persistence;
+	
+	public AliasProcessorImpl(Persistence persistence) {
+		this.persistence = persistence;
+		aliases = persistence.loadAliases();
+	}
 
 	@Override
 	public boolean understands(String message) {
@@ -62,6 +67,7 @@ public class AliasProcessorImpl implements AliasProcessor {
 		String expanded = msg.replace(alias, "").trim();
 		String actualAlias = "#"+alias;
 		aliases.put(actualAlias, expanded);
+		persistence.saveAliases(aliases);
 		
 		String reply = String.format("Alias '%s' created to expand to <%s>",actualAlias,expanded);
 		ReplyTextRequest request = new ReplyTextRequest(chat, message, reply);
@@ -74,6 +80,8 @@ public class AliasProcessorImpl implements AliasProcessor {
 		final String reply;
 		if (aliases.containsKey(aliasKey)){
 			aliases.remove(aliasKey);
+			persistence.saveAliases(aliases);
+			
 			reply = String.format("Alias '%s' removed.",aliasToRemove);
 		}
 		else {

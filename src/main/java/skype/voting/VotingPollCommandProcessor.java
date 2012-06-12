@@ -54,7 +54,6 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 	}
 
 	private String getUpdatedVotingMenu(ChatAdapterInterface chat, VotingSession session) {
-		chat.setGuidelines(buildGuidelineText(chat, session));
 		String reply = buildVotingMenu(chat, session);
 		return reply;
 	}
@@ -147,8 +146,7 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 	public void processHelpCommand(HelpRequest request) {
 		if (!isInitializedSessionOnRequestChat(request)) return;
 		
-		String helpMessage = request.getHelpMessage()+"\n" +
-				"Also, you can use '/get guidelines' to see the available voting options";
+		String helpMessage = request.getHelpMessage()+"\n";
 		onReplyPrivate(request.getChat(), helpMessage);
 	}	
 	
@@ -174,6 +172,7 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 		return formatter.getFormattedStatus();
 	}
 
+	@SuppressWarnings("unused")
 	private String buildGuidelineText(ChatAdapterInterface chat, VotingSession session)
 	{
 		final StringBuffer guideline = new StringBuffer();
@@ -269,6 +268,15 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 							"User '%s' added to the voting poll.\n" +
 							"Votes: "+status, participant)
 					);
+			String menu = buildVotingMenuWithoutVoters(chat, targetSession);
+			onReplyPrivate(chat,
+					String.format(
+						"Hey, we are having a voting poll. Come and join us. Here are the options:\n" +
+						"%s\n" +
+						"Vote by using #1,#2, and so on",
+						menu.trim()
+						)
+					);
 		}
 
 		@Override
@@ -301,6 +309,11 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 				header+
 				getUpdatedVotingMenu(chat, votingSession).trim();
 		onReply(chat, reply);
+	}
+
+	public String buildVotingMenuWithoutVoters(ChatAdapterInterface chat, VotingSession targetSession) {
+		String buildGuidelineText = buildVotingMenu(chat, targetSession);
+		return buildGuidelineText.replaceAll("Voters:.*", "");
 	}
 
 	@Override

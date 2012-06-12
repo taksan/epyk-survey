@@ -6,7 +6,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class AliasProcessorImplTest { 
-	AliasProcessorImpl subject = new AliasProcessorImpl();
+	private PersitenceMock persistence = new PersitenceMock();
+	AliasProcessorImpl subject = new AliasProcessorImpl(persistence);
+	
+
+	@Test
+	public void onCreate_ShouldRestoreAliasFromPersistance()
+	{
+		assertTrue(persistence.loadAliasesInvoked());
+	}
 	
 	@Test
 	public void onAliasCommand_ShouldGenerateAReplyTextRequest() {
@@ -17,11 +25,15 @@ public class AliasProcessorImplTest {
 		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, message);
 		String reply = aliasRequest.getReplyText();
 		assertEquals("Alias '#foo' created to expand to <#startpoll \"some poll\">", reply);
+		
+		assertTrue(persistence.saveAliasesInvoked());
 	}
 	
 	@Test
 	public void onMessageThatMatchesAlias_ShouldExpandAlias(){
-		onAliasCommand_ShouldGenerateAReplyTextRequest();
+		String message = "#alias foo #startpoll \"some poll\"";
+		subject.processMessage(null, message);
+		
 		String expandMessage = subject.expandMessage("#foo");
 		assertEquals("#startpoll \"some poll\"", expandMessage);
 	}
@@ -29,7 +41,8 @@ public class AliasProcessorImplTest {
 	@Test
 	public void onMessageThatMatchesAliasAndHasArguments_ShouldExpandAliasWithArguments()
 	{
-		onAliasCommand_ShouldGenerateAReplyTextRequest();
+		String message = "#alias foo #startpoll \"some poll\"";
+		subject.processMessage(null, message);
 		String expandMessage = subject.expandMessage("#foo 123");
 		assertEquals("#startpoll \"some poll\" 123", expandMessage);
 	}
@@ -51,6 +64,8 @@ public class AliasProcessorImplTest {
 	public void onRemoveAliasCommand_ShouldRemoveTheAlias() {
 		subject.processMessage(null, "#alias foo1 expanded1");
 		subject.processMessage(null, "#alias foo2 expanded2");
+		persistence.setSaveInvokedFalse();
+		
 		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
 		String reply = removeRequest.getReplyText();
 		assertEquals("Alias 'foo1' removed.", reply);
@@ -60,6 +75,7 @@ public class AliasProcessorImplTest {
 				"Registered aliases:\n" +
 				"#foo2 : expanded2", 
 				reply2);
+		assertTrue(persistence.saveAliasesInvoked());
 	}
 	
 	@Test
@@ -69,4 +85,5 @@ public class AliasProcessorImplTest {
 		String reply = removeRequest.getReplyText();
 		assertEquals("Alias 'foo1' doesn't exist.", reply);
 	}
+	
 }

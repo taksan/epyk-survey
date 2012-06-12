@@ -49,8 +49,6 @@ public class VotingPollCommandProcessorTest {
 				"2) baz\n"  +
 				"Voters: tatu,uruca\n";
 		assertEquals(expected, listener.reply.get());
-		assertEquals("Poll 'Almoço!' undergoing. Options: 1) foo 2) baz", 
-				chatBridgeMock.getLastSentGuidelines());
 	}
 	
 	@Test
@@ -69,6 +67,14 @@ public class VotingPollCommandProcessorTest {
 				"User 'gamba' added to the voting poll.\n" +
 				"Votes: foo: 2 ; baz: 3", 
 				listener.reply.get());
+		
+		assertEquals(
+				"Hey, we are having a voting poll. Come and join us. Here are the options:\n" + 
+				"Almoço!\n" + 
+				"1) foo\n" + 
+				"2) baz\n" +  
+				"Vote by using #1,#2, and so on",
+				listener.replyPrivate.get());
 	}
 	
 	@Test
@@ -237,8 +243,7 @@ public class VotingPollCommandProcessorTest {
 			}
 		};
 		subject.processHelpCommand(request);
-		assertEquals("help\n" +
-				"Also, you can use '/get guidelines' to see the available voting options", 
+		assertEquals("help\n", 
 				listener.replyPrivate.get());
 	}
 	

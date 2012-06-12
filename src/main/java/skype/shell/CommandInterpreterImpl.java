@@ -11,7 +11,7 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 	private final AliasProcessor aliasProcessor;
 	
 	public CommandInterpreterImpl(ShellCommandFactory ...factories) {
-		this(new AliasProcessorImpl(), factories);
+		this(new AliasProcessorImpl(new PersistenceImpl()), factories);
 	}
 
 	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandFactory ...factories){
