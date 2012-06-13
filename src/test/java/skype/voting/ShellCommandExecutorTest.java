@@ -68,7 +68,7 @@ public class ShellCommandExecutorTest {
 		ShellCommandExecutorInterface subject = new ShellCommandExecutor(){
 			@Override
 			protected ShellCommandProcessor[] getProcessors() {
-				return new ShellCommandProcessor[0];
+				return new ShellCommandProcessor[]{oneProcessor};
 			}
 		};
 		oneProcessor.setPublicReplyMessage("public reply message");
@@ -83,6 +83,7 @@ public class ShellCommandExecutorTest {
 				replyMsg.set(reply);
 			}
 		});
+		
 		subject.processIfPossible(mockCommand);
 		assertEquals("public reply message", replyMsg.get());
 	}
