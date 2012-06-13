@@ -3,7 +3,6 @@ package skype.voting;
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.CommandInterpreter;
-import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 
@@ -15,16 +14,16 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	private final CommandInterpreter interpreter;
 	private final SkypeBridge skypeBridge;
-	private final CommandProcessor processor;
+	private final ShellCommandExecutorInterface processor;
 
 	public VotingPollBroker(
 			SkypeBridge skypeBridge, 
 			CommandInterpreter interpreter, 
-			CommandProcessor processor) {
+			ShellCommandExecutorInterface processor) {
 		this.skypeBridge = skypeBridge;
 		this.interpreter = interpreter;
 		this.processor = processor;
-		processor.addReplyListener(this);
+		processor.setReplyListener(this);
 	}
 
 	@Override
@@ -37,7 +36,7 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 				chatAdapter,
 				message);
 		
-		shellCommand.beProcessedAsReceivedMessage(processor);
+		processor.processIfPossible(shellCommand);
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 				skypeBridge.getChatAdapter(sentChatMessage), 
 				skypeBridge.getContent(sentChatMessage));
 		
-		shellCommand.beProcessedAsSentMessage(processor);
+		processor.processIfPossible(shellCommand);
 	}
 
 	@Override

@@ -11,12 +11,9 @@ import skype.SkypeBridge;
 import skype.shell.AbstractShellCommand;
 import skype.shell.CommandInterpreter;
 import skype.shell.CommandProcessor;
-import skype.shell.CommandProcessorAdapter;
 import skype.shell.ReplyListener;
-import skype.shell.ReplyTextRequest;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.ChatBridgeMock;
-import skype.voting.requests.MissingVotersRequest;
 
 import com.skype.ChatListener;
 import com.skype.ChatMessage;
@@ -24,29 +21,25 @@ import com.skype.SkypeException;
 import com.skype.User;
 
 public class VotingPollBrokerTest {
-	final class CommandProcessorAdapterMock extends CommandProcessorAdapter {
+	StringBuilder operations = new StringBuilder();
+	
+	final class CommandProcessorAdapterMock implements ShellCommandExecutorInterface {
 		public ReplyListener listener;
 
-		@Override
-		public void addReplyListener(ReplyListener listener) {
+		public void setReplyListener(ReplyListener listener) {
+			operations.append("ShellCommandExecutor setReplyListener\n");
 			this.listener = listener;
-			operations.append("addReplyListener\n");
 		}
 
 		@Override
-		public void processMissingVoteRequest(MissingVotersRequest missingVotersRequest) {
-			throw new RuntimeException("NOT IMPLEMENTED");
-		}
-
-		@Override
-		public void processReplyTextRequest(ReplyTextRequest replyTextRequest) {
-			throw new RuntimeException("NOT IMPLEMENTED");
+		public boolean processIfPossible(ShellCommand aCommand) {
+			operations.append("ShellCommandExecutor processIfPossible\n");
+			return true;
 		}
 	}
 
 	private CommandInterpreter interpreterMock;
 	private CommandProcessorAdapterMock processorMock;
-	StringBuilder operations = new StringBuilder();
 
 	@Test
 	public void onChatMessageReceived_ShouldInterpretAndSendToProcessor() throws SkypeException
@@ -54,10 +47,10 @@ public class VotingPollBrokerTest {
 		VotingPollBroker subject = new VotingPollBroker(getBridge(), getInterpreter(), getProcessor());
 		subject.chatMessageReceived(null);
 		assertEquals(
-				"addReplyListener\n" + 
+				"ShellCommandExecutor setReplyListener\n" + 
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"ShellCommand beProcessedAsReceivedMessage\n" + 
+				"ShellCommandExecutor processIfPossible\n" + 
 				"", operations.toString());
 	}
 	
@@ -67,10 +60,10 @@ public class VotingPollBrokerTest {
 		VotingPollBroker subject = new VotingPollBroker(getBridge(), getInterpreter(), getProcessor());
 		subject.chatMessageSent(null);
 		assertEquals(
-				"addReplyListener\n" + 
+				"ShellCommandExecutor setReplyListener\n" + 
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"ShellCommand beProcessedAsSentMessage\n" + 
+				"ShellCommandExecutor processIfPossible\n" + 
 				"", operations.toString());
 	}
 	
@@ -81,7 +74,7 @@ public class VotingPollBrokerTest {
 		new VotingPollBroker(getBridge(), getInterpreter(), processor);
 		processor.listener.onReply(null, "foo");
 		
-		assertEquals("addReplyListener\n" + 
+		assertEquals("ShellCommandExecutor setReplyListener\n" + 
 				"SkypeBridge: sendMessage: foo", 
 				operations.toString());
 	}
@@ -94,7 +87,7 @@ public class VotingPollBrokerTest {
 		ChatAdapterInterface chat = new ChatBridgeMock("", "wauss");
 		processor.listener.onReplyPrivate(chat, "foo");
 		
-		assertEquals("addReplyListener\n" + 
+		assertEquals("ShellCommandExecutor setReplyListener\n" + 
 				"sendMessageToUser: wauss message:foo", 
 				operations.toString());
 	}

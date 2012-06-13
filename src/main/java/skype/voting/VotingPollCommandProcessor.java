@@ -2,39 +2,40 @@ package skype.voting;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
 import skype.ChatAdapterInterface;
-import skype.SkypeBridge;
-import skype.shell.CommandProcessor;
-import skype.shell.CommandProcessorAdapter;
 import skype.shell.ReplyListener;
-import skype.shell.ReplyTextRequest;
 import skype.shell.ShellCommand;
-import skype.shell.UnrecognizedCommand;
-import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
-import skype.voting.requests.HelpRequest;
-import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VoteStatusRequest;
 import skype.voting.requests.VotingPollVisitor;
+import skype.voting.requests.factories.VotingFactoriesRetriever;
 
-import com.skype.ChatListener;
-import com.skype.User;
-
-public class VotingPollCommandProcessor extends CommandProcessorAdapter implements CommandProcessor {
+public class VotingPollCommandProcessor extends ShellCommandExecutor {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
 	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
+	VotingCommandProcessor[] processors = null;
 	public VotingPollCommandProcessor() {
 		this(new VotingSessionFactoryImpl());
+	}
+	
+	@Override
+	protected ShellCommandProcessor[] getProcessors() {
+		if (processors != null) 
+			return processors;
+		
+		processors = VotingFactoriesRetriever.getProcessors();
+		for (VotingCommandProcessor aProcessor : processors) {
+			aProcessor.setVoteSessionProvider(this);
+		}
+		
+		return processors;
 	}
 	
 	VotingPollCommandProcessor(VotingSessionFactory votingSessionFactory){
@@ -42,163 +43,44 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 	}
 
 	@Override
-	public void processVotingPollRequest(StartPollRequest votePollRequest) {
-		VotingSession session = manager.makeNewVotingSession(votePollRequest);
-		ChatAdapterInterface chat = votePollRequest.getChat();
-		ChatListenerForVotingSession listenerForSession = 
-				new ChatListenerForVotingSession(chat, session);
-		listenersBySession.put(session, listenerForSession);
-		
-		String reply = getUpdatedVotingMenu(chat, session);
-		onReply(chat, reply);
-	}
-
-	private String getUpdatedVotingMenu(ChatAdapterInterface chat, VotingSession session) {
-		String reply = buildVotingMenu(chat, session);
-		return reply;
-	}
-
-	@Override
-	public void processVoteRequest(final VoteRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
-		final VotingSession votingSession = manager.getSessionForRequest(request);
-		votingSession.vote(request, new VoteFeedbackHandler() {
-			@Override
-			public void handleError(String errorMessage) {
-				String reply = errorMessage + ". Valid options:"+
-						buildVotingMenu(request.getChat(), votingSession);
-
-				listener.onReply(request.getChat(), reply);
-			}
-
-			@Override
-			public void handleSuccess() {
-				String voteStatus = getVotingStatusMessage(votingSession);
-				if (voteStatus.isEmpty())
-					return;
-				
-				String reply = "Votes: " + voteStatus;
-				listener.onReply(request.getChat(), reply);
-			}
-		});
-		
-	}
-
-	@Override
-	public void processClosePollRequest(final ClosePollRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
-		final VotingSession votingSession = manager.getSessionForRequest(request);
-		
-		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
-			@Override
-			public void onWinner(VoteOptionAndCount winnerStats) {
-				String voteStatus = getVotingStatusMessage(votingSession);
-				String winnerMessage = 
-						String.format("WINNER: ***%s*** with %d vote%s",
-								winnerStats.optionName,
-								winnerStats.voteCount,
-								getPlural(winnerStats.voteCount)
-								);
-				String reply = "Votes: " + voteStatus + "\n" +	winnerMessage;
-				removeSessionForGivenRequest(request);
-				listener.onReply(request.getChat(), reply);
-			}
-
-			@Override
-			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
-				String voteStatus = getVotingStatusMessage(votingSession);
-				StringBuilder winnerMessage = new StringBuilder();
-				for (VotingPollOption option : tiedOptions) {
-					winnerMessage.append(option.getName()+" and ");
-				}
-				
-				String tiedOptionNames = winnerMessage.toString().replaceFirst(" and $", "");
-				String reply = "Votes: " + voteStatus + "\n" +
-						String.format("TIE: **%s** tied with %s vote%s",
-								tiedOptionNames,
-								tieCount,
-								getPlural(tieCount)
-								);
-				
-				removeSessionForGivenRequest(request);
-				listener.onReply(request.getChat(), reply);
-			}
-			
-			private String getPlural(Integer voteCount) {
-				String string = voteCount>1?"s":"";
-				return string;
-			}
-		});
-	}
-	
-	@Override
-	public void processVoteStatusRequest(VoteStatusRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
-		final VotingSession votingSession = manager.getSessionForRequest(request);
-		String status = "Votes: "+getVotingStatusMessage(votingSession);
-		onReplyPrivate(request.getChat(), status);
-	}
-	
-	@Override
-	public void processHelpCommand(HelpRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
-		String helpMessage = request.getHelpMessage()+"\n";
-		onReplyPrivate(request.getChat(), helpMessage);
-	}	
-	
-
-	@Override
-	public void processUnrecognizedCommand(UnrecognizedCommand unrecognizedCommand) {
-		if (!unrecognizedCommand.getText().startsWith("#"))
-			return;
-		
-		listener.onReplyPrivate(
-				unrecognizedCommand.getChat(), 
-				String.format("'%s' not recognized", unrecognizedCommand.getText()));
-	}
-	
-	@Override
-	public void addReplyListener(ReplyListener listener) {
+	public void setReplyListener(ReplyListener listener) {
+		super.setReplyListener(listener);
 		this.listener = listener;
 	}
 
-	protected String getVotingStatusMessage(VotingSession votingSession) {
+	public VotingSession getSessionForRequest(ShellCommand request) {
+		return manager.getSessionForRequest(request);
+	}
+
+	public VotingSession makeNewVotingSession(StartPollRequest votePollRequest) {
+		VotingSession session = manager.makeNewVotingSession(votePollRequest);
+		
+		ChatAdapterInterface chat = votePollRequest.getChat();
+		ChatListenerForVotingSession listenerForSession = 
+				new ChatListenerForVotingSession(chat, session, listener);
+		listenersBySession.put(session, listenerForSession);
+		
+		return session;
+	}
+
+	public void removeSessionForGivenRequest(final ClosePollRequest request) {
+		VotingSession votingSession = manager.getSessionForRequest(request);
+		request.getChat().removeListener(listenersBySession.get(votingSession));
+		listenersBySession.remove(votingSession);
+		manager.removeSessionForRequest(request);
+	}
+	
+	public boolean isInitializedSessionOnRequestChat(ShellCommand request) {
+		 return manager.getSessionForRequest(request) != null;
+	}	
+
+	public static String getVotingStatusMessage(VotingSession votingSession) {
 		VotingStatusMessageFormatter formatter = new VotingStatusMessageFormatter();
 		votingSession.acceptVoteConsultant(formatter);
 		return formatter.getFormattedStatus();
 	}
 
-	@SuppressWarnings("unused")
-	private String buildGuidelineText(ChatAdapterInterface chat, VotingSession session)
-	{
-		final StringBuffer guideline = new StringBuffer();
-		guideline.append("Poll ");
-		
-		session.accept(new VotingPollVisitor() {
-			int count=1;
-			@Override
-			public void onWelcomeMessage(String message) {
-				guideline.append("'"+message+"' undergoing. Options: ");
-			}
-			@Override
-			public void visitOption(VotingPollOption option) {
-				String optionMsg = count+") "+option.getName();
-				guideline.append(optionMsg+" "); 
-				count++;
-			}
-			@Override
-			public void visitParticipant(String participantName) {
-				//
-			}
-		});
-		return guideline.toString().trim();
-	}
-	
-	private String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
+	public static String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
 		final StringBuffer msg = new StringBuffer();
 		
 		session.accept(new VotingPollVisitor() {
@@ -226,119 +108,13 @@ public class VotingPollCommandProcessor extends CommandProcessorAdapter implemen
 		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 	}
 
-	private void onReply(ChatAdapterInterface chat, String reply) {
-		listener.onReply(chat, reply);
-	}
-	
-	private void onReplyPrivate(ChatAdapterInterface chat, String reply) {
-		listener.onReplyPrivate(chat, reply);
-	}
-
-	private void removeSessionForGivenRequest(final ClosePollRequest request) {
-		VotingSession votingSession = manager.getSessionForRequest(request);
-		request.getChat().removeListener(listenersBySession.get(votingSession));
-		listenersBySession.remove(votingSession);
-		manager.removeSessionForRequest(request);
-	}
-	
-	private boolean isInitializedSessionOnRequestChat(ShellCommand request) {
-		 return manager.getSessionForRequest(request) != null;
-	}	
-	
-	class ChatListenerForVotingSession implements ChatListener {
-
-		private final VotingSession targetSession;
-		private final ChatAdapterInterface chat;
-		private SkypeBridge bridge;
-		
-		public ChatListenerForVotingSession(ChatAdapterInterface chat, VotingSession delegate) {
-			this.chat = chat;
-			this.targetSession = delegate;
-			this.bridge = chat.getSkypeBridge();
-			chat.addListener(this);
-		}
-
-		@Override
-		public void userAdded(User user) {
-			String participant = bridge.getUserFullNameOrId(user);
-			targetSession.addNewParticipant(participant);
-			String status = getVotingStatusMessage(targetSession);
-			onReply(chat, 
-					String.format(
-							"User '%s' added to the voting poll.\n" +
-							"Votes: "+status, participant)
-					);
-			String menu = buildVotingMenuWithoutVoters(chat, targetSession);
-			onReplyPrivate(chat,
-					String.format(
-						"Hey, we are having a voting poll. Come and join us. Here are the options:\n" +
-						"%s\n" +
-						"Vote by using #1,#2, and so on",
-						menu.trim()
-						)
-					);
-		}
-
-		@Override
-		public void userLeft(User user) {
-			String participant = bridge.getUserFullNameOrId(user);
-			targetSession.removeParticipant(participant);
-			
-			String status = getVotingStatusMessage(targetSession);
-			onReply(chat, String.format("User '%s' left the voting poll.\n" +
-					"Update Votes: "+status, 
-					participant));
-		}
-	}
-
-	@Override
-	public void processAddVoteOption(AddVoteOptionRequest request) {
-		if (!isInitializedSessionOnRequestChat(request)) return;
-		
-		VotingSession votingSession = manager.getSessionForRequest(request);
-		ChatAdapterInterface chat = request.getChat();
-		boolean added = votingSession.addOption(request.getName());
-		if (!added) {
-			onReplyPrivate(chat, "Option '"+request.getName()+"' already added.");
-			return;
-		}
-		String header = String.format("New option '%s' added by %s. Current options:\n", 
-				request.getName(),chat.getLasterSenderFullName());
-		
-		String reply =
-				header+
-				getUpdatedVotingMenu(chat, votingSession).trim();
-		onReply(chat, reply);
-	}
-
-	public String buildVotingMenuWithoutVoters(ChatAdapterInterface chat, VotingSession targetSession) {
+	public static String buildVotingMenuWithoutVoters(ChatAdapterInterface chat, VotingSession targetSession) {
 		String buildGuidelineText = buildVotingMenu(chat, targetSession);
 		return buildGuidelineText.replaceAll("Voters:.*", "");
 	}
 
-	@Override
-	public void processMissingVoteRequest(MissingVotersRequest request) {
-		VotingSession votingSession = manager.getSessionForRequest(request);
-		final StringBuilder sb = new StringBuilder();
-		votingSession.acceptParticipantConsultant(new ParticipantConsultant() {
-
-			@Override
-			public void visit(String participantName, boolean hasVoted) {
-				if (!hasVoted)
-					sb.append(participantName+", ");
-			}
-		});
-		if (sb.toString().isEmpty()) {
-			onReply(request.getChat(), "Everyone already voted.");
-			return;
-		}
-		String withoutTrailingCommand = StringUtils.substring(sb.toString(),0,-2);
-		String reply = "Users that haven't voted yet:\n\t"+withoutTrailingCommand;
-		onReply(request.getChat(), reply);
-	}
-
-	@Override
-	public void processReplyTextRequest(ReplyTextRequest request) {
-		onReply(request.getChat(), request.getReplyText());
+	public String getUpdatedVotingMenu(ChatAdapterInterface chat, VotingSession session) {
+		String reply = buildVotingMenu(chat, session);
+		return reply;
 	}
 }
