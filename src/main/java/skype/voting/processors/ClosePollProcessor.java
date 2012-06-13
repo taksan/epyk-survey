@@ -24,7 +24,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 		
 		final ClosePollRequest request = (ClosePollRequest) command;
 		
-		final VotingSession votingSession = executor.getSessionForRequest(request);
+		final VotingSession votingSession = executor.getSessionForRequest(command);
 		
 		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
