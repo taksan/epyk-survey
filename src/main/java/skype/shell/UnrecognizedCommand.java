@@ -16,16 +16,6 @@ public class UnrecognizedCommand implements ShellCommand {
 	public String getText() {
 		return this.unrecognizedCommand;
 	}
-	
-	@Override
-	public void beProcessedAsSentMessage(CommandProcessor processor) {
-		processor.processUnrecognizedCommand(this);
-	}
-	
-	@Override
-	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
-		processor.processUnrecognizedCommand(this);
-	}
 
 	@Override
 	public ChatAdapterInterface getChat() {

@@ -5,7 +5,6 @@ import java.util.Set;
 
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
-import skype.shell.CommandProcessor;
 import skype.voting.VotingPollOption;
 
 
@@ -33,16 +32,6 @@ public class StartPollRequest extends AbstractShellCommand {
 		for (String participantName : participants) {
 			visitor.visitParticipant(participantName);
 		}
-	}
-
-	@Override
-	public void beProcessedAsSentMessage(CommandProcessor processor) {
-		processor.processVotingPollRequest(this);
-	}
-
-	@Override
-	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
-		processor.processVotingPollRequest(this);
 	}
 
 	public int getOptionCount() {

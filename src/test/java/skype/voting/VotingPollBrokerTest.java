@@ -10,7 +10,6 @@ import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.AbstractShellCommand;
 import skype.shell.CommandInterpreter;
-import skype.shell.CommandProcessor;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.ChatBridgeMock;
@@ -109,15 +108,6 @@ public class VotingPollBrokerTest {
 			public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
 				return new AbstractShellCommand(chat,message) {
 					
-					@Override
-					public void beProcessedAsSentMessage(CommandProcessor processor) {
-						operations.append("ShellCommand beProcessedAsSentMessage\n");
-					}
-					
-					@Override
-					public void beProcessedAsReceivedMessage(CommandProcessor processor) {
-						operations.append("ShellCommand beProcessedAsReceivedMessage\n");
-					}
 				};
 			}
 		};

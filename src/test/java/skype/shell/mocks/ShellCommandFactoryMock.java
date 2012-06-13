@@ -1,7 +1,6 @@
 package skype.shell.mocks;
 
 import skype.ChatAdapterInterface;
-import skype.shell.CommandProcessor;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandFactory;
 import skype.shell.UnrecognizedCommand;
@@ -17,18 +16,8 @@ public class ShellCommandFactoryMock implements ShellCommandFactory {
 					return "Understood";
 				}
 				
-				@Override public void beProcessedAsSentMessage(CommandProcessor visitor) {
-					throw new RuntimeException("NOT IMPLEMENTED");
-				}
-
 				@Override
 				public ChatAdapterInterface getChat() {
-					throw new RuntimeException("NOT IMPLEMENTED");
-				}
-
-				@Override
-				public void beProcessedAsReceivedMessage(
-						CommandProcessor processor) {
 					throw new RuntimeException("NOT IMPLEMENTED");
 				}
 		};

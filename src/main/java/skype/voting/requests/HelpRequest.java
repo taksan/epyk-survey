@@ -2,7 +2,6 @@ package skype.voting.requests;
 
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
-import skype.shell.CommandProcessor;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandHelper;
 
@@ -25,15 +24,5 @@ public class HelpRequest extends AbstractShellCommand implements ShellCommand {
 			help.append("Command: " + helper.getHelp()+"\n");
 		}
 		return "Available commands:\n"+help.toString().trim(); 
-	}
-
-	@Override
-	public void beProcessedAsSentMessage(CommandProcessor processor) {
-		processor.processHelpCommand(this);
-	}
-
-	@Override
-	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
-		processor.processHelpCommand(this);
 	}
 }

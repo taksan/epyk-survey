@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import skype.voting.VotingPollOption;
 
-public class StartPollRequestTest extends RequestTest {
+public class StartPollRequestTest  {
 	@Test
 	public void onAccept_ShouldPassAllOverRequiredFields()
 	{
@@ -44,7 +44,6 @@ public class StartPollRequestTest extends RequestTest {
 		assertEquals(expected, actual.toString());
 	}
 	
-	@Override
 	protected StartPollRequest getSubject() {
 		return new StartPollRequest(null);
 	}

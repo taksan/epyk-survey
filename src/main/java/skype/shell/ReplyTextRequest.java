@@ -11,16 +11,6 @@ public class ReplyTextRequest extends AbstractShellCommand {
 		this.reply = reply;
 	}
 
-	@Override
-	public void beProcessedAsSentMessage(CommandProcessor processor) {
-		processor.processReplyTextRequest(this);
-	}
-
-	@Override
-	public void beProcessedAsReceivedMessage(CommandProcessor processor) {
-		processor.processReplyTextRequest(this);
-	}
-
 	public String getReplyText() {
 		return reply;
 	}
