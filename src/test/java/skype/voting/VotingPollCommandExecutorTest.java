@@ -21,14 +21,14 @@ import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VoteStatusRequest;
 
-public class VotingPollCommandProcessorTest {
+public class VotingPollCommandExecutorTest {
 
 	VotingSessionFactoryMock votingSessionFactoryMock = new VotingSessionFactoryMock();
 	ChatBridgeMock chatBridgeMock = new ChatBridgeMock("autoid");
 	ReplyListenerMock listener;
 
-	private VotingPollCommandProcessor getSubject() {
-		VotingPollCommandProcessor subject = new VotingPollCommandProcessor(votingSessionFactoryMock);
+	private VotingPollCommandExecutor getSubject() {
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(votingSessionFactoryMock);
 		listener = new ReplyListenerMock();
 		subject.setReplyListener(listener);
 		return subject;
@@ -38,7 +38,7 @@ public class VotingPollCommandProcessorTest {
 	public void onProcessSentRequest_ShouldReturnVotingMenu() {
 		StartPollRequest pollRequest = buildVotingPollRequest();
 		
-		VotingPollCommandProcessor subject = getSubject();
+		VotingPollCommandExecutor subject = getSubject();
 		subject.processIfPossible(pollRequest);
 		
 		assertEquals(votingSessionFactoryMock.session.pollRequest, pollRequest);
@@ -100,7 +100,7 @@ public class VotingPollCommandProcessorTest {
 
 	@Test
 	public void onProcessVoteWithoutLunchSession_ShouldNotGenerateReply() {
-		VotingPollCommandProcessor subject = getSubject();
+		VotingPollCommandExecutor subject = getSubject();
 		
 		VoteRequest request = new VoteRequestMocked("_foo_user_", 1);
 		subject.processIfPossible(request);
@@ -109,7 +109,7 @@ public class VotingPollCommandProcessorTest {
 
 	@Test
 	public void onProcessVoteWithLuncSession_ShouldIssueUserAndVoteMessage() {
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 
 		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequestMocked(chatBridgeMock, 2);
 		subject.processIfPossible(anyVoteRequestWillPrintCurrentResults);
@@ -119,7 +119,7 @@ public class VotingPollCommandProcessorTest {
 	
 	@Test
 	public void onProcessVoteWithLuncSession_ShouldIssueErrorIfVoteIsInvalid() {
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 
 		VoteRequest invalidVote = new VoteRequestMocked(chatBridgeMock, 42);
 		subject.processIfPossible(invalidVote);
@@ -135,7 +135,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onProcessVoteWithDifferentChatThanCurrentVoteRequest_ShouldNotIssueVote()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 
 		ChatAdapterInterface chat2 = new ChatBridgeMock("anotherChat");
 		VoteRequest anyVoteRequestWillPrintCurrentResults = new VoteRequestMocked(chat2 , 2);
@@ -165,7 +165,7 @@ public class VotingPollCommandProcessorTest {
 	
 	@Test
 	public void processVoteAfterClosePollRequest_ShouldGenerateNoReply(){
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		VotingPollCommandExecutor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		
 		VoteRequest thisRequestShouldNotGenerateReply = new VoteRequestMocked("foo", 2);
 		subject.processIfPossible(thisRequestShouldNotGenerateReply);
@@ -174,14 +174,14 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onClosePollAfterClosedPoll_ShouldGenerateNoReply()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		VotingPollCommandExecutor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		subject.processIfPossible(new ClosePollRequest(chatBridgeMock, null));
 	}
 	
 	
 	@Test
 	public void onprocessIfPossible_ShouldReturnErrorMessage() {
-		VotingPollCommandProcessor subject = getSubject();
+		VotingPollCommandExecutor subject = getSubject();
 		subject.processIfPossible(new UnrecognizedCommand(null, "#commandfoo"));
 		String expected = "'#commandfoo' not recognized";
 		assertEquals(expected, listener.replyPrivate.get());
@@ -189,7 +189,7 @@ public class VotingPollCommandProcessorTest {
 
 	@Test
 	public void onprocessIfPossibleWithoutLeadingSharp_ShouldNotGenerateReply() {
-		VotingPollCommandProcessor subject = getSubject();
+		VotingPollCommandExecutor subject = getSubject();
 		subject.processIfPossible(new UnrecognizedCommand(null, "commandfoo"));
 		assertEquals("", listener.reply.get());
 	}
@@ -197,7 +197,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onprocessIfPossible_ShouldPrintVotingStatusForGivenChat()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		VoteStatusRequest voteStatusRequest = new VoteStatusRequest(chatBridgeMock, null);
 		subject.processIfPossible(voteStatusRequest);
 		
@@ -207,7 +207,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onProcessMissingVotersRequest_ShouldPrintWhoHasnVoted()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		MissingVotersRequest request = new  MissingVotersRequest(chatBridgeMock, null);
 		subject.processIfPossible(request);
 		assertEquals("Users that haven't voted yet:\n" +
@@ -216,7 +216,7 @@ public class VotingPollCommandProcessorTest {
 	
 	@Test
 	public void onProcessMissingVotersRequestWithoutAnyone_ShouldPrintEveryoneVoted(){
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		votingSessionFactoryMock.session.setEveryoneVoted();
 		MissingVotersRequest request = new  MissingVotersRequest(chatBridgeMock, null);
 		subject.processIfPossible(request);
@@ -227,7 +227,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onprocessIfPossibleWithClosedSession_ShouldNotGenerateReply()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		VotingPollCommandExecutor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		VoteStatusRequest voteStatusRequest = new VoteStatusRequest(chatBridgeMock, null);
 		subject.processIfPossible(voteStatusRequest);
 	}
@@ -235,7 +235,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onProcessHelpRequest_ShouldGenerateReplyWithHelpMessage()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		HelpRequest request = new HelpRequest(chatBridgeMock, null){
 			@Override
 			public String getHelpMessage() {
@@ -250,7 +250,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onProcessHelpRequestWithouInitializedPoll_ShouldDoNothing()
 	{
-		VotingPollCommandProcessor subject = getSubject();
+		VotingPollCommandExecutor subject = getSubject();
 		subject.setReplyListener(getListenerThatBreaksIfInvoked());
 		HelpRequest request = new HelpRequest(null, null);
 		subject.processIfPossible(request);
@@ -258,7 +258,7 @@ public class VotingPollCommandProcessorTest {
 	
 	@Test
 	public void onprocessIfPossible_ShouldAddVotingOption(){
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
 		chatBridgeMock.setLastSender("tatu");
 		subject.processIfPossible(request);
@@ -275,7 +275,7 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onprocessIfPossibleThatAlreadyExists_ShouldNotAddAndShouldWarnUser()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "foo");
 		chatBridgeMock.setLastSender("tatu");
 		subject.processIfPossible(request);
@@ -285,7 +285,7 @@ public class VotingPollCommandProcessorTest {
 	
 	@Test
 	public void onprocessIfPossibleWithClosedPoll_ShouldDoNothing(){
-		VotingPollCommandProcessor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
+		VotingPollCommandExecutor subject = getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked();
 		AddVoteOptionRequest request = new AddVoteOptionRequest(chatBridgeMock, null, "matre mia");
 		chatBridgeMock.setLastSender("tatu");
 		subject.processIfPossible(request);
@@ -294,20 +294,20 @@ public class VotingPollCommandProcessorTest {
 	@Test
 	public void onprocessIfPossible_ShouldReplyTextInRequest()
 	{
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		ReplyTextRequest request = new ReplyTextRequest(chatBridgeMock, null, "some text");
 		subject.processIfPossible(request);
 		assertEquals("some text", listener.reply.get());
 	}
 	
-	private VotingPollCommandProcessor getSubjectWithInitializedSession() {
-		VotingPollCommandProcessor subject = getSubject();
+	private VotingPollCommandExecutor getSubjectWithInitializedSession() {
+		VotingPollCommandExecutor subject = getSubject();
 		subject.processIfPossible(buildVotingPollRequest());
 		return subject;
 	}	
 
-	private VotingPollCommandProcessor getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked() {
-		VotingPollCommandProcessor subject = getSubjectWithInitializedSession();
+	private VotingPollCommandExecutor getSubjectWithClosedPollThatBreaksIfReplyListenerIsInvoked() {
+		VotingPollCommandExecutor subject = getSubjectWithInitializedSession();
 		subject.processIfPossible(new ClosePollRequest(chatBridgeMock, null));
 		subject.setReplyListener(getListenerThatBreaksIfInvoked());
 		return subject;
@@ -357,7 +357,6 @@ public class VotingPollCommandProcessorTest {
 	}
 
 	private StartPollRequest buildVotingPollRequest() {
-
 		StartPollRequest request = new StartPollRequest(chatBridgeMock);
 		request.setWelcomeMessage("Almoço!");
 		request.add(new VotingPollOption("foo"));

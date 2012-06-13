@@ -1,7 +1,7 @@
 package skype.voting.processors;
 
 import skype.shell.ShellCommand;
-import skype.voting.VotingPollCommandProcessor;
+import skype.voting.VotingPollCommandExecutor;
 import skype.voting.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.VoteStatusRequest;
@@ -15,11 +15,11 @@ public class VoteStatusProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		if (!manager.isInitializedSessionOnRequestChat(command)) return;
+		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		VoteStatusRequest request = (VoteStatusRequest) command;
 		
-		final VotingSession votingSession = manager.getSessionForRequest(request);
-		String status = "Votes: "+VotingPollCommandProcessor.getVotingStatusMessage(votingSession);
+		final VotingSession votingSession = executor.getSessionForRequest(request);
+		String status = "Votes: "+VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
 		onReplyPrivate(command, status);
 	}
 }

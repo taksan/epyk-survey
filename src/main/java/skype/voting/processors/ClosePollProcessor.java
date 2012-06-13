@@ -4,7 +4,7 @@ import java.util.Set;
 
 import skype.shell.ShellCommand;
 import skype.voting.VoteOptionAndCount;
-import skype.voting.VotingPollCommandProcessor;
+import skype.voting.VotingPollCommandExecutor;
 import skype.voting.VotingPollOption;
 import skype.voting.VotingSession;
 import skype.voting.WinnerConsultant;
@@ -20,16 +20,16 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(final ShellCommand command) {
-		if (!manager.isInitializedSessionOnRequestChat(command)) return;
+		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		
 		final ClosePollRequest request = (ClosePollRequest) command;
 		
-		final VotingSession votingSession = manager.getSessionForRequest(request);
+		final VotingSession votingSession = executor.getSessionForRequest(request);
 		
 		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
 			public void onWinner(VoteOptionAndCount winnerStats) {
-				String voteStatus = VotingPollCommandProcessor.getVotingStatusMessage(votingSession);
+				String voteStatus = VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
 				String winnerMessage = 
 						String.format("WINNER: ***%s*** with %d vote%s",
 								winnerStats.optionName,
@@ -37,13 +37,13 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 								getPlural(winnerStats.voteCount)
 								);
 				String reply = "Votes: " + voteStatus + "\n" +	winnerMessage;
-				manager.removeSessionForGivenRequest(request);
+				executor.removeSessionForGivenRequest(request);
 				onReply(command, reply);
 			}
 
 			@Override
 			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
-				String voteStatus = VotingPollCommandProcessor.getVotingStatusMessage(votingSession);
+				String voteStatus = VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
 				StringBuilder winnerMessage = new StringBuilder();
 				for (VotingPollOption option : tiedOptions) {
 					winnerMessage.append(option.getName()+" and ");
@@ -57,7 +57,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 								getPlural(tieCount)
 								);
 				
-				manager.removeSessionForGivenRequest(request);
+				executor.removeSessionForGivenRequest(request);
 				onReply(command, reply);
 			}
 			

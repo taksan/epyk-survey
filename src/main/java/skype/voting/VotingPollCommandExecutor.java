@@ -13,7 +13,7 @@ import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VotingPollVisitor;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
-public class VotingPollCommandProcessor extends ShellCommandExecutor {
+public class VotingPollCommandExecutor extends ShellCommandExecutor {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
@@ -21,7 +21,7 @@ public class VotingPollCommandProcessor extends ShellCommandExecutor {
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
 	VotingCommandProcessor[] processors = null;
-	public VotingPollCommandProcessor() {
+	public VotingPollCommandExecutor() {
 		this(new VotingSessionFactoryImpl());
 	}
 	
@@ -38,7 +38,7 @@ public class VotingPollCommandProcessor extends ShellCommandExecutor {
 		return processors;
 	}
 	
-	VotingPollCommandProcessor(VotingSessionFactory votingSessionFactory){
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory){
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 
@@ -73,14 +73,14 @@ public class VotingPollCommandProcessor extends ShellCommandExecutor {
 	public boolean isInitializedSessionOnRequestChat(ShellCommand request) {
 		 return manager.getSessionForRequest(request) != null;
 	}	
-
+	
 	public static String getVotingStatusMessage(VotingSession votingSession) {
 		VotingStatusMessageFormatter formatter = new VotingStatusMessageFormatter();
 		votingSession.acceptVoteConsultant(formatter);
 		return formatter.getFormattedStatus();
 	}
 
-	public static String buildVotingMenu(ChatAdapterInterface chat, VotingSession session) {
+	public static String buildVotingMenu(VotingSession session) {
 		final StringBuffer msg = new StringBuffer();
 		
 		session.accept(new VotingPollVisitor() {
@@ -108,13 +108,13 @@ public class VotingPollCommandProcessor extends ShellCommandExecutor {
 		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 	}
 
-	public static String buildVotingMenuWithoutVoters(ChatAdapterInterface chat, VotingSession targetSession) {
-		String buildGuidelineText = buildVotingMenu(chat, targetSession);
+	public static String buildVotingMenuWithoutVoters(VotingSession targetSession) {
+		String buildGuidelineText = buildVotingMenu(targetSession);
 		return buildGuidelineText.replaceAll("Voters:.*", "");
 	}
 
-	public String getUpdatedVotingMenu(ChatAdapterInterface chat, VotingSession session) {
-		String reply = buildVotingMenu(chat, session);
+	public String getUpdatedVotingMenu(VotingSession session) {
+		String reply = buildVotingMenu(session);
 		return reply;
 	}
 }

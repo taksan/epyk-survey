@@ -15,10 +15,10 @@ public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		if (!manager.isInitializedSessionOnRequestChat(command)) return;
+		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		AddVoteOptionRequest request = (AddVoteOptionRequest)command;
 		
-		VotingSession votingSession = manager.getSessionForRequest(request);
+		VotingSession votingSession = executor.getSessionForRequest(request);
 		ChatAdapterInterface chat = request.getChat();
 		boolean added = votingSession.addOption(request.getName());
 		if (!added) {
@@ -30,7 +30,7 @@ public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 		
 		String reply =
 				header+
-				manager.getUpdatedVotingMenu(chat, votingSession).trim();
+				executor.getUpdatedVotingMenu(votingSession).trim();
 		onReply(command, reply);
 	}
 

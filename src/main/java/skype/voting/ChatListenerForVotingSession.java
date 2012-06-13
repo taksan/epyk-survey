@@ -26,13 +26,13 @@ public class ChatListenerForVotingSession implements ChatListener {
 	public void userAdded(User user) {
 		String participant = bridge.getUserFullNameOrId(user);
 		targetSession.addNewParticipant(participant);
-		String status = VotingPollCommandProcessor.getVotingStatusMessage(targetSession);
+		String status = VotingPollCommandExecutor.getVotingStatusMessage(targetSession);
 		listener.onReply(chat, 
 				String.format(
 						"User '%s' added to the voting poll.\n" +
 						"Votes: "+status, participant)
 				);
-		String menu = VotingPollCommandProcessor.buildVotingMenuWithoutVoters(chat, targetSession);
+		String menu = VotingPollCommandExecutor.buildVotingMenuWithoutVoters(targetSession);
 		listener.onReplyPrivate(chat,
 				String.format(
 					"Hey, we are having a voting poll. Come and join us. Here are the options:\n" +
@@ -48,7 +48,7 @@ public class ChatListenerForVotingSession implements ChatListener {
 		String participant = bridge.getUserFullNameOrId(user);
 		targetSession.removeParticipant(participant);
 		
-		String status = VotingPollCommandProcessor.getVotingStatusMessage(targetSession);
+		String status = VotingPollCommandExecutor.getVotingStatusMessage(targetSession);
 		listener.onReply(chat, String.format("User '%s' left the voting poll.\n" +
 				"Update Votes: "+status, 
 				participant));

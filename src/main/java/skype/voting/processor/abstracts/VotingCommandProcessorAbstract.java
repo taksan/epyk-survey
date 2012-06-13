@@ -3,19 +3,19 @@ package skype.voting.processor.abstracts;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.voting.VotingCommandProcessor;
-import skype.voting.VotingPollCommandProcessor;
+import skype.voting.VotingPollCommandExecutor;
 
 public abstract class VotingCommandProcessorAbstract implements VotingCommandProcessor{
 	private ReplyListener listener = null;
-	protected VotingPollCommandProcessor manager;
+	protected VotingPollCommandExecutor executor;
 
 	@Override
 	public void setReplyListener(ReplyListener listener) {
 		this.listener = listener;
 	}
 	
-	public void setVoteSessionProvider(VotingPollCommandProcessor votingPollCommandProcessor) {
-		this.manager = votingPollCommandProcessor;
+	public void setVoteSessionProvider(VotingPollCommandExecutor votingPollCommandProcessor) {
+		this.executor = votingPollCommandProcessor;
 	}
 	
 	protected ReplyListener getListener() {

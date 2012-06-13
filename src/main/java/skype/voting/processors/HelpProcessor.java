@@ -13,7 +13,7 @@ public class HelpProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		if (!manager.isInitializedSessionOnRequestChat(command)) return;
+		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		HelpRequest request = (HelpRequest) command;
 		
 		String helpMessage = request.getHelpMessage()+"\n";

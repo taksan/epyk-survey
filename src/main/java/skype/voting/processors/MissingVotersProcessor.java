@@ -17,7 +17,7 @@ public class MissingVotersProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		VotingSession votingSession = manager.getSessionForRequest(command);
+		VotingSession votingSession = executor.getSessionForRequest(command);
 		
 		final StringBuilder sb = new StringBuilder();
 		votingSession.acceptParticipantConsultant(new ParticipantConsultant() {
