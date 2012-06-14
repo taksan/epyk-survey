@@ -31,7 +31,7 @@ public class VotingPollCommandExecutorTest {
 	ReplyListenerMock listener;
 
 	private VotingPollCommandExecutor getSubject() {
-		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(votingSessionFactoryMock);
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(votingSessionFactoryMock, new VotingSessionMessages());
 		listener = new ReplyListenerMock();
 		subject.setReplyListener(listener);
 		return subject;

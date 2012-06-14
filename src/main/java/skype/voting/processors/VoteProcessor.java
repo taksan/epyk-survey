@@ -1,7 +1,6 @@
 package skype.voting.processors;
 
 import skype.shell.ShellCommand;
-import skype.voting.VotingPollCommandExecutor;
 import skype.voting.application.VoteFeedbackHandler;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
@@ -25,14 +24,14 @@ public class VoteProcessor extends VotingCommandProcessorAbstract {
 			@Override
 			public void handleError(String errorMessage) {
 				String reply = errorMessage + ". Valid options:"+
-						VotingPollCommandExecutor.buildVotingMenu(votingSession);
+						messages.buildVotingMenu(votingSession);
 
 				onReply(command, reply);
 			}
 
 			@Override
 			public void handleSuccess() {
-				String voteStatus = VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
+				String voteStatus = messages.getVotingStatusMessage(votingSession);
 				if (voteStatus.isEmpty())
 					return;
 				

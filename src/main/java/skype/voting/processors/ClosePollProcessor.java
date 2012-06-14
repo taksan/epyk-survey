@@ -3,7 +3,6 @@ package skype.voting.processors;
 import java.util.Set;
 
 import skype.shell.ShellCommand;
-import skype.voting.VotingPollCommandExecutor;
 import skype.voting.application.VoteOptionAndCount;
 import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
@@ -29,7 +28,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
 			public void onWinner(VoteOptionAndCount winnerStats) {
-				String voteStatus = VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
+				String voteStatus = messages.getVotingStatusMessage(votingSession);
 				String winnerMessage = 
 						String.format("WINNER: ***%s*** with %d vote%s",
 								winnerStats.optionName,
@@ -43,7 +42,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 
 			@Override
 			public void onTie(Set<VotingPollOption> tiedOptions, int tieCount) {
-				String voteStatus = VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
+				String voteStatus = messages.getVotingStatusMessage(votingSession);
 				StringBuilder winnerMessage = new StringBuilder();
 				for (VotingPollOption option : tiedOptions) {
 					winnerMessage.append(option.getName()+" and ");

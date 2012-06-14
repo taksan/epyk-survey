@@ -1,7 +1,6 @@
 package skype.voting.processors;
 
 import skype.shell.ShellCommand;
-import skype.voting.VotingPollCommandExecutor;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.VoteStatusRequest;
@@ -19,7 +18,7 @@ public class VoteStatusProcessor extends VotingCommandProcessorAbstract {
 		VoteStatusRequest request = (VoteStatusRequest) command;
 		
 		final VotingSession votingSession = executor.getSessionForRequest(request);
-		String status = "Votes: "+VotingPollCommandExecutor.getVotingStatusMessage(votingSession);
+		String status = "Votes: "+messages.getVotingStatusMessage(votingSession);
 		onReplyPrivate(command, status);
 	}
 }

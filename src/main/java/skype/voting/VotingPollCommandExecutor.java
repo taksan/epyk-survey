@@ -3,20 +3,17 @@ package skype.voting;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;
 import skype.shell.ShellCommandProcessor;
-import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
 import skype.voting.application.VotingSessionFactoryImpl;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VotingPollVisitor;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
 public class VotingPollCommandExecutor extends ShellCommandExecutor {
@@ -27,8 +24,14 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
 	VotingCommandProcessor[] processors = null;
+	private final VotingSessionMessages voteSessionMessages;
 	public VotingPollCommandExecutor() {
-		this(new VotingSessionFactoryImpl());
+		this(new VotingSessionFactoryImpl(), new VotingSessionMessages());
+	}
+	
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessages voteSessionMessages){
+		this.voteSessionMessages = voteSessionMessages;
+		manager = new VotingSessionManager(votingSessionFactory);
 	}
 	
 	@Override
@@ -39,13 +42,10 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 		processors = VotingFactoriesRetriever.getProcessors();
 		for (VotingCommandProcessor aProcessor : processors) {
 			aProcessor.setVoteSessionProvider(this);
+			aProcessor.setVoteSessionMessages(voteSessionMessages);
 		}
 		
 		return processors;
-	}
-	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory){
-		manager = new VotingSessionManager(votingSessionFactory);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 		
 		ChatAdapterInterface chat = votePollRequest.getChat();
 		ChatListenerForVotingSession listenerForSession = 
-				new ChatListenerForVotingSession(chat, session, listener);
+				new ChatListenerForVotingSession(chat, session, listener, voteSessionMessages);
 		listenersBySession.put(session, listenerForSession);
 		
 		return session;
@@ -78,49 +78,5 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 	
 	public boolean isInitializedSessionOnRequestChat(ShellCommand request) {
 		 return manager.getSessionForRequest(request) != null;
-	}	
-	
-	public static String getVotingStatusMessage(VotingSession votingSession) {
-		VotingStatusMessageFormatter formatter = new VotingStatusMessageFormatter();
-		votingSession.acceptVoteConsultant(formatter);
-		return formatter.getFormattedStatus();
-	}
-
-	public static String buildVotingMenu(VotingSession session) {
-		final StringBuffer msg = new StringBuffer();
-		
-		session.accept(new VotingPollVisitor() {
-			int count=1;
-			int voterCount=0;
-			@Override
-			public void onWelcomeMessage(String message) {
-				msg.append(message+"\n");
-			}
-			@Override
-			public void visitOption(VotingPollOption option) {
-				String optionMsg = count+") "+option.getName();
-				msg.append(optionMsg+"\n");
-				
-				count++;
-			}
-			@Override
-			public void visitParticipant(String participantName) {
-				if (voterCount == 0)
-					msg.append("Voters: ");
-				msg.append(participantName+",");
-				voterCount++;
-			}
-		});
-		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
-	}
-
-	public static String buildVotingMenuWithoutVoters(VotingSession targetSession) {
-		String buildGuidelineText = buildVotingMenu(targetSession);
-		return buildGuidelineText.replaceAll("Voters:.*", "");
-	}
-
-	public String getUpdatedVotingMenu(VotingSession session) {
-		String reply = buildVotingMenu(session);
-		return reply;
 	}
 }

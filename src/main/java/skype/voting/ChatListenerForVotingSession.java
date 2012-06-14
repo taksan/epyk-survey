@@ -14,11 +14,14 @@ public class ChatListenerForVotingSession implements ChatListener {
 	private final ChatAdapterInterface chat;
 	private SkypeBridge bridge;
 	private ReplyListener listener;
+	private final VotingSessionMessages messages;
 	
-	public ChatListenerForVotingSession(ChatAdapterInterface chat, VotingSession delegate, ReplyListener listener) {
+	public ChatListenerForVotingSession(ChatAdapterInterface chat, VotingSession delegate, ReplyListener listener,
+			VotingSessionMessages messages) {
 		this.chat = chat;
 		this.targetSession = delegate;
 		this.listener = listener;
+		this.messages = messages;
 		this.bridge = chat.getSkypeBridge();
 		chat.addListener(this);
 	}
@@ -27,13 +30,13 @@ public class ChatListenerForVotingSession implements ChatListener {
 	public void userAdded(User user) {
 		String participant = bridge.getUserFullNameOrId(user);
 		targetSession.addNewParticipant(participant);
-		String status = VotingPollCommandExecutor.getVotingStatusMessage(targetSession);
+		String status = messages.getVotingStatusMessage(targetSession);
 		listener.onReply(chat, 
 				String.format(
 						"User '%s' added to the voting poll.\n" +
 						"Votes: "+status, participant)
 				);
-		String menu = VotingPollCommandExecutor.buildVotingMenuWithoutVoters(targetSession);
+		String menu = messages.buildVotingMenuWithoutVoters(targetSession);
 		listener.onReplyPrivate(chat,
 				String.format(
 					"Hey, we are having a voting poll. Come and join us. Here are the options:\n" +
@@ -49,7 +52,7 @@ public class ChatListenerForVotingSession implements ChatListener {
 		String participant = bridge.getUserFullNameOrId(user);
 		targetSession.removeParticipant(participant);
 		
-		String status = VotingPollCommandExecutor.getVotingStatusMessage(targetSession);
+		String status = messages.getVotingStatusMessage(targetSession);
 		listener.onReply(chat, String.format("User '%s' left the voting poll.\n" +
 				"Update Votes: "+status, 
 				participant));

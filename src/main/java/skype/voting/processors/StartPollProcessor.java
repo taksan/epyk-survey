@@ -17,7 +17,7 @@ public class StartPollProcessor extends VotingCommandProcessorAbstract implement
 	public void process(ShellCommand command) {
 		VotingSession session = executor.makeNewVotingSession((StartPollRequest) command);
 		
-		String reply = executor.getUpdatedVotingMenu(session);
+		String reply = messages.getUpdatedVotingMenu(session);
 		onReply(command, reply);
 	}
 }

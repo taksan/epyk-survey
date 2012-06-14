@@ -30,7 +30,7 @@ public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 		
 		String reply =
 				header+
-				executor.getUpdatedVotingMenu(votingSession).trim();
+				messages.getUpdatedVotingMenu(votingSession).trim();
 		onReply(command, reply);
 	}
 
