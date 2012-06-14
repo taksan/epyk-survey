@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.application;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;

@@ -3,8 +3,8 @@ package skype.voting.processors;
 import org.apache.commons.lang.StringUtils;
 
 import skype.shell.ShellCommand;
-import skype.voting.ParticipantConsultant;
-import skype.voting.VotingSession;
+import skype.voting.application.ParticipantConsultant;
+import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.MissingVotersRequest;
 

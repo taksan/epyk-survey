@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.shell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,6 +11,9 @@ import org.junit.Test;
 import skype.ChatAdapterInterface;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
+import skype.shell.ShellCommandExecutor;
+import skype.shell.ShellCommandExecutorInterface;
+import skype.shell.ShellCommandProcessor;
 import skype.voting.mocks.ShellCommandMock;
 import skype.voting.mocks.ShellCommandProcessorMock;
 

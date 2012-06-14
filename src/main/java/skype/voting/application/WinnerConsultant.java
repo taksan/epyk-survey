@@ -1,6 +1,7 @@
-package skype.voting;
+package skype.voting.application;
 
 import java.util.Set;
+
 
 public interface WinnerConsultant {
 	public void onWinner(VoteOptionAndCount winnerStats);

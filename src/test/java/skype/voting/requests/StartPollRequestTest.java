@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import skype.voting.VotingPollOption;
+import skype.voting.application.VotingPollOption;
 
 public class StartPollRequestTest  {
 	@Test

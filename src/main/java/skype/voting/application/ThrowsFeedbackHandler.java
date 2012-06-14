@@ -1,4 +1,5 @@
-package skype.voting;
+package skype.voting.application;
+
 
 public class ThrowsFeedbackHandler implements VoteFeedbackHandler {
 

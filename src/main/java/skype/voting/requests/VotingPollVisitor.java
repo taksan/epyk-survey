@@ -1,6 +1,6 @@
 package skype.voting.requests;
 
-import skype.voting.VotingPollOption;
+import skype.voting.application.VotingPollOption;
 
 public interface VotingPollVisitor {
 	public void onWelcomeMessage(String message);

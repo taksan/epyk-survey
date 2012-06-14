@@ -1,4 +1,5 @@
-package skype.voting;
+package skype.voting.application;
+
 
 public class VotingSessionFactoryImpl implements VotingSessionFactory {
 

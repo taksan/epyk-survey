@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.application;
 
 public interface VoteFeedbackHandler {
 	public void handleError(String errorMessage);

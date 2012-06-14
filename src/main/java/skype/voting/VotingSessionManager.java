@@ -5,6 +5,8 @@ import java.util.Map;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
+import skype.voting.application.VotingSession;
+import skype.voting.application.VotingSessionFactory;
 import skype.voting.requests.StartPollRequest;
 
 public class VotingSessionManager {

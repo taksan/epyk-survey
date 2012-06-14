@@ -2,7 +2,7 @@ package skype.voting.mocks;
 
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
-import skype.voting.ShellCommandProcessor;
+import skype.shell.ShellCommandProcessor;
 
 public class ShellCommandProcessorMock implements ShellCommandProcessor {
 

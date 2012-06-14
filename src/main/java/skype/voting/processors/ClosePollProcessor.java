@@ -3,11 +3,11 @@ package skype.voting.processors;
 import java.util.Set;
 
 import skype.shell.ShellCommand;
-import skype.voting.VoteOptionAndCount;
 import skype.voting.VotingPollCommandExecutor;
-import skype.voting.VotingPollOption;
-import skype.voting.VotingSession;
-import skype.voting.WinnerConsultant;
+import skype.voting.application.VoteOptionAndCount;
+import skype.voting.application.VotingPollOption;
+import skype.voting.application.VotingSession;
+import skype.voting.application.WinnerConsultant;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.ClosePollRequest;
 

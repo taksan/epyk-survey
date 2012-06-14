@@ -2,7 +2,7 @@ package skype.voting.processors;
 
 import skype.shell.ShellCommand;
 import skype.voting.VotingCommandProcessor;
-import skype.voting.VotingSession;
+import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.StartPollRequest;
 

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
-import skype.voting.VotingPollOption;
+import skype.voting.application.VotingPollOption;
 
 
 public class StartPollRequest extends AbstractShellCommand {

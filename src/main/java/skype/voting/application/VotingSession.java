@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.application;
 
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.StartPollRequest;

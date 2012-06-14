@@ -3,6 +3,7 @@ package skype.voting;
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.ReplyListener;
+import skype.voting.application.VotingSession;
 
 import com.skype.ChatListener;
 import com.skype.User;

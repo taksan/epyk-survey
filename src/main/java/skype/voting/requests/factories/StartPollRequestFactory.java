@@ -4,7 +4,7 @@ import java.util.List;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandFactory;
-import skype.voting.VotingPollOption;
+import skype.voting.application.VotingPollOption;
 import skype.voting.requests.StartPollRequest;
 
 public class StartPollRequestFactory implements ShellCommandFactory {

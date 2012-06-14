@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import skype.voting.ParticipantConsultant;
-import skype.voting.VoteFeedbackHandler;
-import skype.voting.VoteOptionAndCount;
-import skype.voting.VotingConsultant;
-import skype.voting.VotingPollOption;
-import skype.voting.VotingSession;
-import skype.voting.WinnerConsultant;
+import skype.voting.application.ParticipantConsultant;
+import skype.voting.application.VoteFeedbackHandler;
+import skype.voting.application.VoteOptionAndCount;
+import skype.voting.application.VotingConsultant;
+import skype.voting.application.VotingPollOption;
+import skype.voting.application.VotingSession;
+import skype.voting.application.WinnerConsultant;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VotingPollVisitor;

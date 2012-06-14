@@ -2,6 +2,7 @@ package skype.voting;
 
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
+import skype.shell.ShellCommandExecutorInterface;
 
 final class CommandProcessorAdapterMock implements ShellCommandExecutorInterface {
 	public ReplyListener listener;
