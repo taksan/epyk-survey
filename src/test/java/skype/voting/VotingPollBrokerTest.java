@@ -16,13 +16,17 @@ public class VotingPollBrokerTest {
 	@Test
 	public void onChatMessageReceived_ShouldLetExecutorProcessIt() throws SkypeException
 	{
-		VotingPollBroker subject = new VotingPollBroker(getBridge(), getExecutors());
+		CommandExecutor[] commandExecutors = new CommandExecutor[]{oneExecutor,oneExecutor};
+		VotingPollBroker subject = new VotingPollBroker(getBridge(), commandExecutors);
 		subject.chatMessageReceived(null);
 		assertEquals(
 				"CommandExecutor setReplyListener\n" +
+				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor processMessage", operations.toString());
+				"CommandExecutor processMessage\n"+
+				"CommandExecutor processMessage\n", 
+				operations.toString());
 	}
 	
 	@Test
@@ -34,7 +38,7 @@ public class VotingPollBrokerTest {
 				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor processMessage", operations.toString());
+				"CommandExecutor processMessage\n", operations.toString());
 	}
 	
 	@Test
@@ -76,7 +80,7 @@ public class VotingPollBrokerTest {
 
 		@Override
 		public boolean processMessage(ChatAdapterInterface chat, String message) {
-			operations2.append("CommandExecutor processMessage");
+			operations2.append("CommandExecutor processMessage\n");
 			return true;
 		}
 

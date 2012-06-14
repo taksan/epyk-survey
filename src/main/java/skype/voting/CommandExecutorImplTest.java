@@ -9,7 +9,7 @@ import skype.shell.mocks.ChatBridgeMock;
 
 import com.skype.SkypeException;
 
-public class CommandExecutorImplementationTest {
+public class CommandExecutorImplTest {
 	StringBuilder operations = new StringBuilder();
 	
 	@Test
@@ -27,7 +27,7 @@ public class CommandExecutorImplementationTest {
 		final CommandInterpreter interpreter = getInterpreter();
 		final CommandProcessorAdapterMock  processor = getProcessor();
 		
-		return new CommandExecutorImplementation(interpreter, processor);
+		return new CommandExecutorImpl(interpreter, processor);
 	}
 	
 	private CommandInterpreter getInterpreter() {

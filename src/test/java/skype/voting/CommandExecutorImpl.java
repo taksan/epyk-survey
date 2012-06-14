@@ -5,13 +5,18 @@ import skype.shell.CommandInterpreter;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 
-public class CommandExecutorImplementation implements CommandExecutor {
+public class CommandExecutorImpl implements CommandExecutor {
 	private final ShellCommandExecutorInterface processor;
 	private final CommandInterpreter interpreter;
 
-	public CommandExecutorImplementation(ShellCommandExecutorInterface processor, CommandInterpreter interpreter) {
+	public CommandExecutorImpl(CommandInterpreter interpreter, ShellCommandExecutorInterface processor) {
 		this.processor = processor;
 		this.interpreter = interpreter;
+	}
+
+	public CommandExecutorImpl(CommandProcessor[] commandProcessors) {
+		this.processor = null;
+		this.interpreter = null;
 	}
 
 	@Override
