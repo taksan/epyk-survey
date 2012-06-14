@@ -1,6 +1,7 @@
 package skype.voting;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -22,6 +23,24 @@ import com.skype.User;
 public class VotingPollBrokerTest {
 	StringBuilder operations = new StringBuilder();
 	
+	private final class CommandExecutorMock implements CommandExecutor {
+		boolean processed = false;
+		@Override
+		public boolean processMessage(ChatAdapterInterface chat, String message) {
+			processed = true;
+			return true;
+		}
+
+		public boolean messageWasProcessed() {
+			return processed;
+		}
+
+		@Override
+		public void setReplyListener(ReplyListener listener) {
+			
+		}
+	}
+
 	final class CommandProcessorAdapterMock implements ShellCommandExecutorInterface {
 		public ReplyListener listener;
 
@@ -39,11 +58,14 @@ public class VotingPollBrokerTest {
 
 	private CommandInterpreter interpreterMock;
 	private CommandProcessorAdapterMock processorMock;
+	
+	private CommandExecutorMock oneExecutor = new CommandExecutorMock();
 
 	@Test
 	public void onChatMessageReceived_ShouldInterpretAndSendToProcessor() throws SkypeException
 	{
-		VotingPollBroker subject = new VotingPollBroker(getBridge(), getInterpreter(), getProcessor());
+		CommandExecutor[] commandExecutors = getInterpreterProcessorExecutor();
+		VotingPollBroker subject = new VotingPollBroker(getBridge(), commandExecutors);
 		subject.chatMessageReceived(null);
 		assertEquals(
 				"ShellCommandExecutor setReplyListener\n" + 
@@ -53,10 +75,31 @@ public class VotingPollBrokerTest {
 				"", operations.toString());
 	}
 	
+	private CommandExecutor[] getInterpreterProcessorExecutor() {
+		final CommandInterpreter interpreter = getInterpreter();
+		final CommandProcessorAdapterMock  processor = getProcessor();
+		
+		return new CommandExecutor[]{
+			new CommandExecutorImplementation(processor, interpreter)
+		};
+	}
+
+	@Test
+	public void onChatMessageReceived_ShouldLetExecutorProcessIt() throws SkypeException
+	{
+		VotingPollBroker subject = new VotingPollBroker(getBridge(), getExecutors());
+		subject.chatMessageReceived(null);
+		assertTrue(oneExecutor.messageWasProcessed());
+	}
+	
+	private CommandExecutor[] getExecutors() {
+		return new CommandExecutor[]{oneExecutor};
+	}
+
 	@Test
 	public void onChatMessageSent_ShouldInterpretAndSendToProcessor() throws SkypeException
 	{
-		VotingPollBroker subject = new VotingPollBroker(getBridge(), getInterpreter(), getProcessor());
+		VotingPollBroker subject = new VotingPollBroker(getBridge(), getInterpreterProcessorExecutor());
 		subject.chatMessageSent(null);
 		assertEquals(
 				"ShellCommandExecutor setReplyListener\n" + 
@@ -70,7 +113,7 @@ public class VotingPollBrokerTest {
 	public void onReplyListenerInvoke_ShouldInvokeSkypeBridgeSendMessage()
 	{
 		CommandProcessorAdapterMock processor = getProcessor();
-		new VotingPollBroker(getBridge(), getInterpreter(), processor);
+		new VotingPollBroker(getBridge(), getInterpreterProcessorExecutor());
 		processor.listener.onReply(null, "foo");
 		
 		assertEquals("ShellCommandExecutor setReplyListener\n" + 
@@ -82,7 +125,7 @@ public class VotingPollBrokerTest {
 	public void onReplyListenerPrivateInvoke_ShouldInvokeSkypeBridgeSendMessageToSender()
 	{
 		CommandProcessorAdapterMock processor = getProcessor();
-		new VotingPollBroker(getBridge(), getInterpreter(), processor);
+		new VotingPollBroker(getBridge(), getInterpreterProcessorExecutor());
 		ChatAdapterInterface chat = new ChatBridgeMock("", "wauss");
 		processor.listener.onReplyPrivate(chat, "foo");
 		
