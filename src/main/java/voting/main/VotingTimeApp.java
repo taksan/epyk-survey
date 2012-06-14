@@ -18,7 +18,7 @@ public class VotingTimeApp {
 		Connector.getInstance().setApplicationName("LunchTime");
 		
 		CommandExecutorImplementation executorImplementation = 
-				new CommandExecutorImplementation(new VotingPollCommandExecutor(), getInterpreter());
+				new CommandExecutorImplementation(getInterpreter(), new VotingPollCommandExecutor());
 		
 		VotingPollBroker listener = new VotingPollBroker(
 				SkypeBridgeImpl.get(), 
