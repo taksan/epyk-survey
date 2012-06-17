@@ -1,27 +1,25 @@
 package skype.voting.mocks;
 
-import skype.shell.CommandInterpreter;
+import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 
 public final class VotingCommandProcessorMock extends VotingCommandProcessorAbstract {
-	private ShellCommand processedCommand = null;
+	public String processedMessage;
 	
-	public VotingCommandProcessorMock(CommandInterpreter interpreter) {
-		super(interpreter);
-	}
-
 	@Override
-	public void process(ShellCommand command) {
-		this.processedCommand = command;
+	public boolean processMessage(ChatAdapterInterface chat, String message) {
+		processedMessage = message;
+		return true;
 	}
 
 	@Override
 	public boolean canProcess(ShellCommand command) {
-		return true;
+		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
-	public ShellCommand getProcessedCommand() {
-		return processedCommand;
+	@Override
+	public void process(ShellCommand command) {
+		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 }

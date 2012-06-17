@@ -6,14 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import skype.ChatAdapterInterface;
 import skype.shell.AbstractShellCommand;
-import skype.shell.CommandInterpreter;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
-import skype.voting.mocks.ShellCommandMock;
 import skype.voting.mocks.VotingCommandProcessorMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
 import skype.voting.requests.ClosePollRequest;
@@ -30,22 +27,16 @@ public class VotingPollCommandExecutorTest {
 	@Test
 	public void onProcessMessage_ShouldInterpretAndProcess()
 	{
-		final ShellCommandMock commandToSend = new ShellCommandMock();
-		final CommandInterpreter interpreter = 
-			new CommandInterpreter() { @Override public ShellCommand processMessage
-				(ChatAdapterInterface chat, String message) {
-					return commandToSend;
-				}
-		};
-		
-		VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock(interpreter);
+		VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock();
 		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
 				votingSessionFactoryMock, 
 				new VotingSessionMessages(),
 				processorMock
 				);
+		
 		subject.processMessage(chatBridgeMock, "foo");
-		assertEquals(commandToSend, processorMock.getProcessedCommand());
+		
+		assertEquals("foo", processorMock.processedMessage);
 	}
 	
 	@Test
