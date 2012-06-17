@@ -8,9 +8,6 @@ import skype.voting.requests.VotingPollVisitor;
 
 public class VotingSessionMessages implements VotingSessionMessageInterface {
 
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionMessageProvider#getVotingStatusMessage(skype.voting.application.VotingSession)
-	 */
 	@Override
 	public  String getVotingStatusMessage(VotingSession votingSession) {
 		VotingStatusMessageFormatter formatter = new VotingStatusMessageFormatter();
@@ -18,9 +15,6 @@ public class VotingSessionMessages implements VotingSessionMessageInterface {
 		return formatter.getFormattedStatus();
 	}
 
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionMessageProvider#buildVotingMenu(skype.voting.application.VotingSession)
-	 */
 	@Override
 	public  String buildVotingMenu(VotingSession session) {
 		final StringBuffer msg = new StringBuffer();
@@ -50,18 +44,12 @@ public class VotingSessionMessages implements VotingSessionMessageInterface {
 		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 	}
 
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionMessageProvider#buildVotingMenuWithoutVoters(skype.voting.application.VotingSession)
-	 */
 	@Override
 	public  String buildVotingMenuWithoutVoters(VotingSession targetSession) {
 		String buildGuidelineText = buildVotingMenu(targetSession);
 		return buildGuidelineText.replaceAll("Voters:.*", "");
 	}
 
-	/* (non-Javadoc)
-	 * @see skype.voting.VotingSessionMessageProvider#getUpdatedVotingMenu(skype.voting.application.VotingSession)
-	 */
 	@Override
 	public  String getUpdatedVotingMenu(VotingSession session) {
 		String reply = buildVotingMenu(session);

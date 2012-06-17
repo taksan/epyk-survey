@@ -1,7 +1,6 @@
 package skype.voting.mocks;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,13 +18,11 @@ import skype.voting.requests.VotingPollVisitor;
 
 public class VotingSessionMockAdapter implements VotingSession {
 	public StartPollRequest pollRequest;
-	private final boolean isTie;
 	private VotingPollOption fooOption = new VotingPollOption("foo");
 	private VotingPollOption bazOption = new VotingPollOption("baz");
 	private List<VotingPollOption> voteOptions= new ArrayList<VotingPollOption>();
 
-	public VotingSessionMockAdapter(boolean isTie) {
-		this.isTie = isTie;
+	public VotingSessionMockAdapter() {
 		voteOptions.add(fooOption);
 		voteOptions.add(bazOption);
 	}
@@ -70,8 +67,6 @@ public class VotingSessionMockAdapter implements VotingSession {
 	}
 
 	private Integer getFooCount() {
-		if (isTie)
-			return 3;
 		return 2;
 	}
 
@@ -93,13 +88,6 @@ public class VotingSessionMockAdapter implements VotingSession {
 	@Override
 	public void acceptWinnerConsultant(WinnerConsultant consultant) {
 		if (pollRequest != null) {
-			if (isTie) {
-				LinkedHashSet<VotingPollOption> tied = new LinkedHashSet<VotingPollOption>();
-				tied.add(fooOption);
-				tied.add(bazOption);
-				consultant.onTie(tied, 3);
-			}
-			else
 				consultant.onWinner(new VoteOptionAndCount("baz", 3));
 		}
 	}

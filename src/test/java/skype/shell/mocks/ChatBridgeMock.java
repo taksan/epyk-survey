@@ -12,18 +12,15 @@ import skype.skype.mocks.SkypeBridgeMock;
 
 public class ChatBridgeMock implements ChatAdapterInterface 
 {
-	private final class DoNothingListener implements ChatListener {
-		@Override
-		public void userLeft(User user) {
-		}
-
-		@Override
-		public void userAdded(User user) {
-		}
+	private final static class DoesNothingListener implements ChatListener {
+		@Override public void userLeft(User user) { }
+		@Override public void userAdded(User user) { }
 	}
+	private static final DoesNothingListener DOES_NOTHING_LISTENER = new DoesNothingListener();
+
 
 	List<String> participants = new LinkedList<String>();
-	ChatListener listener = new DoNothingListener();
+	ChatListener listener = DOES_NOTHING_LISTENER;
 	private final String id;
 	String sender;
 	SkypeBridge skypeBriddgeMock = new  SkypeBridgeMock();
@@ -85,7 +82,7 @@ public class ChatBridgeMock implements ChatAdapterInterface
 
 	@Override
 	public void removeListener(ChatListener weakReference) {
-		listener = new DoNothingListener();
+		listener = DOES_NOTHING_LISTENER;
 	}
 
 	@Override
@@ -109,5 +106,9 @@ public class ChatBridgeMock implements ChatAdapterInterface
 	@Override
 	public void setTopic(String topic) {
 		lastSetTopic = topic;
+	}
+
+	public ChatListener getListener() {
+		return listener;
 	}
 }
