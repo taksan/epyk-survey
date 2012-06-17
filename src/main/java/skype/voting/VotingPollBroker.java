@@ -35,15 +35,6 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 		processChatMessage(sentChatMessage);
 	}
 	
-	private void processChatMessage(ChatMessage receivedChatMessage) throws SkypeException {
-		ChatAdapterInterface chatAdapter = skypeBridge.getChatAdapter(receivedChatMessage);
-		String message = skypeBridge.getContent(receivedChatMessage);
-		
-		for (CommandExecutor commandExecutor : commandExecutors) {
-			commandExecutor.processMessage(chatAdapter, message);
-		}
-	}
-
 	@Override
 	public void onReply(ChatAdapterInterface chat, String reply) {
 		skypeBridge.sendMessage(chat, reply);
@@ -53,4 +44,15 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 	public void onReplyPrivate(ChatAdapterInterface chat, String reply) {
 		skypeBridge.sendMessageToUser(chat.getLasterSenderFullName(), reply);
 	}
+
+	private synchronized void processChatMessage(ChatMessage receivedChatMessage) throws SkypeException {
+		
+		ChatAdapterInterface chatAdapter = skypeBridge.getChatAdapter(receivedChatMessage);
+		String message = skypeBridge.getContent(receivedChatMessage);
+		
+		for (CommandExecutor commandExecutor : commandExecutors) {
+			commandExecutor.processMessage(chatAdapter, message);
+		}
+	}
+	
 }

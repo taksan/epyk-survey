@@ -8,10 +8,12 @@ import org.apache.commons.lang.UnhandledException;
 
 import com.skype.Chat;
 import com.skype.ChatMessage;
+import com.skype.Skype;
 import com.skype.SkypeException;
 import com.skype.User;
 
 public class SkypeBridgeImpl implements SkypeBridge {
+	private static final String ECHO_FEEDBACK = "echo123";
 	Map<Chat, ChatAdapterInterface> bridgeByChat = new LinkedHashMap<Chat, ChatAdapterInterface>();
 	Map<String,String> skypeIdByFullName = new LinkedHashMap<String,String>();
 	
@@ -50,16 +52,9 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		}
 	}
 
-	private Chat getChatOrCry(ChatMessage chatMessage) {
-		try {
-			return chatMessage.getChat();
-		} catch (SkypeException e) {
-			throw new UnhandledException(e);
-		}
-	}
-
 	@Override
 	public String getUserFullNameOrId(User sender) {
+		String userId = sender.getId();
 		String fullName;
 		try {
 			fullName = sender.getFullName();
@@ -67,8 +62,8 @@ public class SkypeBridgeImpl implements SkypeBridge {
 			throw new UnhandledException(e);
 		}
 		if (fullName==null)
-			return sender.getId();
-		skypeIdByFullName.put(fullName, sender.getId());
+			fullName = userId;
+		skypeIdByFullName.put(fullName, userId);
 		return fullName;
 	}
 
@@ -87,11 +82,28 @@ public class SkypeBridgeImpl implements SkypeBridge {
 
 	@Override
 	public void sendMessageToUser(String fullName, String message) {
-		String userid = skypeIdByFullName.get(fullName);
 		try {
+			String userid = getUserIdByFullName(fullName);
 			User.getInstance(userid).send(message);
 		} catch (SkypeException e) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	private String getUserIdByFullName(String fullName) throws SkypeException {
+		final String userid = skypeIdByFullName.get(fullName);
+		if (Skype.getProfile().getId().equals(userid)) {
+			return ECHO_FEEDBACK;
+		}
+		return userid;
+	}
+	
+
+	private Chat getChatOrCry(ChatMessage chatMessage) {
+		try {
+			return chatMessage.getChat();
+		} catch (SkypeException e) {
+			throw new UnhandledException(e);
 		}
 	}
 }
