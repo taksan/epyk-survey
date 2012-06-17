@@ -12,6 +12,7 @@ import skype.shell.ShellCommandExecutor;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
 import skype.voting.application.VotingSessionFactoryImpl;
+import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
@@ -22,8 +23,7 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 	final VotingSessionManager manager; 
 	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
-	
-	VotingCommandProcessor[] processors = null;
+	VotingCommandProcessorAbstract[] processors = null;
 	private final VotingSessionMessageInterface voteSessionMessages;
 	private final CommandInterpreter commandInterpreter;
 	public VotingPollCommandExecutor() {
@@ -41,7 +41,7 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 			VotingSessionFactory votingSessionFactory, 
 			VotingSessionMessageInterface votingSessionMessages,
 			CommandInterpreter interpreter,
-			VotingCommandProcessor... commands) {
+			VotingCommandProcessorAbstract... commands) {
 		this(votingSessionFactory, votingSessionMessages, interpreter);
 		processors = commands;
 	}
@@ -84,28 +84,37 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 
 	@Override
 	public boolean processMessage(ChatAdapterInterface chat, String message) {
-		ShellCommand aCommand = commandInterpreter.processMessage(chat, message);
-		
-		for (VotingCommandProcessor p : getProcessors()) {
-			if (p.canProcess(aCommand)) {
-				p.process(aCommand);
+		for (VotingCommandProcessorAbstract p : getProcessors()) {
+			if (p.processMessage(chat, message)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
+	boolean areProcessorsInitialized = false;
 	@Override
-	protected VotingCommandProcessor[] getProcessors() {
-		if (processors != null) 
+	protected VotingCommandProcessorAbstract[] getProcessors() {
+		if (processors != null) {
+			if (!areProcessorsInitialized) {
+				initializeProcessors();
+			}
 			return processors;
-		
-		processors = VotingFactoriesRetriever.getProcessors();
-		for (VotingCommandProcessor aProcessor : processors) {
-			aProcessor.setVoteSessionProvider(this);
-			aProcessor.setVoteSessionMessages(voteSessionMessages);
 		}
 		
+		processors = VotingFactoriesRetriever.getProcessors();
+		
+		initializeProcessors();
+		
 		return processors;
+	}
+
+	private void initializeProcessors() {
+		for (VotingCommandProcessorAbstract aProcessor : processors) {
+			aProcessor.setVoteSessionProvider(this);
+			aProcessor.setVoteSessionMessages(voteSessionMessages);
+			aProcessor.setInterpreter(commandInterpreter);
+		}
+		areProcessorsInitialized = true;
 	}
 }
