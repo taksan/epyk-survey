@@ -1,10 +1,10 @@
 package skype.voting.requests.factories;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.AddVoteOptionRequest;
 
-public class AddVoteOptionRequestFactory implements ShellCommandFactory {
+public class AddVoteOptionRequestFactory implements ShellCommandInterpreter {
 	@Override
 	public AddVoteOptionRequest produce(ChatAdapterInterface chat, String message) {
 		if (!understands(message))

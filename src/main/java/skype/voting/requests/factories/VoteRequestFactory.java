@@ -1,10 +1,10 @@
 package skype.voting.requests.factories;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.VoteRequest;
 
-public class VoteRequestFactory implements ShellCommandFactory {
+public class VoteRequestFactory implements ShellCommandInterpreter {
 	@Override
 	public VoteRequest produce(ChatAdapterInterface chat, String message) {
 		String optionNUmber = message.trim().replace("#", "");

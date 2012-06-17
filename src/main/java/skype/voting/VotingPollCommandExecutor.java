@@ -5,6 +5,8 @@ import java.util.Map;
 
 
 import skype.ChatAdapterInterface;
+import skype.shell.CommandInterpreter;
+import skype.shell.CommandInterpreterImpl;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;
@@ -16,7 +18,7 @@ import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
-public class VotingPollCommandExecutor extends ShellCommandExecutor {
+public class VotingPollCommandExecutor extends ShellCommandExecutor implements CommandExecutor {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
@@ -25,15 +27,27 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 	
 	VotingCommandProcessor[] processors = null;
 	private final VotingSessionMessages voteSessionMessages;
+	private final CommandInterpreter commandInterpreter;
 	public VotingPollCommandExecutor() {
-		this(new VotingSessionFactoryImpl(), new VotingSessionMessages());
+		this(new VotingSessionFactoryImpl(), new VotingSessionMessages(), new CommandInterpreterImpl());
 	}
 	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessages voteSessionMessages){
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessages voteSessionMessages,
+			CommandInterpreter interpreter){
 		this.voteSessionMessages = voteSessionMessages;
+		commandInterpreter = interpreter;
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 	
+	public VotingPollCommandExecutor(
+			VotingSessionFactory votingSessionFactory, 
+			VotingSessionMessages votingSessionMessages,
+			CommandInterpreter interpreter,
+			VotingCommandProcessor[] commands) {
+		this(votingSessionFactory, votingSessionMessages, interpreter);
+		processors = commands;
+	}
+
 	@Override
 	protected ShellCommandProcessor[] getProcessors() {
 		if (processors != null) 
@@ -78,5 +92,11 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor {
 	
 	public boolean isInitializedSessionOnRequestChat(ShellCommand request) {
 		 return manager.getSessionForRequest(request) != null;
+	}
+
+	@Override
+	public boolean processMessage(ChatAdapterInterface chat, String message) {
+		ShellCommand command = commandInterpreter.processMessage(chat, message);
+		return processIfPossible(command);
 	}
 }

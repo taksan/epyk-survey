@@ -12,7 +12,7 @@ import skype.voting.requests.ValidatedShellCommandFactory;
 
 
 public class CommandInterpreterImplTest {
-	private ShellCommandFactory cmd1 = new ShellCommandFactoryMock();
+	private ShellCommandInterpreter cmd1 = new ShellCommandFactoryMock();
 	private AliasProcessorMock mock = new AliasProcessorMock();
 	private CommandInterpreterImpl subject = new CommandInterpreterImpl(mock,cmd1);
 	

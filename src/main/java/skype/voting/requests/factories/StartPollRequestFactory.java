@@ -3,11 +3,11 @@ package skype.voting.requests.factories;
 import java.util.List;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.application.VotingPollOption;
 import skype.voting.requests.StartPollRequest;
 
-public class StartPollRequestFactory implements ShellCommandFactory {
+public class StartPollRequestFactory implements ShellCommandInterpreter {
 
 	@Override
 	public StartPollRequest produce(ChatAdapterInterface chat, String message) {

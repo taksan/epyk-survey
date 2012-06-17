@@ -2,10 +2,10 @@ package skype.shell.mocks;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.shell.UnrecognizedCommand;
 
-public class ShellCommandFactoryMock implements ShellCommandFactory {
+public class ShellCommandFactoryMock implements ShellCommandInterpreter {
 	@Override
 	public ShellCommand produce(final ChatAdapterInterface chat, final String message) {
 		if (!understands(message))

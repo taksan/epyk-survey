@@ -7,15 +7,19 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import skype.ChatAdapterInterface;
+import skype.shell.CommandInterpreter;
 import skype.shell.ReplyListener;
 import skype.shell.ReplyTextRequest;
+import skype.shell.ShellCommand;
 import skype.shell.UnrecognizedCommand;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
+import skype.voting.mocks.ShellCommandMock;
 import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.mocks.VotingSessionMockAdapter;
+import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.AddVoteOptionRequest;
 import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.HelpRequest;
@@ -31,11 +35,52 @@ public class VotingPollCommandExecutorTest {
 	ReplyListenerMock listener;
 
 	private VotingPollCommandExecutor getSubject() {
-		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(votingSessionFactoryMock, new VotingSessionMessages());
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(votingSessionFactoryMock, new VotingSessionMessages(), null);
 		listener = new ReplyListenerMock();
 		subject.setReplyListener(listener);
 		return subject;
 	}
+	
+	@Test
+	public void onProcessMessage_ShouldInterpretAndProcess()
+	{
+		final ShellCommandMock commandToSend = new ShellCommandMock();
+		final AtomicReference<ShellCommand> commandToProcess=new AtomicReference<ShellCommand>();
+		final CommandInterpreter interpreter = 
+			new CommandInterpreter() {
+				@Override
+				public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
+					if (message.equals("foo"))
+						return commandToSend;
+					return null;
+				}
+		};
+		
+		VotingCommandProcessor[] commands = new VotingCommandProcessor[]{
+				new VotingCommandProcessorAbstract() {
+					
+					@Override
+					public void process(ShellCommand command) {
+						commandToProcess.set(command);
+					}
+					
+					@Override
+					public boolean canProcess(ShellCommand command) {
+						return command.equals(commandToSend);
+					}
+				}
+		};
+		
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
+				votingSessionFactoryMock, 
+				new VotingSessionMessages(),
+				interpreter,
+				commands
+				);
+		subject.processMessage(chatBridgeMock, "foo");
+		assertEquals(commandToSend, commandToProcess.get());
+	}
+	
 
 	@Test
 	public void onProcessSentRequest_ShouldReturnVotingMenu() {

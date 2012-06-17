@@ -5,16 +5,21 @@ import java.util.Vector;
 import skype.ChatAdapterInterface;
 import skype.voting.requests.HelpRequest;
 import skype.voting.requests.ValidatedShellCommandFactory;
+import skype.voting.requests.factories.VotingFactoriesRetriever;
 
 public class CommandInterpreterImpl implements CommandInterpreter {
-	final ShellCommandFactory[] factories;
+	final ShellCommandInterpreter[] factories;
 	private final AliasProcessor aliasProcessor;
 	
-	public CommandInterpreterImpl(ShellCommandFactory ...factories) {
+	public CommandInterpreterImpl() {
+		this(VotingFactoriesRetriever.getFactories());
+	}
+	
+	public CommandInterpreterImpl(ShellCommandInterpreter ...factories) {
 		this(new AliasProcessorImpl(new PersistenceImpl()), factories);
 	}
 
-	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandFactory ...factories){
+	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandInterpreter ...factories){
 		this.aliasProcessor = aliasProcessor;
 		this.factories = makeDecoratedFactories(factories);
 	}
@@ -26,7 +31,7 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 			return aliasProcessor.processMessage(chat, message);
 		}
 		
-		for (ShellCommandFactory aFactory : factories) {
+		for (ShellCommandInterpreter aFactory : factories) {
 			if (aFactory.understands(expandedMessage)) {
 				return aFactory.produce(chat, expandedMessage);
 			}
@@ -42,12 +47,12 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 		return message.trim().toLowerCase().equals("#help");
 	}
 	
-	private static ShellCommandFactory[] makeDecoratedFactories(ShellCommandFactory... factories) {
-		Vector<ShellCommandFactory> decorated = new Vector<ShellCommandFactory>();
-		for (ShellCommandFactory inputFactory : factories) {
+	private static ShellCommandInterpreter[] makeDecoratedFactories(ShellCommandInterpreter... factories) {
+		Vector<ShellCommandInterpreter> decorated = new Vector<ShellCommandInterpreter>();
+		for (ShellCommandInterpreter inputFactory : factories) {
 			decorated.add(new ValidatedShellCommandFactory(inputFactory));
 		}
-		ShellCommandFactory[] array = decorated.toArray(new ShellCommandFactory[0]);
+		ShellCommandInterpreter[] array = decorated.toArray(new ShellCommandInterpreter[0]);
 		return array;
 	}	
 }

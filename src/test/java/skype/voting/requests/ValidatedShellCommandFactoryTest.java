@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.InvalidCommandException;
 import skype.voting.requests.ValidatedShellCommandFactory;
 
@@ -14,7 +14,7 @@ public class ValidatedShellCommandFactoryTest {
 	@Test
 	public void onParseOfCommandThatDecoratedDoesntUnderstand_ShouldThrowException()
 	{
-		ShellCommandFactory factory = new ShellCommandFactory() {
+		ShellCommandInterpreter factory = new ShellCommandInterpreter() {
 			@Override
 			public boolean understands(String message) {
 				return false;

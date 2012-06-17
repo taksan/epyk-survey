@@ -1,10 +1,10 @@
 package skype.voting.requests.factories;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.VoteStatusRequest;
 
-public class VoteStatusRequestFactory implements ShellCommandFactory {
+public class VoteStatusRequestFactory implements ShellCommandInterpreter {
 
 	@Override
 	public boolean understands(String message) {

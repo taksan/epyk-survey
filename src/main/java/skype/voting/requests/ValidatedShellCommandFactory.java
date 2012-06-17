@@ -2,13 +2,13 @@ package skype.voting.requests;
 
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 
-public class ValidatedShellCommandFactory implements ShellCommandFactory {
+public class ValidatedShellCommandFactory implements ShellCommandInterpreter {
 	
-	private final ShellCommandFactory factory;
+	private final ShellCommandInterpreter factory;
 
-	public ValidatedShellCommandFactory(ShellCommandFactory factory) {
+	public ValidatedShellCommandFactory(ShellCommandInterpreter factory) {
 		this.factory = factory;
 	}
 

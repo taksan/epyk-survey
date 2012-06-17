@@ -1,10 +1,10 @@
 package skype.voting.requests.factories;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.MissingVotersRequest;
 
-public class MissingVotersRequestFactory implements ShellCommandFactory {
+public class MissingVotersRequestFactory implements ShellCommandInterpreter {
 
 	@Override
 	public String getHelp() {

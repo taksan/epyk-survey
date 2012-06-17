@@ -1,10 +1,10 @@
 package skype.voting.requests.factories;
 
 import skype.ChatAdapterInterface;
-import skype.shell.ShellCommandFactory;
+import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.ClosePollRequest;
 
-public class ClosePollRequestFactory implements ShellCommandFactory {
+public class ClosePollRequestFactory implements ShellCommandInterpreter {
 
 	@Override
 	public ClosePollRequest produce(ChatAdapterInterface chat, String message) {
