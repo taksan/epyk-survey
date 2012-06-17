@@ -3,7 +3,7 @@ package skype.voting;
 import skype.shell.ShellCommandProcessor;
 
 public interface VotingCommandProcessor extends ShellCommandProcessor {
-	public void setVoteSessionProvider(VotingPollCommandExecutor votingPollCommandProcessor);
+	public void setVoteSessionProvider(VotingSessionModel votingPollCommandProcessor);
 
-	public void setVoteSessionMessages(VotingSessionMessages voteSessionMessages);
+	public void setVoteSessionMessages(VotingSessionMessageInterface voteSessionMessages);
 }

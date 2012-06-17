@@ -18,7 +18,7 @@ import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
-public class VotingPollCommandExecutor extends ShellCommandExecutor implements CommandExecutor {
+public class VotingPollCommandExecutor extends ShellCommandExecutor implements CommandExecutor, VotingSessionModel {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
@@ -26,13 +26,13 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	
 	VotingCommandProcessor[] processors = null;
-	private final VotingSessionMessages voteSessionMessages;
+	private final VotingSessionMessageInterface voteSessionMessages;
 	private final CommandInterpreter commandInterpreter;
 	public VotingPollCommandExecutor() {
 		this(new VotingSessionFactoryImpl(), new VotingSessionMessages(), new CommandInterpreterImpl());
 	}
 	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessages voteSessionMessages,
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages,
 			CommandInterpreter interpreter){
 		this.voteSessionMessages = voteSessionMessages;
 		commandInterpreter = interpreter;
@@ -41,7 +41,7 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 	
 	public VotingPollCommandExecutor(
 			VotingSessionFactory votingSessionFactory, 
-			VotingSessionMessages votingSessionMessages,
+			VotingSessionMessageInterface votingSessionMessages,
 			CommandInterpreter interpreter,
 			VotingCommandProcessor[] commands) {
 		this(votingSessionFactory, votingSessionMessages, interpreter);
@@ -68,10 +68,18 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 		this.listener = listener;
 	}
 
+	/* (non-Javadoc)
+	 * @see skype.voting.VotingSessionModel#getSessionForRequest(skype.shell.ShellCommand)
+	 */
+	@Override
 	public VotingSession getSessionForRequest(ShellCommand request) {
 		return manager.getSessionForRequest(request);
 	}
 
+	/* (non-Javadoc)
+	 * @see skype.voting.VotingSessionModel#makeNewVotingSession(skype.voting.requests.StartPollRequest)
+	 */
+	@Override
 	public VotingSession makeNewVotingSession(StartPollRequest votePollRequest) {
 		VotingSession session = manager.makeNewVotingSession(votePollRequest);
 		
@@ -83,6 +91,10 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 		return session;
 	}
 
+	/* (non-Javadoc)
+	 * @see skype.voting.VotingSessionModel#removeSessionForGivenRequest(skype.voting.requests.ClosePollRequest)
+	 */
+	@Override
 	public void removeSessionForGivenRequest(final ClosePollRequest request) {
 		VotingSession votingSession = manager.getSessionForRequest(request);
 		request.getChat().removeListener(listenersBySession.get(votingSession));
@@ -90,6 +102,10 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 		manager.removeSessionForRequest(request);
 	}
 	
+	/* (non-Javadoc)
+	 * @see skype.voting.VotingSessionModel#isInitializedSessionOnRequestChat(skype.shell.ShellCommand)
+	 */
+	@Override
 	public boolean isInitializedSessionOnRequestChat(ShellCommand request) {
 		 return manager.getSessionForRequest(request) != null;
 	}

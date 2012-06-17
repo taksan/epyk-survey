@@ -3,13 +3,13 @@ package skype.voting.processor.abstracts;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.voting.VotingCommandProcessor;
-import skype.voting.VotingPollCommandExecutor;
-import skype.voting.VotingSessionMessages;
+import skype.voting.VotingSessionMessageInterface;
+import skype.voting.VotingSessionModel;
 
 public abstract class VotingCommandProcessorAbstract implements VotingCommandProcessor{
 	private ReplyListener listener = null;
-	protected VotingPollCommandExecutor executor;
-	protected VotingSessionMessages messages;
+	protected VotingSessionModel executor;
+	protected VotingSessionMessageInterface messages;
 
 	@Override
 	public void setReplyListener(ReplyListener listener) {
@@ -17,12 +17,12 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	}
 	
 	@Override
-	public void setVoteSessionMessages(VotingSessionMessages voteSessionMessages){
+	public void setVoteSessionMessages(VotingSessionMessageInterface voteSessionMessages){
 		this.messages = voteSessionMessages;
 		
 	}
 	
-	public void setVoteSessionProvider(VotingPollCommandExecutor votingPollCommandProcessor) {
+	public void setVoteSessionProvider(VotingSessionModel votingPollCommandProcessor) {
 		this.executor = votingPollCommandProcessor;
 	}
 	

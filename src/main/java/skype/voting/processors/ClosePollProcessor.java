@@ -61,7 +61,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 			}
 			
 			private String getPlural(Integer voteCount) {
-				String string = voteCount>1?"s":"";
+				String string = voteCount!=1?"s":"";
 				return string;
 			}
 		});

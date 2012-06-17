@@ -17,6 +17,8 @@ public class MissingVotersProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
+		if (!executor.isInitializedSessionOnRequestChat(command)) return;
+		
 		VotingSession votingSession = executor.getSessionForRequest(command);
 		
 		final StringBuilder sb = new StringBuilder();

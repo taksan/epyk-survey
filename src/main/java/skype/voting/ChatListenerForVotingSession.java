@@ -14,10 +14,10 @@ public class ChatListenerForVotingSession implements ChatListener {
 	private final ChatAdapterInterface chat;
 	private SkypeBridge bridge;
 	private ReplyListener listener;
-	private final VotingSessionMessages messages;
+	private final VotingSessionMessageInterface messages;
 	
 	public ChatListenerForVotingSession(ChatAdapterInterface chat, VotingSession delegate, ReplyListener listener,
-			VotingSessionMessages messages) {
+			VotingSessionMessageInterface messages) {
 		this.chat = chat;
 		this.targetSession = delegate;
 		this.listener = listener;
