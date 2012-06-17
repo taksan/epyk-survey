@@ -16,7 +16,7 @@ public class MissingVotersRequestFactoryTest {
 		MissingVotersRequestFactory subject = new MissingVotersRequestFactory();
 		assertTrue(subject.understands("#missing"));
 		ChatAdapterInterface chat = new ChatBridgeMock("42","moe");
-		MissingVotersRequest request = subject.produce(chat, "#missing");
+		MissingVotersRequest request = subject.processMessage(chat, "#missing");
 		assertNotNull(request);
 	}
 }

@@ -16,7 +16,7 @@ public class StartPollRequestTest {
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
 		chat.addParticipant("joe");
 		chat.addParticipant("moe");
-		StartPollRequest request = subject.produce(chat, " #startpoll \"welcome here\" verdinho,garbo");
+		StartPollRequest request = subject.processMessage(chat, " #startpoll \"welcome here\" verdinho,garbo");
 		
 		final StringBuffer sb= new StringBuffer();
 		

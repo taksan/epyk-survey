@@ -7,7 +7,7 @@ import skype.voting.requests.ClosePollRequest;
 public class ClosePollRequestFactory implements ShellCommandInterpreter {
 
 	@Override
-	public ClosePollRequest produce(ChatAdapterInterface chat, String message) {
+	public ClosePollRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message))
 			return null;
 		return new ClosePollRequest(chat, message);

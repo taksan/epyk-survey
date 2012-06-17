@@ -12,7 +12,7 @@ public class VoteStatusRequestFactory implements ShellCommandInterpreter {
 	}
 	
 	@Override
-	public VoteStatusRequest produce(ChatAdapterInterface chat, String message) {
+	public VoteStatusRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message))
 			return null;
 		return new VoteStatusRequest(chat, message);

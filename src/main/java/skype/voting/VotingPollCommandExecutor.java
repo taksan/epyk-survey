@@ -3,14 +3,12 @@ package skype.voting;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 import skype.ChatAdapterInterface;
 import skype.shell.CommandInterpreter;
 import skype.shell.CommandInterpreterImpl;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;
-import skype.shell.ShellCommandProcessor;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
 import skype.voting.application.VotingSessionFactoryImpl;
@@ -86,12 +84,19 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 
 	@Override
 	public boolean processMessage(ChatAdapterInterface chat, String message) {
-		ShellCommand command = commandInterpreter.processMessage(chat, message);
-		return processIfPossible(command);
+		ShellCommand aCommand = commandInterpreter.processMessage(chat, message);
+		
+		for (VotingCommandProcessor p : getProcessors()) {
+			if (p.canProcess(aCommand)) {
+				p.process(aCommand);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
-	protected ShellCommandProcessor[] getProcessors() {
+	protected VotingCommandProcessor[] getProcessors() {
 		if (processors != null) 
 			return processors;
 		

@@ -1,5 +1,6 @@
 package skype.voting.processor.abstracts;
 
+import skype.shell.CommandInterpreter;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.voting.VotingCommandProcessor;
@@ -36,5 +37,9 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	
 	protected void onReplyPrivate(ShellCommand cmd, String reply) {
 		listener.onReplyPrivate(cmd.getChat(), reply);
+	}
+
+	public void setInterpreter(CommandInterpreter commandInterpreter) {
+		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 }

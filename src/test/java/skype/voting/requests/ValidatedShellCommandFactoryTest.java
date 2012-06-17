@@ -21,7 +21,7 @@ public class ValidatedShellCommandFactoryTest {
 			}
 			
 			@Override
-			public ShellCommand produce(ChatAdapterInterface chat, String message) {
+			public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
 				throw new RuntimeException("NOT IMPLEMENTED");
 			}
 
@@ -32,7 +32,7 @@ public class ValidatedShellCommandFactoryTest {
 		};
 		ValidatedShellCommandFactory subject = new ValidatedShellCommandFactory(factory);
 		try {
-			subject.produce(null, "#3@");
+			subject.processMessage(null, "#3@");
 			Assert.fail("Should not accept malformed message");
 		}catch(InvalidCommandException e) {
 			Assert.assertEquals("Invalid command #3@", e.getMessage());

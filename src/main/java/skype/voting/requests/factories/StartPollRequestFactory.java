@@ -10,7 +10,7 @@ import skype.voting.requests.StartPollRequest;
 public class StartPollRequestFactory implements ShellCommandInterpreter {
 
 	@Override
-	public StartPollRequest produce(ChatAdapterInterface chat, String message) {
+	public StartPollRequest processMessage(ChatAdapterInterface chat, String message) {
 		return buildRequest(chat, message);
 	}
 

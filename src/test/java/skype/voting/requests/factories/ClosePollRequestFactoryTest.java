@@ -16,20 +16,20 @@ public class ClosePollRequestFactoryTest {
 	@Test
 	public void onCommand_ShouldCreateAClosePollRequest()
 	{
-		ClosePollRequest request = subject.produce(chat , "#closepoll");
+		ClosePollRequest request = subject.processMessage(chat , "#closepoll");
 		assertNotNull(request);
 		
-		ClosePollRequest request2 = subject.produce(chat , "#closepoll ");
+		ClosePollRequest request2 = subject.processMessage(chat , "#closepoll ");
 		assertNotNull(request2);
 		
-		ClosePollRequest request3 = subject.produce(chat , "#Closepoll ");
+		ClosePollRequest request3 = subject.processMessage(chat , "#Closepoll ");
 		assertNotNull(request3);
 	}
 	
 	@Test
 	public void OnInvalidCommand_ShouldReturnNull()
 	{
-		ClosePollRequest request = subject.produce(chat , "#cslosepoll");
+		ClosePollRequest request = subject.processMessage(chat , "#cslosepoll");
 		assertNull(request);
 	}	
 }

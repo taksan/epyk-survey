@@ -6,7 +6,7 @@ import skype.voting.requests.VoteRequest;
 
 public class VoteRequestFactory implements ShellCommandInterpreter {
 	@Override
-	public VoteRequest produce(ChatAdapterInterface chat, String message) {
+	public VoteRequest processMessage(ChatAdapterInterface chat, String message) {
 		String optionNUmber = message.trim().replace("#", "");
 		int voteNumber = Integer.parseInt(optionNUmber);
 		return new VoteRequest(chat, message, voteNumber);

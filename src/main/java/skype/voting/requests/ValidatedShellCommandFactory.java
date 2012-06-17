@@ -13,9 +13,9 @@ public class ValidatedShellCommandFactory implements ShellCommandInterpreter {
 	}
 
 	@Override
-	public ShellCommand produce(ChatAdapterInterface chat, String message) {
+	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
 		validateMessage(message);
-		return factory.produce(chat, message);
+		return factory.processMessage(chat, message);
 	}
 
 	@Override

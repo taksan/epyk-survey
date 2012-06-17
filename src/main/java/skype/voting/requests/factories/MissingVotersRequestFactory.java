@@ -13,7 +13,7 @@ public class MissingVotersRequestFactory implements ShellCommandInterpreter {
 	}
 
 	@Override
-	public MissingVotersRequest produce(ChatAdapterInterface chat, String message) {
+	public MissingVotersRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message)) return null;
 		return new MissingVotersRequest(chat,message);
 	}

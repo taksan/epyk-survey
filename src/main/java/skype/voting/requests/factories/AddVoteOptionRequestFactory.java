@@ -6,7 +6,7 @@ import skype.voting.requests.AddVoteOptionRequest;
 
 public class AddVoteOptionRequestFactory implements ShellCommandInterpreter {
 	@Override
-	public AddVoteOptionRequest produce(ChatAdapterInterface chat, String message) {
+	public AddVoteOptionRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message))
 			return null;
 		String optionName = message.replaceAll("#addoption[ ]+", "");

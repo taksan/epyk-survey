@@ -7,7 +7,7 @@ import skype.voting.requests.PrintCurrentPollRequest;
 public class PrintCurrentPollRequestFactory implements ShellCommandInterpreter {
 	
 	@Override
-	public PrintCurrentPollRequest produce(ChatAdapterInterface chat, String message) {
+	public PrintCurrentPollRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message))
 			return null;
 		return new PrintCurrentPollRequest(chat,message);

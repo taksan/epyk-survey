@@ -15,6 +15,6 @@ public class VoteStatusRequestFactoryTest {
 	{
 		ChatAdapterInterface chat = new ChatBridgeMock("42","moe");
 		assertTrue(subject.understands("#sTatus"));
-		subject.produce(chat, "#status");
+		subject.processMessage(chat, "#status");
 	}
 }

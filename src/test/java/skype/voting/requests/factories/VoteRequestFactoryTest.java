@@ -15,7 +15,7 @@ public class VoteRequestFactoryTest {
 	
 	@Test
 	public void onVoteCommand_ShouldGenerateVoteRequest(){
-		VoteRequest request = subject.produce(chat, " #3");
+		VoteRequest request = subject.processMessage(chat, " #3");
 		assertEquals(request.sender, "moe");
 		assertEquals(request.vote, 3);
 	}

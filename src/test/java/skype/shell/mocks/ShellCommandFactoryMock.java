@@ -7,7 +7,7 @@ import skype.shell.UnrecognizedCommand;
 
 public class ShellCommandFactoryMock implements ShellCommandInterpreter {
 	@Override
-	public ShellCommand produce(final ChatAdapterInterface chat, final String message) {
+	public ShellCommand processMessage(final ChatAdapterInterface chat, final String message) {
 		if (!understands(message))
 			return new UnrecognizedCommand(chat, message);
 		

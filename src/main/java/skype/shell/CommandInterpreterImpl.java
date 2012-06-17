@@ -33,7 +33,7 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 		
 		for (ShellCommandInterpreter aFactory : factories) {
 			if (aFactory.understands(expandedMessage)) {
-				return aFactory.produce(chat, expandedMessage);
+				return aFactory.processMessage(chat, expandedMessage);
 			}
 		}
 		if (isHelpRequest(expandedMessage)){

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import skype.voting.ReplyListenerMock;
-import skype.voting.VotingPollCommandExecutor;
 import skype.voting.requests.HelpRequest;
 
 public class HelpProcessorTest { 

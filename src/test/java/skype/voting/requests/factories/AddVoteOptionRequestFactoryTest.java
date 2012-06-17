@@ -19,7 +19,7 @@ public class AddVoteOptionRequestFactoryTest {
 	
 	@Test
 	public void onProduce_ShouldParseCommandAndCreateVoteOptionRequest(){
-		AddVoteOptionRequest request = subject.produce(new ChatBridgeMock(), "#addoption  pizza da mamma");
+		AddVoteOptionRequest request = subject.processMessage(new ChatBridgeMock(), "#addoption  pizza da mamma");
 		
 		assertEquals("pizza da mamma", request.getName());
 	}
