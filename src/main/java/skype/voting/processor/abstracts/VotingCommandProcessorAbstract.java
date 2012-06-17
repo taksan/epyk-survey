@@ -2,6 +2,7 @@ package skype.voting.processor.abstracts;
 
 import skype.ChatAdapterInterface;
 import skype.shell.CommandInterpreter;
+import skype.shell.CommandInterpreterImpl;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.voting.CommandExecutor;
@@ -14,6 +15,15 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	protected VotingSessionModel executor;
 	protected VotingSessionMessageInterface messages;
 	private CommandInterpreter interpreter;
+	
+	public VotingCommandProcessorAbstract() {
+		this.interpreter = new CommandInterpreterImpl();
+	}
+	
+	public VotingCommandProcessorAbstract(CommandInterpreter interpreter) {
+		this.interpreter = interpreter;
+	}
+	
 
 	@Override
 	public void setReplyListener(ReplyListener listener) {
@@ -40,11 +50,6 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	
 	protected void onReplyPrivate(ShellCommand cmd, String reply) {
 		listener.onReplyPrivate(cmd.getChat(), reply);
-	}
-
-	public void setInterpreter(CommandInterpreter commandInterpreter) {
-		this.interpreter = commandInterpreter;
-		
 	}
 	
 	public boolean processMessage(ChatAdapterInterface chat, String message){

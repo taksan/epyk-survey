@@ -4,8 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import skype.ChatAdapterInterface;
-import skype.shell.CommandInterpreter;
-import skype.shell.CommandInterpreterImpl;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;
@@ -21,28 +19,24 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
-	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
-			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
+	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	VotingCommandProcessorAbstract[] processors = null;
 	private final VotingSessionMessageInterface voteSessionMessages;
-	private final CommandInterpreter commandInterpreter;
+	
 	public VotingPollCommandExecutor() {
-		this(new VotingSessionFactoryImpl(), new VotingSessionMessages(), new CommandInterpreterImpl());
+		this(new VotingSessionFactoryImpl(), new VotingSessionMessages());
 	}
 	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages,
-			CommandInterpreter interpreter){
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages){
 		this.voteSessionMessages = voteSessionMessages;
-		commandInterpreter = interpreter;
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 	
 	public VotingPollCommandExecutor(
 			VotingSessionFactory votingSessionFactory, 
 			VotingSessionMessageInterface votingSessionMessages,
-			CommandInterpreter interpreter,
 			VotingCommandProcessorAbstract... commands) {
-		this(votingSessionFactory, votingSessionMessages, interpreter);
+		this(votingSessionFactory, votingSessionMessages);
 		processors = commands;
 	}
 
@@ -113,7 +107,6 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 		for (VotingCommandProcessorAbstract aProcessor : processors) {
 			aProcessor.setVoteSessionProvider(this);
 			aProcessor.setVoteSessionMessages(voteSessionMessages);
-			aProcessor.setInterpreter(commandInterpreter);
 		}
 		areProcessorsInitialized = true;
 	}

@@ -38,11 +38,10 @@ public class VotingPollCommandExecutorTest {
 				}
 		};
 		
-		VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock();
+		VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock(interpreter);
 		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
 				votingSessionFactoryMock, 
 				new VotingSessionMessages(),
-				interpreter,
 				processorMock
 				);
 		subject.processMessage(chatBridgeMock, "foo");

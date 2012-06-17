@@ -16,7 +16,7 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 	}
 	
 	public CommandInterpreterImpl(ShellCommandInterpreter ...factories) {
-		this(new AliasProcessorImpl(new PersistenceImpl()), factories);
+		this(VotingFactoriesRetriever.getSingletonAliasProcessor(), factories);
 	}
 
 	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandInterpreter ...factories){
