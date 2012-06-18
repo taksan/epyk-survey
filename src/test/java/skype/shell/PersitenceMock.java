@@ -7,11 +7,12 @@ public class PersitenceMock implements Persistence {
 
 	private boolean loadInvoked;
 	private boolean saveInvoked;
+	private LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<String, String>();
 
 	@Override
 	public Map<String, String> loadAliases() {
 		loadInvoked = true;
-		return new LinkedHashMap<String, String>();
+		return linkedHashMap ;
 	}
 	
 	@Override
@@ -31,5 +32,8 @@ public class PersitenceMock implements Persistence {
 		saveInvoked = false;
 	}
 
+	public void addAlias(String alias, String expansion) {
+		linkedHashMap.put("#"+alias, expansion);
+	}
 
 }

@@ -5,53 +5,33 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import skype.shell.mocks.AliasExpanderMock;
+
 public class AliasProcessorImplTest { 
 	private PersitenceMock persistence = new PersitenceMock();
-	AliasProcessorImpl subject = new AliasProcessorImpl(persistence);
-	
-
-	@Test
-	public void onCreate_ShouldRestoreAliasFromPersistance()
-	{
-		assertTrue(persistence.loadAliasesInvoked());
-	}
+	AliasExpanderMock expander = new AliasExpanderMock(persistence);
+	AliasProcessorImpl subject = new AliasProcessorImpl(expander);
 	
 	@Test
 	public void onAliasCommand_ShouldGenerateAReplyTextRequest() {
 		String message = "#alias foo #startpoll \"some poll\"";
-		
 		assertTrue(subject.understands(message));
 		
 		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, message);
+		
+		assertTrue(expander.createNewAliasInvoked());
+		
 		String reply = aliasRequest.getReplyText();
 		assertEquals("Alias '#foo' created to expand to <#startpoll \"some poll\">", reply);
-		
-		assertTrue(persistence.saveAliasesInvoked());
-	}
-	
-	@Test
-	public void onMessageThatMatchesAlias_ShouldExpandAlias(){
-		String message = "#alias foo #startpoll \"some poll\"";
-		subject.processMessage(null, message);
-		
-		String expandMessage = subject.expandMessage("#foo");
-		assertEquals("#startpoll \"some poll\"", expandMessage);
-	}
-	
-	@Test
-	public void onMessageThatMatchesAliasAndHasArguments_ShouldExpandAliasWithArguments()
-	{
-		String message = "#alias foo #startpoll \"some poll\"";
-		subject.processMessage(null, message);
-		String expandMessage = subject.expandMessage("#foo 123");
-		assertEquals("#startpoll \"some poll\" 123", expandMessage);
 	}
 	
 	@Test
 	public void onListAliasCommand_ShouldGenerateReplyTextMessageWithListOfAliases(){
-		subject.processMessage(null, "#alias foo1 expanded1");
-		subject.processMessage(null, "#alias foo2 expanded2");
+		persistence.addAlias("foo1", "expanded1");
+		persistence.addAlias("foo2", "expanded2");
+		
 		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, "#aliaslist");
+		assertTrue(expander.getAliasesInvoked());
 		String reply = aliasRequest.getReplyText();
 		assertEquals(
 				"Registered aliases:\n" +
@@ -62,25 +42,19 @@ public class AliasProcessorImplTest {
 	
 	@Test
 	public void onRemoveAliasCommand_ShouldRemoveTheAlias() {
-		subject.processMessage(null, "#alias foo1 expanded1");
-		subject.processMessage(null, "#alias foo2 expanded2");
 		persistence.setSaveInvokedFalse();
 		
 		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
-		String reply = removeRequest.getReplyText();
-		assertEquals("Alias 'foo1' removed.", reply);
-		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, "#aliaslist");
-		String reply2 = aliasRequest.getReplyText();
-		assertEquals(
-				"Registered aliases:\n" +
-				"#foo2 : expanded2", 
-				reply2);
-		assertTrue(persistence.saveAliasesInvoked());
+		assertTrue(expander.removeAliasInvoked());
+		
+		String reply2 = removeRequest.getReplyText();
+		assertEquals("Alias 'foo1' removed.", reply2);
 	}
 	
 	@Test
 	public void onRemoveAliasOnNonExistingAlias_ShouldReplyAliasDoesNotExist()
 	{
+		expander.setFailOnRemoval();
 		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
 		String reply = removeRequest.getReplyText();
 		assertEquals("Alias 'foo1' doesn't exist.", reply);
