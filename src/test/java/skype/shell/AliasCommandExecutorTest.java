@@ -9,21 +9,19 @@ import org.junit.Test;
 import skype.shell.mocks.AliasExpanderMock;
 import skype.voting.ReplyListenerMock;
 
-public class AliasProcessorImplTest { 
+public class AliasCommandExecutorTest { 
 	private PersistenceMock persistence = new PersistenceMock();
 	AliasExpanderMock expander = new AliasExpanderMock(persistence);
-	AliasProcessorImpl subject = new AliasProcessorImpl(expander);
+	AliasCommandExecutor subject = new AliasCommandExecutor(expander);
 	ReplyListenerMock listenerMock = new ReplyListenerMock();
 	
-	public AliasProcessorImplTest() {
+	public AliasCommandExecutorTest() {
 		subject.setReplyListener(listenerMock);
 	}
 	
 	@Test
 	public void onProcessAliasMessage_ShoulInvokeExpanderCreateAliasAndGenerateReply()
 	{
-
-
 		String message = "#alias foo #startpoll \"some poll\"";
 		subject.processMessage(null, message);
 		assertTrue(expander.createNewAliasInvoked());

@@ -1,5 +1,9 @@
 package skype.voting;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
 import skype.shell.ReplyListener;
@@ -11,15 +15,24 @@ import com.skype.SkypeException;
 public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	private final SkypeBridge skypeBridge;
-	private final CommandExecutor[] commandExecutors;
+	private final ArrayList<CommandExecutor> commandExecutors = new ArrayList<CommandExecutor>();
 
-	public VotingPollBroker(SkypeBridge bridge, CommandExecutor... commandExecutors) {
+	public VotingPollBroker(SkypeBridge bridge, 
+			UnrecognizedRequestExecutor last, 
+			CommandExecutor... commandExecutors) {
 		this.skypeBridge = bridge;
-		this.commandExecutors = commandExecutors;
+		List<CommandExecutor> asList = Arrays.asList(commandExecutors);
 		
-		for (CommandExecutor commandExecutor : commandExecutors) {
+		this.commandExecutors.addAll(asList);
+		this.commandExecutors.add(last);
+		
+		for (CommandExecutor commandExecutor : this.commandExecutors) {
 			commandExecutor.setReplyListener(this);
 		}
+	}
+
+	public VotingPollBroker(SkypeBridge bridge, CommandExecutor... commandExecutors){
+		this(bridge, new UnrecognizedRequestExecutor(), commandExecutors);
 	}
 
 	@Override
@@ -51,7 +64,8 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 		String message = skypeBridge.getContent(receivedChatMessage);
 		
 		for (CommandExecutor commandExecutor : commandExecutors) {
-			commandExecutor.processMessage(chatAdapter, message);
+			boolean processed = commandExecutor.processMessage(chatAdapter, message);
+			if (processed) break;
 		}
 	}
 	

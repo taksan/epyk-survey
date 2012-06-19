@@ -5,16 +5,43 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import skype.ChatAdapterInterface;
-import skype.SkypeBridge;
 import skype.shell.ReplyListener;
 import skype.shell.mocks.ChatBridgeMock;
 
 import com.skype.SkypeException;
 
 public class VotingPollBrokerTest {
+	@Test
+	public void onChatMessageThatIsNotProcessedByAnyExecutors_ShouldReplyUnrecognizedCommand() throws SkypeException
+	{
+		doesNotUnderstandExecutor.setUnderstands(false);
+		CommandExecutor[] commandExecutors = new CommandExecutor[]{doesNotUnderstandExecutor ,doesNotUnderstandExecutor};
+		SkypeBridgeMock bridge = getBridge();
+		
+		UnrecognizedRequestExecutor unrecog = new UnrecognizedRequestExecutor() {
+			@Override
+			public boolean processMessage(ChatAdapterInterface chat, String messageRaw) {
+				operations.append("Unrecognized command ''");
+				return true;
+			}
+		};
+		VotingPollBroker subject = new VotingPollBroker(bridge, unrecog , commandExecutors);
+		subject.chatMessageReceived(null);
+		
+		String expected = 		
+				"CommandExecutor setReplyListener\n" + 
+				"CommandExecutor setReplyListener\n" + 
+				"getChatAdapter\n" + 
+				"getContent\n" + 
+				"CommandExecutor DOES NOT processMessage\n" + 
+				"CommandExecutor DOES NOT processMessage\n" + 
+				"Unrecognized command ''";
+				
+		assertEquals(expected, operations.toString());
+	}
 
 	@Test
-	public void onChatMessageReceived_ShouldLetExecutorProcessIt() throws SkypeException
+	public void onChatMessageReceived_ShouldLetOnlyTheExecutorProcessIt() throws SkypeException
 	{
 		CommandExecutor[] commandExecutors = new CommandExecutor[]{oneExecutor,oneExecutor};
 		VotingPollBroker subject = new VotingPollBroker(getBridge(), commandExecutors);
@@ -24,8 +51,7 @@ public class VotingPollBrokerTest {
 				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor processMessage\n"+
-				"CommandExecutor processMessage\n", 
+				"CommandExecutor processMessage\n",
 				operations.toString());
 	}
 	
@@ -74,12 +100,21 @@ public class VotingPollBrokerTest {
 	
 	private final static class CommandExecutorMock implements CommandExecutor {
 		private final StringBuilder operations2;
+		private boolean understands = true;
 		public CommandExecutorMock(StringBuilder operations) {
 			operations2 = operations;
 		}
 
+		public void setUnderstands(boolean b) {
+			understands = b;
+		}
+
 		@Override
 		public boolean processMessage(ChatAdapterInterface chat, String message) {
+			if (!understands) {
+				operations2.append("CommandExecutor DOES NOT processMessage\n");
+				return false;
+			}
 			operations2.append("CommandExecutor processMessage\n");
 			return true;
 		}
@@ -91,9 +126,10 @@ public class VotingPollBrokerTest {
 	}
 
 	private CommandExecutorMock oneExecutor = new CommandExecutorMock(operations);
+	private CommandExecutorMock doesNotUnderstandExecutor = new CommandExecutorMock(operations);
 
 	
-	private SkypeBridge getBridge() {
+	private SkypeBridgeMock getBridge() {
 		return new SkypeBridgeMock(operations);
 	}
 }

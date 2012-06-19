@@ -63,7 +63,7 @@ final class SkypeBridgeMock implements SkypeBridge {
 			
 			@Override
 			public String getLasterSenderFullName() {
-				throw new RuntimeException("NOT IMPLEMENTED");
+				return "john doe";
 			}
 			
 			@Override

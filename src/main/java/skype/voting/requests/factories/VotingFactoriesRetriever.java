@@ -2,7 +2,7 @@ package skype.voting.requests.factories;
 
 import skype.shell.AliasExpander;
 import skype.shell.AliasExpanderImpl;
-import skype.shell.AliasProcessorImpl;
+import skype.shell.AliasCommandExecutor;
 import skype.shell.PersistenceImpl;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
@@ -26,8 +26,8 @@ public class VotingFactoriesRetriever {
 		return instancesOfClassesInGivenPackage;
 	}
 
-	final static AliasProcessorImpl aliasProcessorSingleton = new AliasProcessorImpl(new PersistenceImpl());
-	public static AliasProcessorImpl getSingletonAliasProcessor() {
+	final static AliasCommandExecutor aliasProcessorSingleton = new AliasCommandExecutor(new PersistenceImpl());
+	public static AliasCommandExecutor getSingletonAliasProcessor() {
 		return aliasProcessorSingleton;
 	}
 
