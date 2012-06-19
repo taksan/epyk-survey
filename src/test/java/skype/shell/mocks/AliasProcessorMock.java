@@ -31,7 +31,7 @@ public class AliasProcessorMock implements AliasProcessor {
 	}
 
 	@Override
-	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
+	public ShellCommand interpretAndProcessMessage(ChatAdapterInterface chat, String message) {
 		operations.append("processMessage:"+message+"\n");
 		return new ReplyTextRequest(chat, message, "");
 	}

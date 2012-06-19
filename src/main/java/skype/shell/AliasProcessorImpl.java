@@ -5,9 +5,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 import skype.ChatAdapterInterface;
+import skype.voting.CommandExecutor;
 
-public class AliasProcessorImpl implements AliasProcessor {
+public class AliasProcessorImpl implements CommandExecutor {
 	private final AliasExpander expander;
+	private ReplyListener listener;
 	
 	public AliasProcessorImpl(AliasExpander expander) {
 		this.expander = expander;
@@ -16,19 +18,27 @@ public class AliasProcessorImpl implements AliasProcessor {
 	public AliasProcessorImpl(Persistence persistence) {
 		this(new AliasExpanderImpl(persistence));
 	}
+	
 
 	@Override
-	public boolean understands(String message) {
+	public boolean processMessage(ChatAdapterInterface chat, String message) {
+		ReplyTextRequest command = interpretAndProcessMessage(chat, message);
+		if (command == null)
+			return false;
+		listener.onReply(chat, command.getReplyText());
+		return true;
+	}
+
+	@Override
+	public void setReplyListener(ReplyListener listener) {
+		this.listener = listener;
+	}	
+
+	private boolean understands(String message) {
 		return isAddAlias(message) || isListAlias(message) || isRemoveAlias(message);
 	}
 	
-	@Override
-	public String expandMessage(String message) {
-		return expander.expand(message);
-	}
-	
-	@Override
-	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
+	private ReplyTextRequest interpretAndProcessMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message))
 			return null;
 		
@@ -55,7 +65,7 @@ public class AliasProcessorImpl implements AliasProcessor {
 		return message.trim().equalsIgnoreCase("#aliaslist");
 	}
 
-	private ShellCommand processListAliasRequest(ChatAdapterInterface chat, String message) {
+	private ReplyTextRequest processListAliasRequest(ChatAdapterInterface chat, String message) {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> aliases = expander.getAliases();
 		for (Entry<String, String> entry : aliases.entrySet()) {
@@ -65,7 +75,7 @@ public class AliasProcessorImpl implements AliasProcessor {
 		return new ReplyTextRequest(chat, message, reply);
 	}
 
-	private ShellCommand processAliasRequestAndGenerateReply(ChatAdapterInterface chat, String message) {
+	private ReplyTextRequest processAliasRequestAndGenerateReply(ChatAdapterInterface chat, String message) {
 		String msg = message.replaceAll("#alias\\s+", "");
 		String alias = msg.replaceAll("([^ ]*)\\s.*", "$1");
 		String expanded = msg.replace(alias, "").trim();
@@ -77,7 +87,7 @@ public class AliasProcessorImpl implements AliasProcessor {
 		return request;
 	}
 
-	private ShellCommand processRemoveAliasRequest(ChatAdapterInterface chat, String message) {
+	private ReplyTextRequest processRemoveAliasRequest(ChatAdapterInterface chat, String message) {
 		final String aliasToRemove = message.replaceAll("#aliasdel[ ]*", "");
 		String aliasKey = "#"+aliasToRemove;
 		final AtomicReference<String> reply = new AtomicReference<String>();
@@ -97,5 +107,6 @@ public class AliasProcessorImpl implements AliasProcessor {
 		ReplyTextRequest request = new ReplyTextRequest(chat, message, reply.get());
 		return request;
 	}
+
 
 }

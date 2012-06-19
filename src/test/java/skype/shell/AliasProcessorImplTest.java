@@ -1,27 +1,34 @@
 package skype.shell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import skype.shell.mocks.AliasExpanderMock;
+import skype.voting.ReplyListenerMock;
 
 public class AliasProcessorImplTest { 
 	private PersistenceMock persistence = new PersistenceMock();
 	AliasExpanderMock expander = new AliasExpanderMock(persistence);
 	AliasProcessorImpl subject = new AliasProcessorImpl(expander);
+	ReplyListenerMock listenerMock = new ReplyListenerMock();
+	
+	public AliasProcessorImplTest() {
+		subject.setReplyListener(listenerMock);
+	}
 	
 	@Test
-	public void onAliasCommand_ShouldGenerateAReplyTextRequest() {
+	public void onProcessAliasMessage_ShoulInvokeExpanderCreateAliasAndGenerateReply()
+	{
+
+
 		String message = "#alias foo #startpoll \"some poll\"";
-		assertTrue(subject.understands(message));
-		
-		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, message);
-		
+		subject.processMessage(null, message);
 		assertTrue(expander.createNewAliasInvoked());
 		
-		String reply = aliasRequest.getReplyText();
+		String reply = listenerMock.reply.get();
 		assertEquals("Alias '#foo' created to expand to <#startpoll \"some poll\">", reply);
 	}
 	
@@ -30,9 +37,9 @@ public class AliasProcessorImplTest {
 		persistence.addAlias("foo1", "expanded1");
 		persistence.addAlias("foo2", "expanded2");
 		
-		ReplyTextRequest aliasRequest = (ReplyTextRequest) subject.processMessage(null, "#aliaslist");
+		subject.processMessage(null, "#aliaslist");
 		assertTrue(expander.getAliasesInvoked());
-		String reply = aliasRequest.getReplyText();
+		String reply = listenerMock.reply.get();
 		assertEquals(
 				"Registered aliases:\n" +
 				"#foo1 : expanded1\n" +
@@ -44,20 +51,24 @@ public class AliasProcessorImplTest {
 	public void onRemoveAliasCommand_ShouldRemoveTheAlias() {
 		persistence.setSaveInvokedFalse();
 		
-		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
+		subject.processMessage(null, "#aliasdel foo1");
 		assertTrue(expander.removeAliasInvoked());
 		
-		String reply2 = removeRequest.getReplyText();
-		assertEquals("Alias 'foo1' removed.", reply2);
+		String reply = listenerMock.reply.get();
+		assertEquals("Alias 'foo1' removed.", reply);
 	}
 	
 	@Test
 	public void onRemoveAliasOnNonExistingAlias_ShouldReplyAliasDoesNotExist()
 	{
 		expander.setFailOnRemoval();
-		ReplyTextRequest removeRequest = (ReplyTextRequest) subject.processMessage(null, "#aliasdel foo1");
-		String reply = removeRequest.getReplyText();
+		subject.processMessage(null, "#aliasdel foo1");
+		String reply = listenerMock.reply.get();
 		assertEquals("Alias 'foo1' doesn't exist.", reply);
 	}
-	
+
+	@Test
+	public void onProcessUnknownMessage_ShouldReturnFalse(){
+		assertFalse(subject.processMessage(null, "#foo"));
+	}
 }

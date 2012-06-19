@@ -9,6 +9,6 @@ public interface AliasProcessor {
 
 	boolean understands(String message);
 
-	ShellCommand processMessage(ChatAdapterInterface chat, String message);
+	ShellCommand interpretAndProcessMessage(ChatAdapterInterface chat, String message);
 
 }

@@ -1,14 +1,12 @@
 package voting.main;
 
-import skype.ChatAdapterInterface;
 import skype.SkypeBridgeImpl;
-import skype.shell.CommandInterpreterImpl;
-import skype.shell.ReplyListener;
-import skype.shell.ShellCommand;
+import skype.shell.AliasProcessorImpl;
 import skype.voting.CommandExecutor;
 import skype.voting.MainCommandExecutor;
 import skype.voting.VotingPollBroker;
 import skype.voting.VotingPollCommandExecutor;
+import skype.voting.requests.factories.VotingFactoriesRetriever;
 
 import com.skype.Skype;
 import com.skype.SkypeException;
@@ -20,24 +18,9 @@ public class VotingTimeApp {
 	public void execute() throws SkypeException {
 		Connector.getInstance().setApplicationName("LunchTime");
 		final VotingPollCommandExecutor executor = new VotingPollCommandExecutor();
-		final CommandInterpreterImpl interpreter = new CommandInterpreterImpl();
+		final AliasProcessorImpl aliasExecutor = new AliasProcessorImpl(VotingFactoriesRetriever.getSingletonAliasExpander());
 		CommandExecutor[] processorUnits = new CommandExecutor[]{
-				new CommandExecutor() {
-					@Override
-					public void setReplyListener(ReplyListener listener) {
-						executor.setReplyListener(listener);
-					}
-					
-					@Override
-					public boolean processMessage(ChatAdapterInterface chat, String message) {
-						ShellCommand shellCommand = interpreter.processMessage(
-								chat,
-								message);
-						
-						return executor.processIfPossible(shellCommand);
-					}
-				}
-		};
+				aliasExecutor, executor};
 		MainCommandExecutor executorImplementation = 
 				new MainCommandExecutor(processorUnits);
 		
