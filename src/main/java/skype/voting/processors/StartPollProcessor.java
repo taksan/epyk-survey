@@ -14,11 +14,6 @@ public class StartPollProcessor extends VotingCommandProcessorAbstract implement
 	}
 
 	@Override
-	public boolean canProcess(ShellCommand command) {
-		return command instanceof StartPollRequest;
-	}
-
-	@Override
 	public void process(ShellCommand command) {
 		VotingSession session = executor.makeNewVotingSession((StartPollRequest) command);
 		

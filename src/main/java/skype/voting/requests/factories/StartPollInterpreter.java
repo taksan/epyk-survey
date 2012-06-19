@@ -10,12 +10,14 @@ import skype.voting.requests.StartPollRequest;
 public class StartPollInterpreter implements ShellCommandInterpreter {
 
 	@Override
-	public StartPollRequest processMessage(ChatAdapterInterface chat, String message) {
+	public StartPollRequest processMessage(ChatAdapterInterface chat, String messageRaw) {
+		String message = messageRaw.trim();
+		if (!understands(message))
+			return null;
 		return buildRequest(chat, message);
 	}
 
-	private StartPollRequest buildRequest(ChatAdapterInterface chat, String incomingCommand) {
-		String command = incomingCommand.trim();
+	private StartPollRequest buildRequest(ChatAdapterInterface chat, String command) {
 		StartPollRequest votingPollRequest = new StartPollRequest(chat, command);
 		command = command.replaceAll("#startpoll[ ]*", "");
 		String welcome = command.replaceAll("\"(.*)\".*","$1");

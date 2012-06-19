@@ -14,11 +14,6 @@ public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 	}
 	
 	@Override
-	public boolean canProcess(ShellCommand command) {
-		return command instanceof AddVoteOptionRequest;
-	}
-
-	@Override
 	public void process(ShellCommand command) {
 		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		AddVoteOptionRequest request = (AddVoteOptionRequest)command;

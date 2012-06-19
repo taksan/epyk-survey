@@ -18,11 +18,6 @@ public final class VotingCommandProcessorMock extends VotingCommandProcessorAbst
 	}
 
 	@Override
-	public boolean canProcess(ShellCommand command) {
-		throw new RuntimeException("NOT IMPLEMENTED");
-	}
-
-	@Override
 	public void process(ShellCommand command) {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}

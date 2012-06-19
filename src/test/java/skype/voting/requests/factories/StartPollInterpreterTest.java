@@ -1,6 +1,7 @@
 package skype.voting.requests.factories;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -9,7 +10,13 @@ import skype.voting.application.VotingPollOption;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VotingPollVisitor;
 
-public class StartPollRequestTest {
+public class StartPollInterpreterTest {
+	@Test
+	public void onInvalidMessage_ShouldNotBuildRequest() {
+		StartPollInterpreter subject = new StartPollInterpreter();
+		assertNull(subject.processMessage(null,"#2"));
+	}
+	
 	@Test
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
 		StartPollInterpreter subject = new StartPollInterpreter();

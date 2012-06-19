@@ -44,16 +44,16 @@ public class ProcessorTestUtils {
 	public ReplyListenerMock initializeProcessorWithVotingSessionAnd1VoteAndGetListener(ClosePollProcessor subject) {
 		ReplyListenerMock initializeProcessorWithVotingSessionAndGetListener = initializeProcessorWithVotingSessionAndGetListener(subject);
 		getSessionChat().setLastSender("uruca");
-		VOTING_POLL_COMMAND_PROCESSOR.processIfPossible(new VoteRequest(getSessionChat(), "", 2));
+		VOTING_POLL_COMMAND_PROCESSOR.processMessage(getSessionChat(), "#2");
 		return initializeProcessorWithVotingSessionAndGetListener;
 	}
 
 	public ReplyListenerMock initializeProcessorWithVotingSessionWhereEveryoneVotedAndGetListener(MissingVotersProcessor subject) {
 		ReplyListenerMock initializeProcessorWithVotingSessionAndGetListener = initializeProcessorWithVotingSessionAndGetListener(subject);
 		getSessionChat().setLastSender("uruca");
-		VOTING_POLL_COMMAND_PROCESSOR.processIfPossible(new VoteRequest(getSessionChat(), "", 2));
+		VOTING_POLL_COMMAND_PROCESSOR.processMessage(getSessionChat(), "#2");
 		getSessionChat().setLastSender("tatu");
-		VOTING_POLL_COMMAND_PROCESSOR.processIfPossible(new VoteRequest(getSessionChat(), "", 2));
+		VOTING_POLL_COMMAND_PROCESSOR.processMessage(getSessionChat(), "#2");
 		return initializeProcessorWithVotingSessionAndGetListener;
 	}
 

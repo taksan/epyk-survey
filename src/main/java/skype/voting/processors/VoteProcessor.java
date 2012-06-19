@@ -14,11 +14,6 @@ public class VoteProcessor extends VotingCommandProcessorAbstract {
 	}
 
 	@Override
-	public boolean canProcess(ShellCommand command) {
-		return command instanceof VoteRequest;
-	}
-
-	@Override
 	public void process(final ShellCommand command) {
 		if (!executor.isInitializedSessionOnRequestChat(command)) return;
 		

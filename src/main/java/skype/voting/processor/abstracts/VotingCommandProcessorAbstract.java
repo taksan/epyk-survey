@@ -49,10 +49,9 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	
 	public boolean processMessage(ChatAdapterInterface chat, String message){
 		ShellCommand aCommand = this.interpreter.processMessage(chat, message);
-		if (canProcess(aCommand)) {
-			process(aCommand);
-			return true;
-		}
-		return false;
+		if (aCommand ==null)
+			return false;
+		process(aCommand);
+		return true;
 	}
 }

@@ -7,7 +7,7 @@ import skype.ChatAdapterInterface;
 import skype.alias.AliasExpander;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
-import skype.shell.ShellCommandExecutor;
+import skype.shell.ShellCommandProcessor;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
 import skype.voting.application.VotingSessionFactoryImpl;
@@ -16,7 +16,7 @@ import skype.voting.requests.ClosePollRequest;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
-public class VotingPollCommandExecutor extends ShellCommandExecutor implements CommandExecutor, VotingSessionModel {
+public class VotingPollCommandExecutor implements CommandExecutor, VotingSessionModel {
 
 	private ReplyListener listener;
 	final VotingSessionManager manager; 
@@ -49,7 +49,9 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 
 	@Override
 	public void setReplyListener(ReplyListener listener) {
-		super.setReplyListener(listener);
+		for (ShellCommandProcessor p : getProcessors()) {
+			p.setReplyListener(listener);
+		}
 		this.listener = listener;
 	}
 
@@ -95,7 +97,7 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 	}
 	
 	boolean areProcessorsInitialized = false;
-	@Override
+	
 	protected VotingCommandProcessorAbstract[] getProcessors() {
 		if (processors != null) {
 			if (!areProcessorsInitialized) {

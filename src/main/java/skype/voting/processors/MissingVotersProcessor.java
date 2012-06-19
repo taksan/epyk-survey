@@ -6,18 +6,12 @@ import skype.shell.ShellCommand;
 import skype.voting.application.ParticipantConsultant;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.MissingVotersRequest;
 import skype.voting.requests.factories.MissingVotersInterpreter;
 
 public class MissingVotersProcessor extends VotingCommandProcessorAbstract {
 	
 	public MissingVotersProcessor() {
 		super(new MissingVotersInterpreter());
-	}
-
-	@Override
-	public boolean canProcess(ShellCommand command) {
-		return command instanceof MissingVotersRequest;
 	}
 
 	@Override
