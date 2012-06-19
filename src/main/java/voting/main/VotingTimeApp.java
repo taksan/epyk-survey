@@ -18,7 +18,9 @@ public class VotingTimeApp {
 	public void execute() throws SkypeException {
 		Connector.getInstance().setApplicationName("LunchTime");
 		final VotingPollCommandExecutor executor = new VotingPollCommandExecutor();
-		final AliasCommandExecutor aliasExecutor = new AliasCommandExecutor(VotingFactoriesRetriever.getSingletonAliasExpander());
+		final AliasCommandExecutor aliasExecutor = 
+				new AliasCommandExecutor(VotingFactoriesRetriever.getSingletonAliasExpander());
+		
 		CommandExecutor[] processorUnits = 
 				new CommandExecutor[]{aliasExecutor, executor};
 		MainCommandExecutor executorImplementation = 
