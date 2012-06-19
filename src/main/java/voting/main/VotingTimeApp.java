@@ -2,6 +2,7 @@ package voting.main;
 
 import skype.SkypeBridgeImpl;
 import skype.shell.AliasCommandExecutor;
+import skype.shell.HelpCommandExecutor;
 import skype.voting.CommandExecutor;
 import skype.voting.MainCommandExecutor;
 import skype.voting.VotingPollBroker;
@@ -17,14 +18,17 @@ public class VotingTimeApp {
 
 	public void execute() throws SkypeException {
 		Connector.getInstance().setApplicationName("LunchTime");
-		final VotingPollCommandExecutor executor = new VotingPollCommandExecutor();
+		
+		final VotingPollCommandExecutor votingPollExecutor = new VotingPollCommandExecutor();
+		
 		final AliasCommandExecutor aliasExecutor = 
 				new AliasCommandExecutor(VotingFactoriesRetriever.getSingletonAliasExpander());
 		
-		CommandExecutor[] processorUnits = 
-				new CommandExecutor[]{aliasExecutor, executor};
-		MainCommandExecutor executorImplementation = 
-				new MainCommandExecutor(processorUnits);
+		CommandExecutor helpExecutor = new HelpCommandExecutor(VotingFactoriesRetriever.getFactories());
+		
+		CommandExecutor[] processorUnits = new CommandExecutor[]{aliasExecutor, votingPollExecutor, helpExecutor };
+		
+		MainCommandExecutor executorImplementation = new MainCommandExecutor(processorUnits);
 		
 		VotingPollBroker listener = new VotingPollBroker(
 				SkypeBridgeImpl.get(), 

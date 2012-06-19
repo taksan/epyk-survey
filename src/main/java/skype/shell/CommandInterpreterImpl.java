@@ -3,7 +3,6 @@ package skype.shell;
 import java.util.Vector;
 
 import skype.ChatAdapterInterface;
-import skype.voting.requests.HelpRequest;
 import skype.voting.requests.ValidatedShellCommandFactory;
 import skype.voting.requests.factories.VotingFactoriesRetriever;
 
@@ -24,17 +23,11 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 			if (aFactory.understands(expandedMessage)) {
 				return aFactory.processMessage(chat, expandedMessage);
 			}
-		}
-		if (isHelpRequest(expandedMessage)){
-			return new HelpRequest(chat,expandedMessage,factories);
-		}
-		
+		}		
 		return new UnrecognizedCommand(chat, expandedMessage);
 	}
 
-	private boolean isHelpRequest(String message) {
-		return message.trim().toLowerCase().equals("#help");
-	}
+
 	
 	private static ShellCommandInterpreter[] makeDecoratedFactories(ShellCommandInterpreter... factories) {
 		Vector<ShellCommandInterpreter> decorated = new Vector<ShellCommandInterpreter>();
