@@ -5,13 +5,6 @@ import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.MissingVotersRequest;
 
 public class MissingVotersInterpreter implements ShellCommandInterpreter {
-
-	@Override
-	public String getHelp() {
-		return "#missing\n" +
-				"	displays who hasn't voted yet";
-	}
-
 	@Override
 	public MissingVotersRequest processMessage(ChatAdapterInterface chat, String message) {
 		if (!understands(message)) return null;
@@ -23,4 +16,9 @@ public class MissingVotersInterpreter implements ShellCommandInterpreter {
 		return message.trim().equalsIgnoreCase("#missing");
 	} 
 	
+	@Override
+	public String getHelp() {
+		return "#missing\n" +
+				"	displays who hasn't voted yet";
+	}
 }

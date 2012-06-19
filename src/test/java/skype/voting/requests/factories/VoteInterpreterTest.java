@@ -1,6 +1,7 @@
 package skype.voting.requests.factories;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -18,5 +19,17 @@ public class VoteInterpreterTest {
 		VoteRequest request = subject.processMessage(chat, " #3");
 		assertEquals(request.sender, "moe");
 		assertEquals(request.vote, 3);
+	}
+	
+	@Test
+	public void onVoteCommand_ShouldGenerateAcceptNumber(){
+		VoteRequest request = subject.processMessage(chat, " 3");
+		assertEquals(request.sender, "moe");
+		assertEquals(request.vote, 3);
+	}
+	
+	@Test
+	public void onInvalidCommand_ShouldReturnNull() {
+		assertNull(subject.processMessage(chat, "foo"));
 	}
 }

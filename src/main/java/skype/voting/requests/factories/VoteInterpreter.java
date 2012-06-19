@@ -6,7 +6,10 @@ import skype.voting.requests.VoteRequest;
 
 public class VoteInterpreter implements ShellCommandInterpreter {
 	@Override
-	public VoteRequest processMessage(ChatAdapterInterface chat, String message) {
+	public VoteRequest processMessage(ChatAdapterInterface chat, String messageRaw) {
+		String message = messageRaw.trim();
+		if (!understands(message))
+			return null;
 		String optionNUmber = message.trim().replace("#", "");
 		int voteNumber = Integer.parseInt(optionNUmber);
 		return new VoteRequest(chat, message, voteNumber);
@@ -14,7 +17,7 @@ public class VoteInterpreter implements ShellCommandInterpreter {
 
 	@Override
 	public boolean understands(String message) {
-		return message.matches("#[0-9]+");
+		return message.matches("#?[0-9]+");
 	}
 
 	@Override
