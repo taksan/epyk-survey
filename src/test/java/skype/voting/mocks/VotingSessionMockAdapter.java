@@ -12,6 +12,7 @@ import skype.voting.application.VotingConsultant;
 import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
 import skype.voting.application.WinnerConsultant;
+import skype.voting.processors.ProcessorTestUtils;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 import skype.voting.requests.VotingPollVisitor;
@@ -25,6 +26,8 @@ public class VotingSessionMockAdapter implements VotingSession {
 	public VotingSessionMockAdapter() {
 		voteOptions.add(fooOption);
 		voteOptions.add(bazOption);
+		
+		initWith(new ProcessorTestUtils().buildVotingPollRequest());
 	}
 
 	private String welcome;

@@ -6,19 +6,12 @@ import org.junit.Test;
 
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
-import skype.voting.processors.ProcessorTestUtils;
-import skype.voting.requests.StartPollRequest;
 
 public class ChatListenerForVotingSessionTest { 
 	ChatBridgeMock chatBridgeMock = new ChatBridgeMock("autoid");
 	VotingSessionMockAdapter session = new VotingSessionMockAdapter();
 	ReplyListenerMock listener = new ReplyListenerMock();
 	VotingSessionMessageInterface messages = new VotingSessionMessages();
-	
-	public ChatListenerForVotingSessionTest() {
-		StartPollRequest pollRequest = new ProcessorTestUtils().buildVotingPollRequest();
-		session.initWith(pollRequest);
-	}
 	
 	@Test
 	public void onNewUserOnGivenChat_ShouldAddUserToVotingSession()
