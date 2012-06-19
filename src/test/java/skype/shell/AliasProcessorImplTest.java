@@ -8,7 +8,7 @@ import org.junit.Test;
 import skype.shell.mocks.AliasExpanderMock;
 
 public class AliasProcessorImplTest { 
-	private PersitenceMock persistence = new PersitenceMock();
+	private PersistenceMock persistence = new PersistenceMock();
 	AliasExpanderMock expander = new AliasExpanderMock(persistence);
 	AliasProcessorImpl subject = new AliasProcessorImpl(expander);
 	

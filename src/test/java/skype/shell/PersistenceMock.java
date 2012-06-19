@@ -3,7 +3,7 @@ package skype.shell;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PersitenceMock implements Persistence {
+public class PersistenceMock implements Persistence {
 
 	private boolean loadInvoked;
 	private boolean saveInvoked;

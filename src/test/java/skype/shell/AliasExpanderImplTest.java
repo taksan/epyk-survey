@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 public class AliasExpanderImplTest { 
-	PersitenceMock persistence = new PersitenceMock();
+	PersistenceMock persistence = new PersistenceMock();
 
 	
 	@Test

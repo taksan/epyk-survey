@@ -9,28 +9,17 @@ import skype.voting.requests.factories.VotingFactoriesRetriever;
 
 public class CommandInterpreterImpl implements CommandInterpreter {
 	final ShellCommandInterpreter[] factories;
-	private final AliasProcessor aliasProcessor;
 	
 	public CommandInterpreterImpl() {
 		this(VotingFactoriesRetriever.getFactories());
 	}
 	
 	public CommandInterpreterImpl(ShellCommandInterpreter ...factories) {
-		this(VotingFactoriesRetriever.getSingletonAliasProcessor(), factories);
-	}
-
-	CommandInterpreterImpl(AliasProcessor aliasProcessor, ShellCommandInterpreter ...factories){
-		this.aliasProcessor = aliasProcessor;
 		this.factories = makeDecoratedFactories(factories);
 	}
 
 	@Override
-	public ShellCommand processMessage(ChatAdapterInterface chat, String message) {
-		String expandedMessage = aliasProcessor.expandMessage(message);
-		if (aliasProcessor.understands(message)){
-			return aliasProcessor.processMessage(chat, message);
-		}
-		
+	public ShellCommand processMessage(ChatAdapterInterface chat, String expandedMessage) {
 		for (ShellCommandInterpreter aFactory : factories) {
 			if (aFactory.understands(expandedMessage)) {
 				return aFactory.processMessage(chat, expandedMessage);

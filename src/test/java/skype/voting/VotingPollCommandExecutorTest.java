@@ -7,10 +7,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.shell.AbstractShellCommand;
+import skype.shell.AliasExpander;
 import skype.shell.ShellCommand;
+import skype.shell.mocks.AliasExpanderMock;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionFactory;
+import skype.voting.mocks.CopyAliasExpander;
 import skype.voting.mocks.VotingCommandProcessorMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
 import skype.voting.requests.ClosePollRequest;
@@ -23,14 +26,33 @@ public class VotingPollCommandExecutorTest {
 	VotingSessionFactoryMock votingSessionFactoryMock = new VotingSessionFactoryMock();
 	ChatBridgeMock chatBridgeMock = new ChatBridgeMock("autoid");
 	ReplyListenerMock listener;
+	VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock();
+	
+	@Test
+	public void OnProcessAnyMessage_ShouldUseAliasExpander(){
+		
+		AliasExpanderMock expanderMock = new AliasExpanderMock();
+		expanderMock.setExpandedMessage("foo-expanded");
+		
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
+				votingSessionFactoryMock, 
+				new VotingSessionMessages(),
+				expanderMock,
+				processorMock
+				);
+		
+		subject.processMessage(chatBridgeMock, "foo");
+		assertEquals("foo-expanded", processorMock.processedMessage);
+	}
 
 	@Test
 	public void onProcessMessage_ShouldInterpretAndProcess()
 	{
-		VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock();
+		AliasExpander copyAliasExpander = new CopyAliasExpander();
 		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
 				votingSessionFactoryMock, 
 				new VotingSessionMessages(),
+				copyAliasExpander ,
 				processorMock
 				);
 		

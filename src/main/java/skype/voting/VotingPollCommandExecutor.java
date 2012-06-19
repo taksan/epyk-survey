@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import skype.ChatAdapterInterface;
+import skype.shell.AliasExpander;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;
@@ -22,21 +23,27 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
 	VotingCommandProcessorAbstract[] processors = null;
 	private final VotingSessionMessageInterface voteSessionMessages;
+	private final AliasExpander aliasExpander;
 	
 	public VotingPollCommandExecutor() {
-		this(new VotingSessionFactoryImpl(), new VotingSessionMessages());
+		this(new VotingSessionFactoryImpl(), 
+			 new VotingSessionMessages(), 
+			 VotingFactoriesRetriever.getSingletonAliasExpander());
 	}
 	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages){
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages,
+			AliasExpander aliasExpander){
 		this.voteSessionMessages = voteSessionMessages;
+		this.aliasExpander = aliasExpander;
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 	
 	public VotingPollCommandExecutor(
 			VotingSessionFactory votingSessionFactory, 
 			VotingSessionMessageInterface votingSessionMessages,
+			AliasExpander aliasExpander,
 			VotingCommandProcessorAbstract... commands) {
-		this(votingSessionFactory, votingSessionMessages);
+		this(votingSessionFactory, votingSessionMessages, aliasExpander);
 		processors = commands;
 	}
 
@@ -77,9 +84,10 @@ public class VotingPollCommandExecutor extends ShellCommandExecutor implements C
 	}
 
 	@Override
-	public boolean processMessage(ChatAdapterInterface chat, String message) {
+	public boolean processMessage(ChatAdapterInterface chat, String messageToProcess) {
+		String expandedMessage = aliasExpander.expand(messageToProcess);
 		for (VotingCommandProcessorAbstract p : getProcessors()) {
-			if (p.processMessage(chat, message)) {
+			if (p.processMessage(chat, expandedMessage)) {
 				return true;
 			}
 		}

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import skype.shell.mocks.AliasProcessorMock;
 import skype.shell.mocks.ShellCommandFactoryMock;
 import skype.voting.requests.HelpRequest;
 import skype.voting.requests.ValidatedShellCommandFactory;
@@ -13,8 +12,7 @@ import skype.voting.requests.ValidatedShellCommandFactory;
 
 public class CommandInterpreterImplTest {
 	private ShellCommandInterpreter cmd1 = new ShellCommandFactoryMock();
-	private AliasProcessorMock mock = new AliasProcessorMock();
-	private CommandInterpreterImpl subject = new CommandInterpreterImpl(mock,cmd1);
+	private CommandInterpreterImpl subject = new CommandInterpreterImpl(cmd1);
 	
 	@Test
 	public void onConstruction_ShouldDecorateFactoriesWithValidatorDecorator()
@@ -39,24 +37,5 @@ public class CommandInterpreterImplTest {
 	public void onRecognizedCommand_ShouldProduceGivenCommand() {
 		ShellCommand shellCommand = subject.processMessage(null, "#understood_command");
 		assertEquals("Understood", shellCommand.getText());
-	}
-	
-	@Test
-	public void onAnyMessage_ShouldBeDelegatedToAliasProcessorIfItUnderstands()
-	{
-		mock.setUnderstands("#foo");
-		subject.processMessage(null, "#foo");
-		assertEquals(
-				"expandMessage:#foo\n" + 
-				"understands:#foo\n" + 
-				"processMessage:#foo\n",
-				mock.getOperations());
-	}
-	
-	@Test
-	public void onAliasedMessage_ShouldDelegateExpandedMessageToAppropriateFactory(){
-		mock.setAlias("#foo","#understood_command");
-		ShellCommand shellCommand = subject.processMessage(null, "#foo");
-		assertEquals("Understood", shellCommand.getText());		
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import skype.shell.AliasExpander;
 import skype.shell.Persistence;
+import skype.shell.PersistenceMock;
 import skype.shell.RemoveAliasFeedbackHandler;
 
 public class AliasExpanderMock implements AliasExpander {
@@ -14,11 +15,16 @@ public class AliasExpanderMock implements AliasExpander {
 		persistence2 = persistence;
 	}
 
+	public AliasExpanderMock() {
+		persistence2 = new PersistenceMock();
+	}
+
 	private boolean expandWasInvoked;
 	private boolean createNewAliasInvoked;
 	private boolean getAliasesInvoked;
 	private boolean removeAliasInvoked;
 	private boolean shouldFailOnRemoval = false;
+	private String expandedMessage;
 	
 	public boolean expandWasInvoked() {
 		return expandWasInvoked;
@@ -27,7 +33,7 @@ public class AliasExpanderMock implements AliasExpander {
 	@Override
 	public String expand(String message) {
 		expandWasInvoked = true;
-		return null;
+		return expandedMessage;
 	}
 	
 	@Override
@@ -64,6 +70,10 @@ public class AliasExpanderMock implements AliasExpander {
 
 	public boolean removeAliasInvoked() {
 		return removeAliasInvoked;
+	}
+
+	public void setExpandedMessage(String expanded) {
+		this.expandedMessage = expanded;
 	}
 
 
