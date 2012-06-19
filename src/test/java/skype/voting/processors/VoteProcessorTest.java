@@ -23,18 +23,23 @@ public class VoteProcessorTest {
 	public void onProcessVoteWithoutLunchSession_ShouldNotGenerateReply() {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorAndGetListener(subject);
 		
-		VoteRequest request = new VoteRequestMocked("_foo_user_", 1);
-		subject.process(request);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#1");
 		assertEquals("", listener.reply.get());
+	}
+	
+	public void onProcessVote_ShouldIssueVote()
+	{
+		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
+		
+		subject.processMessage(processorTestUtils.getSessionChat(), "#2");
+		assertEquals("Votes: foo: 0 ; baz: 1", listener.reply.get() + "");
 	}
 	
 	@Test
 	public void onProcessVoteWithLuncSession_ShouldIssueUserAndVoteMessage() {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
 		
-		int vote = 2;
-		VoteRequest anyVoteRequestWillPrintCurrentResults = processorTestUtils.makeVoteInInitializedChatSession(vote);
-		subject.process(anyVoteRequestWillPrintCurrentResults);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#2");
 
 		assertEquals("Votes: foo: 0 ; baz: 1", listener.reply.get() + "");
 	}
@@ -43,8 +48,7 @@ public class VoteProcessorTest {
 	public void onProcessVoteWithLuncSession_ShouldIssueErrorIfVoteIsInvalid() {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
 		
-		VoteRequest invalidVote = processorTestUtils.makeVoteInInitializedChatSession(42);
-		subject.process(invalidVote);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#42");
 
 		assertEquals("Invalid voting option 42. Valid options:\n" + 
 				"Almoço!\n" + 

@@ -7,10 +7,10 @@ import org.junit.Test;
 import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.VoteRequest;
-import skype.voting.requests.factories.VoteRequestFactory;
+import skype.voting.requests.factories.VoteInterpreter;
 
-public class VoteRequestFactoryTest {
-	VoteRequestFactory subject = new VoteRequestFactory();
+public class VoteInterpreterTest {
+	VoteInterpreter subject = new VoteInterpreter();
 	ChatAdapterInterface chat = new ChatBridgeMock("42","moe");
 	
 	@Test

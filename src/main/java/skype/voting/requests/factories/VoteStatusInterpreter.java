@@ -4,7 +4,7 @@ import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.VoteStatusRequest;
 
-public class VoteStatusRequestFactory implements ShellCommandInterpreter {
+public class VoteStatusInterpreter implements ShellCommandInterpreter {
 
 	@Override
 	public boolean understands(String message) {

@@ -3,13 +3,12 @@ package skype.shell.mocks;
 import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandInterpreter;
-import skype.shell.UnrecognizedCommand;
 
 public class ShellCommandFactoryMock implements ShellCommandInterpreter {
 	@Override
 	public ShellCommand processMessage(final ChatAdapterInterface chat, final String message) {
 		if (!understands(message))
-			return new UnrecognizedCommand(chat, message);
+			throw new IllegalStateException("It is is a bug to get here");
 		
 		return new ShellCommand() {
 				@Override public String getText() {

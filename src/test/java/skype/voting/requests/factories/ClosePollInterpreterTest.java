@@ -9,8 +9,8 @@ import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.ClosePollRequest;
 
-public class ClosePollRequestFactoryTest {
-	ClosePollRequestFactory subject = new ClosePollRequestFactory();
+public class ClosePollInterpreterTest {
+	ClosePollInterpreter subject = new ClosePollInterpreter();
 	ChatAdapterInterface chat = new ChatBridgeMock("43");
 	
 	@Test

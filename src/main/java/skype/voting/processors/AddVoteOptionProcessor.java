@@ -5,9 +5,14 @@ import skype.shell.ShellCommand;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.AddVoteOptionRequest;
+import skype.voting.requests.factories.AddVoteOptionRequestInterpreter;
 
 public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
-
+	
+	public AddVoteOptionProcessor() {
+		super(new AddVoteOptionRequestInterpreter());
+	}
+	
 	@Override
 	public boolean canProcess(ShellCommand command) {
 		return command instanceof AddVoteOptionRequest;

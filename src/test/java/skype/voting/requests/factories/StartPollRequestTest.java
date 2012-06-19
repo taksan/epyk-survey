@@ -12,7 +12,7 @@ import skype.voting.requests.VotingPollVisitor;
 public class StartPollRequestTest {
 	@Test
 	public void onCorrectCommand_ShouldCreateLunchRequest() {
-		StartPollRequestFactory subject = new StartPollRequestFactory();
+		StartPollInterpreter subject = new StartPollInterpreter();
 		ChatBridgeMock chat = new ChatBridgeMock("#42");
 		chat.addParticipant("joe");
 		chat.addParticipant("moe");

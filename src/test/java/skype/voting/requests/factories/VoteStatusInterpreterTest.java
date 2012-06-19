@@ -7,8 +7,8 @@ import org.junit.Test;
 import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 
-public class VoteStatusRequestFactoryTest {
-	VoteStatusRequestFactory subject = new VoteStatusRequestFactory();
+public class VoteStatusInterpreterTest {
+	VoteStatusInterpreter subject = new VoteStatusInterpreter();
 	
 	@Test
 	public void onProduce_ShouldParseCommandAndCreateRequest()

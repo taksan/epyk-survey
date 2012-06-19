@@ -4,7 +4,7 @@ import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.MissingVotersRequest;
 
-public class MissingVotersRequestFactory implements ShellCommandInterpreter {
+public class MissingVotersInterpreter implements ShellCommandInterpreter {
 
 	@Override
 	public String getHelp() {

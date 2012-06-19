@@ -9,11 +9,11 @@ import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.MissingVotersRequest;
 
-public class MissingVotersRequestFactoryTest {
+public class MissingVotersInterpreterTest {
 	@Test
 	public void onProcuce_ShouldCreateRequestInstance()
 	{
-		MissingVotersRequestFactory subject = new MissingVotersRequestFactory();
+		MissingVotersInterpreter subject = new MissingVotersInterpreter();
 		assertTrue(subject.understands("#missing"));
 		ChatAdapterInterface chat = new ChatBridgeMock("42","moe");
 		MissingVotersRequest request = subject.processMessage(chat, "#missing");

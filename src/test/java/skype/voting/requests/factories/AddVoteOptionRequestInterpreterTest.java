@@ -8,8 +8,8 @@ import org.junit.Test;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.requests.AddVoteOptionRequest;
 
-public class AddVoteOptionRequestFactoryTest {
-	AddVoteOptionRequestFactory subject = new AddVoteOptionRequestFactory();
+public class AddVoteOptionRequestInterpreterTest {
+	AddVoteOptionRequestInterpreter subject = new AddVoteOptionRequestInterpreter();
 	
 	@Test
 	public void onAddOptionCommand_ShouldCreateAddVoteOptionRequest()

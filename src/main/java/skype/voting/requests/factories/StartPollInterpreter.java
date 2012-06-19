@@ -7,7 +7,7 @@ import skype.shell.ShellCommandInterpreter;
 import skype.voting.application.VotingPollOption;
 import skype.voting.requests.StartPollRequest;
 
-public class StartPollRequestFactory implements ShellCommandInterpreter {
+public class StartPollInterpreter implements ShellCommandInterpreter {
 
 	@Override
 	public StartPollRequest processMessage(ChatAdapterInterface chat, String message) {

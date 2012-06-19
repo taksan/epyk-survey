@@ -31,10 +31,10 @@ public class ProcessorTestUtils {
 		return initializeProcessorAndGetListener(subject);
 	}
 
-	public ChatAdapterInterface getSessionChat() {
+	public ChatBridgeMock getSessionChat() {
 		if (chatBridgeMock == null)
 			chatBridgeMock = new ChatBridgeMock("autoid");
-		return chatBridgeMock;
+		return (ChatBridgeMock) chatBridgeMock;
 	}
 
 	public VoteRequest makeVoteInInitializedChatSession(int vote) {

@@ -4,7 +4,7 @@ import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.VoteRequest;
 
-public class VoteRequestFactory implements ShellCommandInterpreter {
+public class VoteInterpreter implements ShellCommandInterpreter {
 	@Override
 	public VoteRequest processMessage(ChatAdapterInterface chat, String message) {
 		String optionNUmber = message.trim().replace("#", "");

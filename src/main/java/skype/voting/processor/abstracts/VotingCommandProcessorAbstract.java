@@ -2,7 +2,6 @@ package skype.voting.processor.abstracts;
 
 import skype.ChatAdapterInterface;
 import skype.shell.CommandInterpreter;
-import skype.shell.CommandInterpreterImpl;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.voting.CommandExecutor;
@@ -15,10 +14,6 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	protected VotingSessionModel executor;
 	protected VotingSessionMessageInterface messages;
 	private CommandInterpreter interpreter;
-	
-	public VotingCommandProcessorAbstract() {
-		this.interpreter = new CommandInterpreterImpl();
-	}
 	
 	public VotingCommandProcessorAbstract(CommandInterpreter interpreter) {
 		this.interpreter = interpreter;

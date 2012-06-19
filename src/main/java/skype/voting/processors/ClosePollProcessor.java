@@ -9,8 +9,13 @@ import skype.voting.application.VotingSession;
 import skype.voting.application.WinnerConsultant;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.requests.ClosePollRequest;
+import skype.voting.requests.factories.ClosePollInterpreter;
 
 public class ClosePollProcessor extends VotingCommandProcessorAbstract {
+	
+	public ClosePollProcessor() {
+		super(new ClosePollInterpreter());
+	}
 
 	@Override
 	public boolean canProcess(ShellCommand command) {

@@ -5,6 +5,10 @@ import skype.shell.ShellCommand;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 
 public final class VotingCommandProcessorMock extends VotingCommandProcessorAbstract {
+	public VotingCommandProcessorMock() {
+		super(null);
+	}
+
 	public String processedMessage;
 	
 	@Override

@@ -4,7 +4,7 @@ import skype.ChatAdapterInterface;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.requests.ClosePollRequest;
 
-public class ClosePollRequestFactory implements ShellCommandInterpreter {
+public class ClosePollInterpreter implements ShellCommandInterpreter {
 
 	@Override
 	public ClosePollRequest processMessage(ChatAdapterInterface chat, String message) {

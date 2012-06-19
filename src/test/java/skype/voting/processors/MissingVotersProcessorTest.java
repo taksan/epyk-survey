@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import skype.voting.ReplyListenerMock;
-import skype.voting.requests.MissingVotersRequest;
 
 public class MissingVotersProcessorTest { 
 	MissingVotersProcessor subject = new MissingVotersProcessor();
@@ -20,8 +19,7 @@ public class MissingVotersProcessorTest {
 	public void onProcessMissingVotersRequest_ShouldPrintWhoHasnVoted()
 	{
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
-		MissingVotersRequest request = new  MissingVotersRequest(processorTestUtils.getSessionChat(), null);
-		subject.process(request);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#missing");
 		assertEquals("Users that haven't voted yet:\n" +
 				"	tatu, uruca", listener.reply.get() + "");
 	}
@@ -30,8 +28,7 @@ public class MissingVotersProcessorTest {
 	@Test
 	public void onProcessMissingVotersRequestWithoutAnyone_ShouldPrintEveryoneVoted(){
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionWhereEveryoneVotedAndGetListener(subject);
-		MissingVotersRequest request = new  MissingVotersRequest(processorTestUtils.getSessionChat(), null);
-		subject.process(request);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#missing");
 		assertEquals("Everyone already voted.", listener.reply.get() + "");
 	}
 	
@@ -39,8 +36,7 @@ public class MissingVotersProcessorTest {
 	public void onProcessMissingVotersRequestWithClosedSession_ShouldNotGenerateReply()
 	{
 		final ReplyListenerMock listener = processorTestUtils.initializeProcessorAndGetListener(subject);
-		MissingVotersRequest request = new MissingVotersRequest(processorTestUtils.getSessionChat(), null);
-		subject.process(request);
+		subject.processMessage(processorTestUtils.getSessionChat(), "#missing");
 		assertEquals("", listener.reply.get());
 	}
 
