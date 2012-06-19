@@ -8,6 +8,7 @@ import skype.voting.VotingSessionMessages;
 import skype.voting.application.VotingPollOption;
 import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
+import skype.voting.processors.mocks.VotingSessionMessagesMock;
 import skype.voting.requests.StartPollRequest;
 import skype.voting.requests.VoteRequest;
 
@@ -21,7 +22,7 @@ public class ProcessorTestUtils {
 		ReplyListenerMock listener = new ReplyListenerMock(); 
 		VOTING_POLL_COMMAND_PROCESSOR.setReplyListener(listener);
 		subject.setReplyListener(listener);
-		subject.setVoteSessionMessages(new VotingSessionMessages());
+		subject.setVoteSessionMessages(new VotingSessionMessagesMock());
 		return listener;
 	}
 

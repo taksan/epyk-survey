@@ -41,7 +41,7 @@ public class VoteProcessorTest {
 		
 		subject.processMessage(processorTestUtils.getSessionChat(), "#2");
 
-		assertEquals("Votes: foo: 0 ; baz: 1", listener.reply.get() + "");
+		assertEquals("Votes: <getVotingStatusMessage>", listener.reply.get() + "");
 	}
 
 	@Test
@@ -50,11 +50,7 @@ public class VoteProcessorTest {
 		
 		subject.processMessage(processorTestUtils.getSessionChat(), "#42");
 
-		assertEquals("Invalid voting option 42. Valid options:\n" + 
-				"Almoço!\n" + 
-				"1) foo\n" + 
-				"2) baz\n" + 
-				"Voters: tatu,uruca\n",
+		assertEquals("Invalid voting option 42. Valid options:<buildVotingMenu>",
 				listener.reply.get());
 	}
 	

@@ -16,12 +16,8 @@ public class AddVoteOptionProcessorTest {
 		utils.getSessionChat().setLastSender("tatu");
 		subject.processMessage(utils.getSessionChat(), "#addoption matre mia");
 		
-		assertEquals("New option 'matre mia' added by tatu. Current options:\n" +
-				"Almoço!\n" +
-				"1) foo\n" + 
-				"2) baz\n" +
-				"3) matre mia\n"+
-				"Voters: tatu,uruca", 
+		assertEquals("New option 'matre mia' added by tatu. Current options:\n" + 
+				"<getUpdatedVotingMenu>", 
 				listener.reply.get());
 	}
 

@@ -15,11 +15,6 @@ public class PrintCurrentPollProcessorTest {
 		ReplyListenerMock listener = utils.initializeProcessorWithVotingSessionAndGetListener(subject);
 		
 		subject.processMessage(utils.getSessionChat(), "#showpoll");
-		assertEquals("\n" + 
-				"Almoço!\n" + 
-				"1) foo\n" + 
-				"2) baz\n" + 
-				"Voters: tatu,uruca\n", 
-				listener.reply.get() + "");
+		assertEquals("<getUpdatedVotingMenu>", listener.reply.get() + "");
 	}
 }

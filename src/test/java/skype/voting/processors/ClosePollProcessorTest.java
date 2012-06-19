@@ -22,7 +22,7 @@ public class ClosePollProcessorTest {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAnd1VoteAndGetListener(subject);
 		subject.process(getCloseRequest());
 		assertEquals(
-				"Votes: foo: 0 ; baz: 1\n" +
+				"Votes: <getVotingStatusMessage>\n" + 
 				"WINNER: ***baz*** with 1 vote", 
 				listener.reply.get());
 	}
@@ -34,7 +34,7 @@ public class ClosePollProcessorTest {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
 		subject.processMessage(processorTestUtils.getSessionChat(), "#closepoll");
 		assertEquals(
-				"Votes: foo: 0 ; baz: 0\n" +
+				"Votes: <getVotingStatusMessage>\n" + 
 				"TIE: **foo and baz** tied with 0 votes", 
 				listener.reply.get());
 	}

@@ -16,6 +16,6 @@ public class VoteStatusProcessorTest {
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAndGetListener(subject);
 		subject.processMessage(processorTestUtils.getSessionChat(), "#status");
 		
-		assertEquals("Votes: foo: 0 ; baz: 0", listener.replyPrivate.get());
+		assertEquals("Votes: <getVotingStatusMessage>", listener.replyPrivate.get());
 	}
 }

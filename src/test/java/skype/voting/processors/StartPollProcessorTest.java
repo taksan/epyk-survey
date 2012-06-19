@@ -20,11 +20,7 @@ public class StartPollProcessorTest {
 		
 		subject.processMessage(sessionChat, "#startpoll \"Almoço!\" foo,baz");
 		
-		String expected = 
-				"\n" + "Almoço!\n" + 
-				"1) foo\n" + 
-				"2) baz\n"  +
-				"Voters: tatu,uruca\n";
+		String expected = "<getUpdatedVotingMenu>";
 		assertEquals(expected, listener.reply.get());
 	}
 }

@@ -3,26 +3,26 @@ package skype.voting.processors.mocks;
 import skype.voting.VotingSessionMessageInterface;
 import skype.voting.application.VotingSession;
 
-public class VotingSessionMessageMock implements VotingSessionMessageInterface {
+public class VotingSessionMessagesMock implements VotingSessionMessageInterface {
 
 	@Override
 	public String getVotingStatusMessage(VotingSession votingSession) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return "<getVotingStatusMessage>";
 	}
 
 	@Override
 	public String buildVotingMenu(VotingSession session) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return "<buildVotingMenu>";
 	}
 
 	@Override
 	public String buildVotingMenuWithoutVoters(VotingSession targetSession) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return "<buildVotingMenuWithoutVoters>";
 	}
 
 	@Override
 	public String getUpdatedVotingMenu(VotingSession session) {
-		return "getUpdatedVotingMenu " + session.toString();
+		return "<getUpdatedVotingMenu>";
 	}
 
 }
