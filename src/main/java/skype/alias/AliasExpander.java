@@ -1,6 +1,8 @@
-package skype.shell;
+package skype.alias;
 
 import java.util.Map;
+
+import skype.shell.RemoveAliasFeedbackHandler;
 
 public interface AliasExpander {
 	public String expand(String message);

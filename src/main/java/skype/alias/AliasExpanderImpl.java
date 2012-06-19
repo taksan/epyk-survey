@@ -1,6 +1,9 @@
-package skype.shell;
+package skype.alias;
 
 import java.util.Map;
+
+import skype.shell.Persistence;
+import skype.shell.RemoveAliasFeedbackHandler;
 
 public class AliasExpanderImpl implements AliasExpander {
 	

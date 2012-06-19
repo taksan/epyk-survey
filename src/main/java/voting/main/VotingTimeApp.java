@@ -1,7 +1,7 @@
 package voting.main;
 
 import skype.SkypeBridgeImpl;
-import skype.shell.AliasCommandExecutor;
+import skype.alias.AliasCommandExecutor;
 import skype.shell.HelpCommandExecutor;
 import skype.voting.CommandExecutor;
 import skype.voting.MainCommandExecutor;

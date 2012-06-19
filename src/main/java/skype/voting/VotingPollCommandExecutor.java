@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import skype.ChatAdapterInterface;
-import skype.shell.AliasExpander;
+import skype.alias.AliasExpander;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
 import skype.shell.ShellCommandExecutor;

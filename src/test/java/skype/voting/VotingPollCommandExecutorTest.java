@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import skype.alias.AliasExpander;
 import skype.shell.AbstractShellCommand;
-import skype.shell.AliasExpander;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.AliasExpanderMock;
 import skype.shell.mocks.ChatBridgeMock;

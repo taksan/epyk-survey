@@ -1,4 +1,4 @@
-package skype.shell;
+package skype.alias;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import skype.alias.AliasCommandExecutor;
+import skype.shell.PersistenceMock;
 import skype.shell.mocks.AliasExpanderMock;
 import skype.voting.ReplyListenerMock;
 

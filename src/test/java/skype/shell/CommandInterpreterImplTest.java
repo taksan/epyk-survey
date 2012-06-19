@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.shell.mocks.ShellCommandFactoryMock;
-import skype.voting.requests.HelpRequest;
 import skype.voting.requests.ValidatedShellCommandFactory;
 
 
@@ -19,12 +18,6 @@ public class CommandInterpreterImplTest {
 	{
 		assertTrue("Internal factories must be decorated by ValidatedShellCommandFactory",
 				subject.factories[0] instanceof ValidatedShellCommandFactory);
-	}
-	
-	@Test
-	public void onHelpCommand_ShouldReturnHelpRequest(){
-		ShellCommand shellCommand = subject.processMessage(null, "#help");
-		assertTrue(shellCommand instanceof HelpRequest);
 	}
 	
 	@Test

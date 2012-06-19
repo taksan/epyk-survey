@@ -1,8 +1,8 @@
 package skype.voting.requests.factories;
 
-import skype.shell.AliasExpander;
-import skype.shell.AliasExpanderImpl;
-import skype.shell.AliasCommandExecutor;
+import skype.alias.AliasCommandExecutor;
+import skype.alias.AliasExpander;
+import skype.alias.AliasExpanderImpl;
 import skype.shell.PersistenceImpl;
 import skype.shell.ShellCommandInterpreter;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;

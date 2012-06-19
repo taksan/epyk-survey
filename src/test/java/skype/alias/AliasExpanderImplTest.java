@@ -1,4 +1,4 @@
-package skype.shell;
+package skype.alias;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+
+import skype.alias.AliasExpanderImpl;
+import skype.shell.PersistenceMock;
+import skype.shell.RemoveAliasFeedbackHandler;
 
 public class AliasExpanderImplTest { 
 	PersistenceMock persistence = new PersistenceMock();

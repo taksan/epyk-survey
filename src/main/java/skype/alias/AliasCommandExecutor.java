@@ -1,10 +1,13 @@
-package skype.shell;
+package skype.alias;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 
 import skype.ChatAdapterInterface;
+import skype.shell.Persistence;
+import skype.shell.RemoveAliasFeedbackHandler;
+import skype.shell.ReplyListener;
 import skype.voting.CommandExecutor;
 
 public class AliasCommandExecutor implements CommandExecutor {

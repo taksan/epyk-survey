@@ -2,7 +2,7 @@ package skype.voting.mocks;
 
 import java.util.Map;
 
-import skype.shell.AliasExpander;
+import skype.alias.AliasExpander;
 import skype.shell.RemoveAliasFeedbackHandler;
 
 public class CopyAliasExpander implements AliasExpander {

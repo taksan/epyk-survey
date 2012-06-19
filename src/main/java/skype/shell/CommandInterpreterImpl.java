@@ -27,8 +27,6 @@ public class CommandInterpreterImpl implements CommandInterpreter {
 		return new UnrecognizedCommand(chat, expandedMessage);
 	}
 
-
-	
 	private static ShellCommandInterpreter[] makeDecoratedFactories(ShellCommandInterpreter... factories) {
 		Vector<ShellCommandInterpreter> decorated = new Vector<ShellCommandInterpreter>();
 		for (ShellCommandInterpreter inputFactory : factories) {
