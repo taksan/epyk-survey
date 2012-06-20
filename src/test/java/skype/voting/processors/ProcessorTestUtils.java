@@ -4,13 +4,12 @@ import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.ReplyListenerMock;
 import skype.voting.VotingPollCommandExecutor;
-import skype.voting.VotingSessionMessages;
 import skype.voting.application.VotingPollOption;
 import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
 import skype.voting.processors.mocks.VotingSessionMessagesMock;
-import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VoteRequest;
+import skype.voting.processors.requests.StartPollRequest;
+import skype.voting.processors.requests.VoteRequest;
 
 public class ProcessorTestUtils {
 

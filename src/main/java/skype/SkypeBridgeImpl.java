@@ -84,7 +84,7 @@ public class SkypeBridgeImpl implements SkypeBridge {
 	public void sendMessageToUser(String fullName, String message) {
 		try {
 			String userid = getUserIdByFullName(fullName);
-			User.getInstance(userid).send(message);
+			User.getInstance(userid).chat().send(message);
 		} catch (SkypeException e) {
 			throw new IllegalStateException(e);
 		}

@@ -8,7 +8,7 @@ import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.ReplyListenerMock;
 import skype.voting.mocks.VoteRequestMocked;
-import skype.voting.requests.VoteRequest;
+import skype.voting.processors.requests.VoteRequest;
 
 public class VoteProcessorTest { 
 	VoteProcessor subject = new VoteProcessor();

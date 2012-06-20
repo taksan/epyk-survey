@@ -15,8 +15,8 @@ import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.application.VotingSession;
 import skype.voting.application.VotingSessionImpl;
 import skype.voting.mocks.VoteRequestMocked;
-import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VotingPollVisitor;
+import skype.voting.processors.requests.StartPollRequest;
+import skype.voting.processors.requests.VotingPollVisitor;
 
 
 public class VotingSessionImplTest {

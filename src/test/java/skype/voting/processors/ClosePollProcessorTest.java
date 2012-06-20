@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import skype.voting.ReplyListenerMock;
-import skype.voting.requests.ClosePollRequest;
+import skype.voting.processors.requests.ClosePollRequest;
 
 public class ClosePollProcessorTest { 
 	ProcessorTestUtils processorTestUtils;
@@ -17,7 +17,6 @@ public class ClosePollProcessorTest {
 	@Test
 	public void onClosePollRequest_ShouldPrintTheResults()
 	{
-		
 		ClosePollProcessor subject = new ClosePollProcessor();
 		ReplyListenerMock listener = processorTestUtils.initializeProcessorWithVotingSessionAnd1VoteAndGetListener(subject);
 		subject.process(getCloseRequest());

@@ -6,6 +6,8 @@ import java.util.List;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
+import skype.alias.HelpProvider;
+import skype.shell.HelpCommandExecutor;
 import skype.shell.ReplyListener;
 
 import com.skype.ChatMessage;
@@ -15,7 +17,7 @@ import com.skype.SkypeException;
 public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	private final SkypeBridge skypeBridge;
-	private final ArrayList<CommandExecutor> commandExecutors = new ArrayList<CommandExecutor>();
+	final ArrayList<CommandExecutor> commandExecutors = new ArrayList<CommandExecutor>();
 
 	public VotingPollBroker(SkypeBridge bridge, 
 			UnrecognizedRequestExecutor last, 
@@ -24,11 +26,21 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 		List<CommandExecutor> asList = Arrays.asList(commandExecutors);
 		
 		this.commandExecutors.addAll(asList);
+		this.commandExecutors.add(getHelperExecutor(commandExecutors));
 		this.commandExecutors.add(last);
 		
 		for (CommandExecutor commandExecutor : this.commandExecutors) {
 			commandExecutor.setReplyListener(this);
 		}
+	}
+
+	private CommandExecutor getHelperExecutor(CommandExecutor[] commandExecutors2) {
+		List<HelpProvider> providers = new ArrayList<HelpProvider>();
+		for (CommandExecutor commandExecutor : commandExecutors2) {
+			if (commandExecutor instanceof HelpProvider)
+				providers.add((HelpProvider) commandExecutor);
+		}
+		return new HelpCommandExecutor(providers.toArray(new HelpProvider[0]));
 	}
 
 	public VotingPollBroker(SkypeBridge bridge, CommandExecutor... commandExecutors){

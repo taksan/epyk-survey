@@ -7,10 +7,10 @@ import skype.voting.application.VoteFeedbackHandler;
 import skype.voting.application.VotingConsultant;
 import skype.voting.application.VotingSession;
 import skype.voting.application.WinnerConsultant;
-import skype.voting.requests.ClosePollRequest;
-import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollVisitor;
+import skype.voting.processors.requests.ClosePollRequest;
+import skype.voting.processors.requests.StartPollRequest;
+import skype.voting.processors.requests.VoteRequest;
+import skype.voting.processors.requests.VotingPollVisitor;
 
 public class VotingSessionModelMock implements VotingSessionModel {
 	StringBuilder sb = new StringBuilder();

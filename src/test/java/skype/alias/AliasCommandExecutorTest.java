@@ -7,8 +7,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.alias.AliasCommandExecutor;
+import skype.alias.mocks.HelpVisitorMock;
 import skype.shell.PersistenceMock;
 import skype.shell.mocks.AliasExpanderMock;
+import skype.voting.HelpVisitor;
 import skype.voting.ReplyListenerMock;
 
 public class AliasCommandExecutorTest { 
@@ -70,5 +72,38 @@ public class AliasCommandExecutorTest {
 	@Test
 	public void onProcessUnknownMessage_ShouldReturnFalse(){
 		assertFalse(subject.processMessage(null, "#foo"));
+	}
+	
+	@Test
+	public void onAcceptHelpVisitor_ShouldVisitHelpMessages()
+	{
+		StringBuilder operations = new StringBuilder();
+		HelpVisitor helpVisitor = new HelpVisitorMock(operations);
+		subject.acceptHelpVisitor(helpVisitor );
+		String expectedAliasHelp = "onTopLevel: Alias manipulation:\n" +
+				"onTopic: #alias <aliasname> <expansion>\n"+
+				"onTopicDescription: creates a new <alias> that will expand to the given text starting when #aliasname is typed\n" +
+				"onTopic: #aliaslist\n" + 
+				"onTopicDescription: display the existing aliases\n" +
+				"onTopic: #aliasdel <aliasname>\n" +
+				"onTopicDescription: removes specified alias\n";
+				
+		
+		String expectedWithoutAlias = expectedAliasHelp+
+				"onTopLevel: No aliases have been defined yet\n";;
+		assertEquals(expectedWithoutAlias, operations.toString());
+		operations.setLength(0);
+		
+		persistence.addAlias("foo1", "expanded1");
+		persistence.addAlias("foo2", "expanded2");
+		subject.acceptHelpVisitor(helpVisitor);
+		
+		String expected = expectedAliasHelp	 +
+				"onTopLevel: Currently defined aliases\n"+
+				"onTopic: alias #foo1 : expanded1\n"+
+				"onTopic: alias #foo2 : expanded2\n";
+				
+		
+		assertEquals(expected, operations.toString());
 	}
 }

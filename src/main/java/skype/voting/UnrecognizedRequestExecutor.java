@@ -21,5 +21,4 @@ public class UnrecognizedRequestExecutor implements CommandExecutor {
 	public void setReplyListener(ReplyListener listener) {
 		this.listener = listener;
 	}
-
 }

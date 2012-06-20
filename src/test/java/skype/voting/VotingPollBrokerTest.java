@@ -1,16 +1,48 @@
 package skype.voting;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
 
 import org.junit.Test;
 
 import skype.ChatAdapterInterface;
+import skype.shell.HelpCommandExecutor;
 import skype.shell.ReplyListener;
 import skype.shell.mocks.ChatBridgeMock;
+import skype.voting.mocks.CommmandExecutorAndHelperMock;
 
 import com.skype.SkypeException;
 
 public class VotingPollBrokerTest {
+	@Test
+	public void onCreation_ShouldAddHelpExecutorThatProcessAllExecutorsThatAreHelpProviders()
+	{
+		CommmandExecutorAndHelperMock e1 = new CommmandExecutorAndHelperMock("e1", operations);
+		CommmandExecutorAndHelperMock e2 = new CommmandExecutorAndHelperMock("e2", operations);
+		
+		VotingPollBroker subject = new VotingPollBroker(getBridge(), e1, oneExecutor, e2);
+		ArrayList<CommandExecutor> executors = subject.commandExecutors;
+		HelpCommandExecutor e = null;
+		for (CommandExecutor commandExecutor : executors) {
+			if (commandExecutor instanceof HelpCommandExecutor) {
+				e = (HelpCommandExecutor) commandExecutor;
+			}
+		}
+		assertNotNull(e);
+		e.processMessage(new ChatBridgeMock(), "#help");
+		
+		assertEquals(
+				"e1 CommmandExecutorAndHelperMock setReplyListener\n" + 
+				"CommandExecutor setReplyListener\n" + 
+				"e2 CommmandExecutorAndHelperMock setReplyListener\n" +  
+				"e1 acceptHelpVisitor\n" +
+				"e2 acceptHelpVisitor\n" +
+				"sendMessageToUser: none message:HELP.\n", 
+				operations.toString());
+	}
+	
 	@Test
 	public void onChatMessageThatIsNotProcessedByAnyExecutors_ShouldReplyUnrecognizedCommand() throws SkypeException
 	{
@@ -30,7 +62,7 @@ public class VotingPollBrokerTest {
 		
 		String expected = 		
 				"CommandExecutor setReplyListener\n" + 
-				"CommandExecutor setReplyListener\n" + 
+				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
 				"CommandExecutor DOES NOT processMessage\n" + 

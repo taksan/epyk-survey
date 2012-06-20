@@ -1,8 +1,8 @@
 package skype.voting.application;
 
-import skype.voting.requests.VoteRequest;
-import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VotingPollVisitor;
+import skype.voting.processors.requests.StartPollRequest;
+import skype.voting.processors.requests.VoteRequest;
+import skype.voting.processors.requests.VotingPollVisitor;
 
 public interface VotingSession {
 

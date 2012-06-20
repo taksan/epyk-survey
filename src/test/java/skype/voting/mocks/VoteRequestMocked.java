@@ -2,7 +2,7 @@ package skype.voting.mocks;
 
 import skype.ChatAdapterInterface;
 import skype.shell.mocks.ChatBridgeMock;
-import skype.voting.requests.VoteRequest;
+import skype.voting.processors.requests.VoteRequest;
 
 public class VoteRequestMocked extends VoteRequest {
 

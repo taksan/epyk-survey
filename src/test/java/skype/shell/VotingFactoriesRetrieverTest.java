@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import skype.voting.requests.factories.VotingFactoriesRetriever;
+import skype.voting.processors.interpreters.VotingFactoriesRetriever;
 
 public class VotingFactoriesRetrieverTest {
 	@Test

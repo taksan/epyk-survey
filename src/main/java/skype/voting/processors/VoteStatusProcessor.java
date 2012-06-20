@@ -3,8 +3,8 @@ package skype.voting.processors;
 import skype.shell.ShellCommand;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.VoteStatusRequest;
-import skype.voting.requests.factories.VoteStatusInterpreter;
+import skype.voting.processors.interpreters.VoteStatusInterpreter;
+import skype.voting.processors.requests.VoteStatusRequest;
 
 public class VoteStatusProcessor extends VotingCommandProcessorAbstract {
 	

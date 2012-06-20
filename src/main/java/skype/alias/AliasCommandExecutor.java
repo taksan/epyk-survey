@@ -6,16 +6,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import skype.ChatAdapterInterface;
 import skype.shell.Persistence;
-import skype.shell.RemoveAliasFeedbackHandler;
+import skype.shell.PersistenceImpl;
 import skype.shell.ReplyListener;
 import skype.voting.CommandExecutor;
+import skype.voting.HelpVisitor;
 
-public class AliasCommandExecutor implements CommandExecutor {
+public class AliasCommandExecutor implements CommandExecutor, HelpProvider {
 	private final AliasExpander expander;
 	private ReplyListener listener;
 	
 	public AliasCommandExecutor(AliasExpander expander) {
 		this.expander = expander;
+	}
+	
+	public AliasCommandExecutor() {
+		this(new PersistenceImpl());
 	}
 
 	public AliasCommandExecutor(Persistence persistence) {
@@ -41,7 +46,7 @@ public class AliasCommandExecutor implements CommandExecutor {
 		if (isAddAlias(message))
 			return processAliasRequestAndGenerateReply(message);
 		if (isListAlias(message))
-			return processListAliasRequest(message);
+			return processListAliasRequest();
 		if (isRemoveAlias(message))
 			return processRemoveAliasRequest(message);
 		
@@ -61,7 +66,7 @@ public class AliasCommandExecutor implements CommandExecutor {
 		return message.trim().equalsIgnoreCase("#aliaslist");
 	}
 
-	private String processListAliasRequest(String message) {
+	private String processListAliasRequest() {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> aliases = expander.getAliases();
 		for (Entry<String, String> entry : aliases.entrySet()) {
@@ -98,4 +103,27 @@ public class AliasCommandExecutor implements CommandExecutor {
 		});
 		return reply.get();
 	}
+
+	@Override
+	public void acceptHelpVisitor(HelpVisitor helpVisitor) {
+		helpVisitor.
+			onTopLevel("Alias manipulation:").
+				onTopic("#alias <aliasname> <expansion>").
+					onTopicDescription("creates a new <alias> that will expand to the given text starting when #aliasname is typed").
+				onTopic("#aliaslist").
+					onTopicDescription("display the existing aliases").
+				onTopic("#aliasdel <aliasname>").
+					onTopicDescription("removes specified alias");
+		
+		Map<String, String> aliases = expander.getAliases();
+		if (aliases.size() ==0) {
+			helpVisitor.onTopLevel("No aliases have been defined yet");
+			return;
+		}
+		helpVisitor.onTopLevel("Currently defined aliases");
+		for (Entry<String, String> a : aliases.entrySet()) {
+			helpVisitor.onTopic("alias " + a.getKey()+" : " + a.getValue());
+		}
+	}
+
 }

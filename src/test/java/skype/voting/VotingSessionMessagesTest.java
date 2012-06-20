@@ -24,7 +24,7 @@ public class VotingSessionMessagesTest {
 	{
 		String actual = subject.buildVotingMenu(votingSession);
 		
-		String expected = "\n" + 
+		String expected = ".\n" + 
 				"Almoço!\n" + 
 				"1) foo\n" + 
 				"2) baz\n" + 
@@ -38,7 +38,7 @@ public class VotingSessionMessagesTest {
 	{
 		String actual = subject.buildVotingMenuWithoutVoters(votingSession);
 		
-		String expected = "\n" + 
+		String expected = ".\n" + 
 				"Almoço!\n" + 
 				"1) foo\n" + 
 				"2) baz\n" + 
@@ -51,7 +51,7 @@ public class VotingSessionMessagesTest {
 	public void onGetUpdatedVotingMenu_ShouldBuildUpdatedMenu(){
 		String actual = subject.getUpdatedVotingMenu(votingSession);
 		
-		String expected = "\n" + 
+		String expected = ".\n" + 
 				"Almoço!\n" + 
 				"1) foo\n" + 
 				"2) baz\n" + 

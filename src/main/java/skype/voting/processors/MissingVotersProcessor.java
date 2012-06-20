@@ -6,7 +6,7 @@ import skype.shell.ShellCommand;
 import skype.voting.application.ParticipantConsultant;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.factories.MissingVotersInterpreter;
+import skype.voting.processors.interpreters.MissingVotersInterpreter;
 
 public class MissingVotersProcessor extends VotingCommandProcessorAbstract {
 	

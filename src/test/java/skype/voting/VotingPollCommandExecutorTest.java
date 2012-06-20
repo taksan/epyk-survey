@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import skype.alias.AliasExpander;
+import skype.alias.mocks.HelpVisitorMock;
 import skype.shell.AbstractShellCommand;
 import skype.shell.ShellCommand;
 import skype.shell.mocks.AliasExpanderMock;
@@ -16,8 +17,8 @@ import skype.voting.application.VotingSessionFactory;
 import skype.voting.mocks.CopyAliasExpander;
 import skype.voting.mocks.VotingCommandProcessorMock;
 import skype.voting.mocks.VotingSessionMockAdapter;
-import skype.voting.requests.ClosePollRequest;
-import skype.voting.requests.StartPollRequest;
+import skype.voting.processors.requests.ClosePollRequest;
+import skype.voting.processors.requests.StartPollRequest;
 
 import com.skype.ChatListener;
 
@@ -27,11 +28,11 @@ public class VotingPollCommandExecutorTest {
 	ChatBridgeMock chatBridgeMock = new ChatBridgeMock("autoid");
 	ReplyListenerMock listener;
 	VotingCommandProcessorMock processorMock = new VotingCommandProcessorMock();
+	AliasExpanderMock expanderMock = new AliasExpanderMock();
 	
 	@Test
 	public void OnProcessAnyMessage_ShouldUseAliasExpander(){
 		
-		AliasExpanderMock expanderMock = new AliasExpanderMock();
 		expanderMock.setExpandedMessage("foo-expanded");
 		
 		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
@@ -114,6 +115,26 @@ public class VotingPollCommandExecutorTest {
 		
 		ShellCommand someRequest = new AbstractShellCommand(chatBridgeMock, null) {	};
 		assertFalse(subject.isInitializedSessionOnRequestChat(someRequest));
+	}
+	
+	@Test
+	public void onAcceptHelpVisitor_ShouldDelegateAcceptToAllProcessors()
+	{
+		VotingPollCommandExecutor subject = new VotingPollCommandExecutor(
+				votingSessionFactoryMock, 
+				new VotingSessionMessages(),
+				expanderMock,
+				processorMock,
+				processorMock
+				);
+		final StringBuilder operations = new StringBuilder();
+		subject.acceptHelpVisitor(new HelpVisitorMock(operations));
+		String expected = 
+				"onTopLevel: Available voting commands\n" +
+				"onTopic: VotingCommandProcessorMock visit\n"+
+				"onTopic: VotingCommandProcessorMock visit\n";
+		
+		assertEquals(expected, operations.toString());
 	}
 	
 	private final class VotingSessionFactoryMock implements VotingSessionFactory {

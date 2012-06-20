@@ -8,8 +8,8 @@ import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
 import skype.voting.application.WinnerConsultant;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.ClosePollRequest;
-import skype.voting.requests.factories.ClosePollInterpreter;
+import skype.voting.processors.interpreters.ClosePollInterpreter;
+import skype.voting.processors.requests.ClosePollRequest;
 
 public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 	

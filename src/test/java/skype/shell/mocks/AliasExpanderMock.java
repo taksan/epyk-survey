@@ -3,9 +3,9 @@ package skype.shell.mocks;
 import java.util.Map;
 
 import skype.alias.AliasExpander;
+import skype.alias.RemoveAliasFeedbackHandler;
 import skype.shell.Persistence;
 import skype.shell.PersistenceMock;
-import skype.shell.RemoveAliasFeedbackHandler;
 
 public class AliasExpanderMock implements AliasExpander {
 

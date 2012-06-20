@@ -28,6 +28,6 @@ public class ShellCommandFactoryMock implements ShellCommandInterpreter {
 
 	@Override
 	public String getHelp() {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return "ShellCommandFactoryMock help";
 	}
 }

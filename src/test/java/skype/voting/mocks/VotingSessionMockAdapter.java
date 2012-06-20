@@ -13,9 +13,9 @@ import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
 import skype.voting.application.WinnerConsultant;
 import skype.voting.processors.ProcessorTestUtils;
-import skype.voting.requests.StartPollRequest;
-import skype.voting.requests.VoteRequest;
-import skype.voting.requests.VotingPollVisitor;
+import skype.voting.processors.requests.StartPollRequest;
+import skype.voting.processors.requests.VoteRequest;
+import skype.voting.processors.requests.VotingPollVisitor;
 
 public class VotingSessionMockAdapter implements VotingSession {
 	public StartPollRequest pollRequest;

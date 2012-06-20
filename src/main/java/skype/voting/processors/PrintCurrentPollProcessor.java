@@ -3,7 +3,7 @@ package skype.voting.processors;
 import skype.shell.ShellCommand;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.factories.PrintCurrentPollInterpreter;
+import skype.voting.processors.interpreters.PrintCurrentPollInterpreter;
 
 public class PrintCurrentPollProcessor extends VotingCommandProcessorAbstract {
 	

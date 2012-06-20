@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import skype.voting.application.VotingPollOption;
 import skype.voting.application.VotingSession;
-import skype.voting.requests.VotingPollVisitor;
+import skype.voting.processors.requests.VotingPollVisitor;
 
 public class VotingSessionMessages implements VotingSessionMessageInterface {
 
@@ -41,7 +41,7 @@ public class VotingSessionMessages implements VotingSessionMessageInterface {
 				voterCount++;
 			}
 		});
-		return "\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
+		return ".\n"+StringUtils.substring(msg.toString(),0,-1)+"\n";
 	}
 
 	@Override

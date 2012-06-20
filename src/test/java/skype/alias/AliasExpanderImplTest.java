@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import skype.alias.AliasExpanderImpl;
 import skype.shell.PersistenceMock;
-import skype.shell.RemoveAliasFeedbackHandler;
 
 public class AliasExpanderImplTest { 
 	PersistenceMock persistence = new PersistenceMock();

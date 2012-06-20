@@ -4,8 +4,8 @@ import skype.ChatAdapterInterface;
 import skype.shell.ShellCommand;
 import skype.voting.application.VotingSession;
 import skype.voting.processor.abstracts.VotingCommandProcessorAbstract;
-import skype.voting.requests.AddVoteOptionRequest;
-import skype.voting.requests.factories.AddVoteOptionRequestInterpreter;
+import skype.voting.processors.interpreters.AddVoteOptionRequestInterpreter;
+import skype.voting.processors.requests.AddVoteOptionRequest;
 
 public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 	
