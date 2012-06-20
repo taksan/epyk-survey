@@ -32,6 +32,7 @@ public class ChatListenerForVotingSessionTest {
 		
 		assertEquals(
 				"Hey, we are having a voting poll. Come and join us. Here are the options:\n" + 
+				".\n" +
 				"Almoço!\n" + 
 				"1) foo\n" + 
 				"2) baz\n" +  
