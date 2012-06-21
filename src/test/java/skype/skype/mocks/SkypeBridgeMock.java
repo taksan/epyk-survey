@@ -12,9 +12,10 @@ public final class SkypeBridgeMock implements SkypeBridge {
 	public String toChatId="";
 	
 	@Override
-	public void sendMessage(ChatAdapterInterface chatId, String message) {
+	public String sendMessage(ChatAdapterInterface chatId, String message) {
 		this.sentMessage = message;
 		this.toChatId = chatId.toString();
+		return toChatId;
 	}
 
 	@Override
@@ -33,7 +34,12 @@ public final class SkypeBridgeMock implements SkypeBridge {
 	}
 
 	@Override
-	public void sendMessageToUser(String fullname, String message) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+	public String sendMessageToUser(String fullname, String message) {
+		return "";
+	}
+
+	@Override
+	public String getMessageId(ChatMessage receivedChatMessage) {
+		return "";
 	}
 }

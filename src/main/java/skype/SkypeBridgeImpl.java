@@ -38,9 +38,9 @@ public class SkypeBridgeImpl implements SkypeBridge {
 	}
 	
 	@Override
-	public void sendMessage(ChatAdapterInterface chatBridge, String message) {
+	public String sendMessage(ChatAdapterInterface chatBridge, String message) {
 		Chat chat = ((ChatBridge)chatBridge).getChat();
-		sendMessageOrCry(message, chat);
+		return sendMessageOrCry(message, chat);
 	}
 
 	public String getSenderFullNameOrId(ChatMessage chatMessage) {
@@ -67,9 +67,10 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		return fullName;
 	}
 
-	private void sendMessageOrCry(String message, Chat chat) {
+	private String sendMessageOrCry(String message, Chat chat) {
 		try {
-			chat.send(message);
+			ChatMessage sent = chat.send(message);
+			return sent.getId();
 		} catch (SkypeException e) {
 			throw new IllegalStateException(e);
 		}
@@ -81,10 +82,11 @@ public class SkypeBridgeImpl implements SkypeBridge {
 	}
 
 	@Override
-	public void sendMessageToUser(String fullName, String message) {
+	public String sendMessageToUser(String fullName, String message) {
 		try {
 			String userid = getUserIdByFullName(fullName);
-			User.getInstance(userid).chat().send(message);
+			ChatMessage sent = User.getInstance(userid).chat().send(message);
+			return sent.getId();
 		} catch (SkypeException e) {
 			throw new IllegalStateException(e);
 		}
@@ -105,5 +107,10 @@ public class SkypeBridgeImpl implements SkypeBridge {
 		} catch (SkypeException e) {
 			throw new UnhandledException(e);
 		}
+	}
+
+	@Override
+	public String getMessageId(ChatMessage chatMessage) {
+		return chatMessage.getId();
 	}
 }

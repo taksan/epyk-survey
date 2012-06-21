@@ -39,8 +39,8 @@ public class VotingPollBrokerTest {
 				"e2 CommmandExecutorAndHelperMock setReplyListener\n" +  
 				"e1 acceptHelpVisitor\n" +
 				"e2 acceptHelpVisitor\n" +
-				"sendMessageToUser: none message:HELP.\n", 
-				operations.toString());
+				"sendMessageToUser: none message:HELP.", 
+				operations.toString().trim());
 	}
 	
 	@Test
@@ -73,7 +73,7 @@ public class VotingPollBrokerTest {
 	}
 
 	@Test
-	public void onChatMessageReceived_ShouldLetOnlyTheExecutorProcessIt() throws SkypeException
+	public void onChatMessageReceived_ShouldLetOnlyTheFirstSuccesfullExecutorProcessIt() throws SkypeException
 	{
 		CommandExecutor[] commandExecutors = new CommandExecutor[]{oneExecutor,oneExecutor};
 		VotingPollBroker subject = new VotingPollBroker(getBridge(), commandExecutors);
@@ -83,8 +83,8 @@ public class VotingPollBrokerTest {
 				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor processMessage\n",
-				operations.toString());
+				"CommandExecutor processMessage",
+				operations.toString().trim());
 	}
 	
 	@Test
@@ -96,7 +96,8 @@ public class VotingPollBrokerTest {
 				"CommandExecutor setReplyListener\n" +
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor processMessage\n", operations.toString());
+				"CommandExecutor processMessage", 
+				operations.toString().trim());
 	}
 	
 	@Test
@@ -108,7 +109,7 @@ public class VotingPollBrokerTest {
 		assertEquals(
 				"CommandExecutor setReplyListener\n" + 
 				"SkypeBridge: sendMessage: foo", 
-				operations.toString());
+				operations.toString().trim());
 	}
 	
 	@Test
@@ -120,9 +121,45 @@ public class VotingPollBrokerTest {
 		assertEquals(
 				"CommandExecutor setReplyListener\n" + 
 				"sendMessageToUser: wauss message:foo", 
-				operations.toString());
-		
-	}	
+				operations.toString().trim());
+	}
+	
+	@Test
+	public void onReplyListener_ShouldIgnoreSentMessage()
+	{
+		SkypeBridgeMock skypeMock = getBridge();
+		VotingPollBroker subject = new VotingPollBroker(skypeMock, getExecutors());
+		ChatBridgeMock replyChat = new ChatBridgeMock("#", "wauss");
+		skypeMock.setNextMessageId("FOOID");
+		subject.onReply(replyChat, "foo");
+		subject.processChatMessage(replyChat, "FOOID", "foo");
+		assertEquals(
+				"CommandExecutor setReplyListener\n" + 
+				"SkypeBridge: sendMessage: foo",
+				operations.toString().trim());
+		subject.processChatMessage(replyChat, "FOOID", "foo");
+		assertEquals(
+				"CommandExecutor setReplyListener\n" + 
+				"SkypeBridge: sendMessage: foo\n" +
+				"CommandExecutor processMessage",
+				operations.toString().trim());		
+	}
+	
+	@Test
+	public void onReplyPrivate_ShouldIgnoreSentMessage()
+	{
+		SkypeBridgeMock skypeMock = getBridge();
+		VotingPollBroker subject = new VotingPollBroker(skypeMock, getExecutors());
+		ChatBridgeMock replyChat = new ChatBridgeMock("#", "wauss");
+		skypeMock.setNextMessageId("FOOID");
+		subject.onReplyPrivate(replyChat, "foo");
+		subject.processChatMessage(replyChat, "FOOID", "foo");
+		assertEquals(
+				"CommandExecutor setReplyListener\n" + 
+				"sendMessageToUser: wauss message:foo",
+				operations.toString().trim());	
+	}
+	
 	
 	private CommandExecutor[] getExecutors() {
 		return new CommandExecutor[]{oneExecutor};

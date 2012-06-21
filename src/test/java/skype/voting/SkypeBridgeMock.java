@@ -1,24 +1,26 @@
 package skype.voting;
 
-import java.util.List;
-
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
+import skype.shell.mocks.ChatBridgeMock;
 
-import com.skype.ChatListener;
 import com.skype.ChatMessage;
 import com.skype.User;
 
 final class SkypeBridgeMock implements SkypeBridge {
 	private final StringBuilder operations;
+	private String nextMessageId="";
 
 	SkypeBridgeMock(StringBuilder operations) {
 		this.operations = operations;
 		
 	}
 	@Override
-	public void sendMessage(ChatAdapterInterface chatBridgeInterface, String message) {
-		operations.append("SkypeBridge: sendMessage: " + message);
+	public String sendMessage(ChatAdapterInterface chatAdapter, String message) {
+		operations.append("SkypeBridge: sendMessage: " + message + "\n");
+		String previousId = nextMessageId;
+		nextMessageId = "";
+		return previousId;
 	}
 
 	@Override
@@ -29,48 +31,7 @@ final class SkypeBridgeMock implements SkypeBridge {
 	@Override
 	public ChatAdapterInterface getChatAdapter(ChatMessage sentChatMessage) {
 		operations.append("getChatAdapter\n");
-		return new ChatAdapterInterface() {
-			
-			@Override
-			public void setTopic(String topic) {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public void setLastSender(String senderFullNameOrId) {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public void setGuidelines(String guidelines) {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public void removeListener(ChatListener weakReference) {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public SkypeBridge getSkypeBridge() {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public List<String> getPartipantNames() {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-			
-			@Override
-			public String getLasterSenderFullName() {
-				return "john doe";
-			}
-			
-			@Override
-			public void addListener(ChatListener listener) {
-				throw new RuntimeException("NOT IMPLEMENTED");
-			}
-		};
+		return new ChatBridgeMock(null);
 	}
 
 	@Override
@@ -80,7 +41,15 @@ final class SkypeBridgeMock implements SkypeBridge {
 	}
 
 	@Override
-	public void sendMessageToUser(String user, String message) {
-		operations.append("sendMessageToUser: " +user +" message:" + message);
+	public String sendMessageToUser(String user, String message) {
+		operations.append("sendMessageToUser: " +user +" message:" + message + "\n");
+		return nextMessageId;
+	}
+	public void setNextMessageId(String id) {
+		nextMessageId = id;
+	}
+	@Override
+	public String getMessageId(ChatMessage receivedChatMessage) {
+		return nextMessageId;
 	}
 }
