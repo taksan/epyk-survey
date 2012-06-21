@@ -8,7 +8,7 @@ import com.skype.User;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
-import skype.skype.mocks.SkypeBridgeMock;
+import skype.voting.mocks.SkypeBridgeMock;
 
 public class ChatBridgeMock implements ChatAdapterInterface 
 {
@@ -23,7 +23,7 @@ public class ChatBridgeMock implements ChatAdapterInterface
 	ChatListener listener = DOES_NOTHING_LISTENER;
 	private final String id;
 	String sender;
-	SkypeBridge skypeBriddgeMock = new  SkypeBridgeMock();
+	SkypeBridge skypeBriddgeMock = new  SkypeBridgeMock(new StringBuilder());
 	private String lastGuidelines = "";
 	private String lastSetTopic="";
 

@@ -1,4 +1,4 @@
-package skype.voting;
+package skype.voting.mocks;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
@@ -7,11 +7,11 @@ import skype.shell.mocks.ChatBridgeMock;
 import com.skype.ChatMessage;
 import com.skype.User;
 
-final class SkypeBridgeMock implements SkypeBridge {
+public class SkypeBridgeMock implements SkypeBridge {
 	private final StringBuilder operations;
 	private String nextMessageId="";
 
-	SkypeBridgeMock(StringBuilder operations) {
+	public SkypeBridgeMock(StringBuilder operations) {
 		this.operations = operations;
 		
 	}
@@ -25,7 +25,7 @@ final class SkypeBridgeMock implements SkypeBridge {
 
 	@Override
 	public String getUserFullNameOrId(User sender) {
-		throw new RuntimeException("NOT IMPLEMENTED");
+		return sender.getId();
 	}
 
 	@Override

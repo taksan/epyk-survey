@@ -12,6 +12,7 @@ import skype.shell.HelpCommandExecutor;
 import skype.shell.ReplyListener;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.CommmandExecutorAndHelperMock;
+import skype.voting.mocks.SkypeBridgeMock;
 
 import com.skype.SkypeException;
 
