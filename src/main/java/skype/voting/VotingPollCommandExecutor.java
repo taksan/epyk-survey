@@ -19,12 +19,16 @@ import skype.voting.processors.requests.StartPollRequest;
 
 public class VotingPollCommandExecutor implements CommandExecutor, VotingSessionModel, HelpProvider {
 
+	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = 
+			new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
+	
 	private ReplyListener listener;
-	final VotingSessionManager manager; 
-	final Map<VotingSession, ChatListenerForVotingSession> listenersBySession = new LinkedHashMap<VotingSession, ChatListenerForVotingSession>();
-	VotingCommandProcessorAbstract[] processors = null;
+	private final VotingSessionManager manager; 
+	
+	private VotingCommandProcessorAbstract[] processors = null;
 	private final VotingSessionMessageInterface voteSessionMessages;
 	private final AliasExpander aliasExpander;
+	boolean areProcessorsInitialized = false;
 	
 	public VotingPollCommandExecutor() {
 		this(new VotingSessionFactoryImpl(), 
@@ -97,31 +101,6 @@ public class VotingPollCommandExecutor implements CommandExecutor, VotingSession
 		return false;
 	}
 	
-	boolean areProcessorsInitialized = false;
-	
-	protected VotingCommandProcessorAbstract[] getProcessors() {
-		if (processors != null) {
-			if (!areProcessorsInitialized) {
-				initializeProcessors();
-			}
-			return processors;
-		}
-		
-		processors = VotingFactoriesRetriever.getProcessors();
-		
-		initializeProcessors();
-		
-		return processors;
-	}
-
-	private void initializeProcessors() {
-		for (VotingCommandProcessorAbstract aProcessor : processors) {
-			aProcessor.setVoteSessionProvider(this);
-			aProcessor.setVoteSessionMessages(voteSessionMessages);
-		}
-		areProcessorsInitialized = true;
-	}
-
 	@Override
 	public void acceptHelpVisitor(HelpVisitor helpVisitor) {
 		helpVisitor.onTopLevel("Available voting commands");
@@ -129,4 +108,26 @@ public class VotingPollCommandExecutor implements CommandExecutor, VotingSession
 			aProcessor.acceptHelpVisitor(helpVisitor);
 		}
 	}
+	
+	protected VotingCommandProcessorAbstract[] getProcessors() {
+		if (processors == null) {
+			processors = VotingFactoriesRetriever.getProcessors();
+		}
+		
+		initializeProcessors();
+		
+		return processors;
+	}
+
+	private void initializeProcessors() {
+		if (areProcessorsInitialized)
+			return;
+		
+		for (VotingCommandProcessorAbstract aProcessor : processors) {
+			aProcessor.setVoteSessionProvider(this);
+			aProcessor.setVoteSessionMessages(voteSessionMessages);
+		}
+		areProcessorsInitialized = true;
+	}
+
 }
