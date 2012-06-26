@@ -6,6 +6,22 @@
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
 		</layout>
 	</appender>
+	
+	<appender name="VoteBotLog" class="org.apache.log4j.RollingFileAppender">
+        <param name="MaxFileSize" value="15MB" />
+        <param name="MaxBackupIndex" value="12" />
+        <param name="File" value="vote-bot.log" />
+        <param name="Append" value="true" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%c][%t] %m  %C.%M(%F:%L) %n" />
+        </layout>
+    </appender>
+
+    <logger name="skype.voting.VotingPollBroker" additivity="false">
+        <level value="debug" />
+        <appender-ref ref="VoteBotLog" />
+    </logger>
+	
 	<root>
 		<priority value="off"></priority>
 		<appender-ref ref="stdout"/>

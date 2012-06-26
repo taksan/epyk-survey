@@ -1,6 +1,2 @@
-- don't create chats for every message sent
-- after a message is sent, return the chatmessage ID to enable the broker ignore messages the bot sends itself
-- fix the chat listener using skype message types. 
-- improve logging, when an answer is sent print the message it is replying to.
 - prevent the alias executor from overriding any commands the bot understands
 - move the alias expander to expand before delivering to any executor, instead of expanding only inside the voting executor
