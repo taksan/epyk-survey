@@ -13,6 +13,8 @@ public class PrintCurrentPollProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
+		if (!votingModel.isInitializedSessionOnRequestChat(command)) return;
+		
 		final VotingSession session = votingModel.getSessionForRequest(command);
 		String reply = messages.getUpdatedVotingMenu(session);
 		onReply(command, reply);
