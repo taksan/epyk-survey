@@ -14,10 +14,10 @@ public class VoteStatusProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		if (!executor.isInitializedSessionOnRequestChat(command)) return;
+		if (!votingModel.isInitializedSessionOnRequestChat(command)) return;
 		VoteStatusRequest request = (VoteStatusRequest) command;
 		
-		final VotingSession votingSession = executor.getSessionForRequest(request);
+		final VotingSession votingSession = votingModel.getSessionForRequest(request);
 		String status = "Votes: "+messages.getVotingStatusMessage(votingSession);
 		onReplyPrivate(command, status);
 	}

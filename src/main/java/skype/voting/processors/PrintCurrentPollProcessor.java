@@ -13,7 +13,7 @@ public class PrintCurrentPollProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(ShellCommand command) {
-		final VotingSession session = executor.getSessionForRequest(command);
+		final VotingSession session = votingModel.getSessionForRequest(command);
 		String reply = messages.getUpdatedVotingMenu(session);
 		onReply(command, reply);
 	}

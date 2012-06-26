@@ -15,7 +15,7 @@ public class StartPollProcessor extends VotingCommandProcessorAbstract implement
 
 	@Override
 	public void process(ShellCommand command) {
-		VotingSession session = executor.makeNewVotingSession((StartPollRequest) command);
+		VotingSession session = votingModel.makeNewVotingSession((StartPollRequest) command);
 		
 		String reply = messages.getUpdatedVotingMenu(session);
 		onReply(command, reply);
