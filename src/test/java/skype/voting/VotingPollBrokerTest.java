@@ -10,6 +10,7 @@ import org.junit.Test;
 import skype.ChatAdapterInterface;
 import skype.shell.HelpCommandExecutor;
 import skype.shell.ReplyListener;
+import skype.shell.mocks.AliasExpanderMock;
 import skype.shell.mocks.ChatBridgeMock;
 import skype.voting.mocks.CommmandExecutorAndHelperMock;
 import skype.voting.mocks.SkypeBridgeMock;
@@ -63,11 +64,11 @@ public class VotingPollBrokerTest {
 		
 		String expected = 		
 				"CommandExecutor setReplyListener\n" + 
-				"CommandExecutor setReplyListener\n" +
+				"CommandExecutor setReplyListener\n" + 
 				"getChatAdapter\n" + 
 				"getContent\n" + 
-				"CommandExecutor DOES NOT processMessage\n" + 
-				"CommandExecutor DOES NOT processMessage\n" + 
+				"CommandExecutor DOES NOT processMessage \n" + 
+				"CommandExecutor DOES NOT processMessage \n" + 
 				"Unrecognized command ''";
 				
 		assertEquals(expected, operations.toString());
@@ -141,8 +142,8 @@ public class VotingPollBrokerTest {
 		subject.processChatMessage(replyChat, "FOOID", "foo");
 		assertEquals(
 				"CommandExecutor setReplyListener\n" + 
-				"SkypeBridge: sendMessage: foo\n" +
-				"CommandExecutor processMessage",
+				"SkypeBridge: sendMessage: foo\n" + 
+				"CommandExecutor processMessage foo",
 				operations.toString().trim());		
 	}
 	
@@ -161,6 +162,24 @@ public class VotingPollBrokerTest {
 				operations.toString().trim());	
 	}
 	
+	@Test
+	public void onAnyCommand_ShouldInvokeAliasExpander()
+	{
+		AliasExpanderMock aliasExpanderMock = new AliasExpanderMock();
+		aliasExpanderMock.setExpandedMessage("EXPANDED-MESSAGE");
+		
+		SkypeBridgeMock skypeMock = getBridge();
+		
+		VotingPollBroker subject = new VotingPollBroker(skypeMock, aliasExpanderMock, getExecutors());
+		operations.setLength(0);
+		ChatBridgeMock chatAdapter = new ChatBridgeMock("#", "wauss");
+		subject.processChatMessage(chatAdapter, "fooid", "#msgToExpand");
+		oneExecutor.setUnderstands(true);
+		
+		assertEquals("CommandExecutor processMessage EXPANDED-MESSAGE", 
+				operations.toString().trim());
+		
+	}
 	
 	private CommandExecutor[] getExecutors() {
 		return new CommandExecutor[]{oneExecutor};
@@ -182,10 +201,10 @@ public class VotingPollBrokerTest {
 		@Override
 		public boolean processMessage(ChatAdapterInterface chat, String message) {
 			if (!understands) {
-				operations2.append("CommandExecutor DOES NOT processMessage\n");
+				operations2.append("CommandExecutor DOES NOT processMessage "+message+"\n");
 				return false;
 			}
-			operations2.append("CommandExecutor processMessage\n");
+			operations2.append("CommandExecutor processMessage " + message + "\n");
 			return true;
 		}
 

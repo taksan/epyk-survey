@@ -10,9 +10,11 @@ import org.apache.log4j.Logger;
 
 import skype.ChatAdapterInterface;
 import skype.SkypeBridge;
+import skype.alias.AliasExpander;
 import skype.alias.HelpProvider;
 import skype.shell.HelpCommandExecutor;
 import skype.shell.ReplyListener;
+import skype.voting.processors.interpreters.VotingFactoriesRetriever;
 
 import com.skype.ChatMessage;
 import com.skype.ChatMessageListener;
@@ -22,8 +24,10 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	private final SkypeBridge skypeBridge;
 	final ArrayList<CommandExecutor> commandExecutors = new ArrayList<CommandExecutor>();
+	private final AliasExpander aliasExpander;
 
-	public VotingPollBroker(SkypeBridge bridge, 
+	public VotingPollBroker(SkypeBridge bridge,
+			AliasExpander expander,
 			UnrecognizedRequestExecutor last, 
 			CommandExecutor... commandExecutors) {
 		this.skypeBridge = bridge;
@@ -36,6 +40,14 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 		for (CommandExecutor commandExecutor : this.commandExecutors) {
 			commandExecutor.setReplyListener(this);
 		}
+		this.aliasExpander = expander;
+	}
+	
+	public VotingPollBroker(SkypeBridge bridge, 
+			UnrecognizedRequestExecutor last, 
+			CommandExecutor... commandExecutors)
+	{
+		this(bridge, VotingFactoriesRetriever.getSingletonAliasExpander(), last, commandExecutors);
 	}
 
 	private CommandExecutor getHelperExecutor(CommandExecutor[] commandExecutors2) {
@@ -49,6 +61,12 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 
 	public VotingPollBroker(SkypeBridge bridge, CommandExecutor... commandExecutors){
 		this(bridge, new UnrecognizedRequestExecutor(), commandExecutors);
+	}
+
+	public VotingPollBroker(SkypeBridge bridge,
+			AliasExpander aliasExpander, 
+			CommandExecutor... commandExecutors) {
+		this(bridge, aliasExpander, new UnrecognizedRequestExecutor(), commandExecutors);
 	}
 
 	@Override
@@ -99,9 +117,9 @@ public class VotingPollBroker implements ChatMessageListener, ReplyListener {
 			return;
 		}
 		messageBeingProcessed="id:"+messageId+"; message: " + message;
-				
+		String expandedMessage = aliasExpander.expand(message);
 		for (CommandExecutor commandExecutor : commandExecutors) {
-			boolean processed = commandExecutor.processMessage(chatAdapter, message);
+			boolean processed = commandExecutor.processMessage(chatAdapter, expandedMessage);
 			if (processed) break;
 		}
 	}

@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import skype.ChatAdapterInterface;
-import skype.alias.AliasExpander;
 import skype.alias.HelpProvider;
 import skype.shell.ReplyListener;
 import skype.shell.ShellCommand;
@@ -27,28 +26,23 @@ public class VotingPollCommandExecutor implements CommandExecutor, VotingSession
 	
 	private VotingCommandProcessorAbstract[] processors = null;
 	private final VotingSessionMessageInterface voteSessionMessages;
-	private final AliasExpander aliasExpander;
 	boolean areProcessorsInitialized = false;
 	
 	public VotingPollCommandExecutor() {
 		this(new VotingSessionFactoryImpl(), 
-			 new VotingSessionMessages(), 
-			 VotingFactoriesRetriever.getSingletonAliasExpander());
+			 new VotingSessionMessages());
 	}
 	
-	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages,
-			AliasExpander aliasExpander){
+	VotingPollCommandExecutor(VotingSessionFactory votingSessionFactory, VotingSessionMessageInterface voteSessionMessages){
 		this.voteSessionMessages = voteSessionMessages;
-		this.aliasExpander = aliasExpander;
 		manager = new VotingSessionManager(votingSessionFactory);
 	}
 	
 	public VotingPollCommandExecutor(
 			VotingSessionFactory votingSessionFactory, 
 			VotingSessionMessageInterface votingSessionMessages,
-			AliasExpander aliasExpander,
 			VotingCommandProcessorAbstract... commands) {
-		this(votingSessionFactory, votingSessionMessages, aliasExpander);
+		this(votingSessionFactory, votingSessionMessages);
 		processors = commands;
 	}
 
@@ -92,9 +86,8 @@ public class VotingPollCommandExecutor implements CommandExecutor, VotingSession
 
 	@Override
 	public boolean processMessage(ChatAdapterInterface chat, String messageToProcess) {
-		String expandedMessage = aliasExpander.expand(messageToProcess);
 		for (VotingCommandProcessorAbstract p : getProcessors()) {
-			if (p.processMessage(chat, expandedMessage)) {
+			if (p.processMessage(chat, messageToProcess)) {
 				return true;
 			}
 		}

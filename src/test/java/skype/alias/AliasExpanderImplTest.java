@@ -26,7 +26,6 @@ public class AliasExpanderImplTest {
 		persistence.addAlias("foo", "#startpoll \"some poll\"");
 		
 		AliasExpanderImpl subject = new AliasExpanderImpl(persistence);
-		
 		String expandMessage = subject.expand("#foo");
 		
 		assertEquals("#startpoll \"some poll\"", expandMessage);
