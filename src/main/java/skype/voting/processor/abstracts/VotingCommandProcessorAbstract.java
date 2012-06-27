@@ -12,7 +12,7 @@ import skype.voting.VotingSessionModel;
 
 public abstract class VotingCommandProcessorAbstract implements VotingCommandProcessor, CommandExecutor{
 	private ReplyListener listener = null;
-	protected VotingSessionModel executor;
+	protected VotingSessionModel votingModel;
 	protected VotingSessionMessageInterface messages;
 	private ShellCommandInterpreter interpreter;
 	
@@ -32,7 +32,7 @@ public abstract class VotingCommandProcessorAbstract implements VotingCommandPro
 	}
 	
 	public void setVoteSessionProvider(VotingSessionModel votingPollCommandProcessor) {
-		this.executor = votingPollCommandProcessor;
+		this.votingModel = votingPollCommandProcessor;
 	}
 	
 	protected ReplyListener getListener() {

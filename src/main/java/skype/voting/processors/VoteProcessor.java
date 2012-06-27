@@ -15,11 +15,11 @@ public class VoteProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(final ShellCommand command) {
-		if (!executor.isInitializedSessionOnRequestChat(command)) return;
+		if (!votingModel.isInitializedSessionOnRequestChat(command)) return;
 		
 		final VoteRequest request = (VoteRequest) command;
 		
-		final VotingSession votingSession = executor.getSessionForRequest(request);
+		final VotingSession votingSession = votingModel.getSessionForRequest(request);
 		votingSession.vote(request, new VoteFeedbackHandler() {
 			@Override
 			public void handleError(String errorMessage) {

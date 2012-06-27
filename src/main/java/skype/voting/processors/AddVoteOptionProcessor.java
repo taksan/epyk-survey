@@ -15,10 +15,10 @@ public class AddVoteOptionProcessor extends VotingCommandProcessorAbstract {
 	
 	@Override
 	public void process(ShellCommand command) {
-		if (!executor.isInitializedSessionOnRequestChat(command)) return;
+		if (!votingModel.isInitializedSessionOnRequestChat(command)) return;
 		AddVoteOptionRequest request = (AddVoteOptionRequest)command;
 		
-		VotingSession votingSession = executor.getSessionForRequest(request);
+		VotingSession votingSession = votingModel.getSessionForRequest(request);
 		ChatAdapterInterface chat = request.getChat();
 		boolean added = votingSession.addOption(request.getName());
 		if (!added) {

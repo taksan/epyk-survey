@@ -19,11 +19,11 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 
 	@Override
 	public void process(final ShellCommand command) {
-		if (!executor.isInitializedSessionOnRequestChat(command)) return;
+		if (!votingModel.isInitializedSessionOnRequestChat(command)) return;
 		
 		final ClosePollRequest request = (ClosePollRequest) command;
 		
-		final VotingSession votingSession = executor.getSessionForRequest(command);
+		final VotingSession votingSession = votingModel.getSessionForRequest(command);
 		
 		votingSession.acceptWinnerConsultant(new WinnerConsultant() {
 			@Override
@@ -36,7 +36,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 								getPlural(winnerStats.voteCount)
 								);
 				String reply = "Votes: " + voteStatus + "\n" +	winnerMessage;
-				executor.removeSessionForGivenRequest(request);
+				votingModel.removeSessionForGivenRequest(request);
 				onReply(command, reply);
 			}
 
@@ -56,7 +56,7 @@ public class ClosePollProcessor extends VotingCommandProcessorAbstract {
 								getPlural(tieCount)
 								);
 				
-				executor.removeSessionForGivenRequest(request);
+				votingModel.removeSessionForGivenRequest(request);
 				onReply(command, reply);
 			}
 			
