@@ -10,12 +10,10 @@ import skype.voting.processors.interpreters.VotingFactoriesRetriever;
 import com.skype.Skype;
 import com.skype.SkypeException;
 import com.skype.User;
-import com.skype.connector.Connector;
 
-public class VotingTimeApp {
+public class EpykSurveyApp {
 
 	public void execute() throws SkypeException {
-		Connector.getInstance().setApplicationName("LunchTime");
 		
 		CommandExecutor[] botExecutors = getCommandExecutors();
 		
@@ -24,7 +22,7 @@ public class VotingTimeApp {
 				botExecutors);
 		
 		Skype.addChatMessageListener(listener);
-		User.getInstance("echo123").send("Voting app on!");
+		User.getInstance("echo123").send("Epyk Survey Started!");
 	}
 
 	private static CommandExecutor[] getCommandExecutors() {
