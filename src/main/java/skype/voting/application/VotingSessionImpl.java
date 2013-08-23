@@ -171,7 +171,5 @@ public class VotingSessionImpl implements VotingPollVisitor, VotingSession {
 			boolean hasVoted = vote.getValue()!=null;
 			consultant.visit(vote.getKey(), hasVoted);
 		}
-	}
-
-	
+	}	
 }

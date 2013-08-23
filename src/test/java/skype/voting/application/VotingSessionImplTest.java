@@ -18,7 +18,6 @@ import skype.voting.mocks.VoteRequestMocked;
 import skype.voting.processors.requests.StartPollRequest;
 import skype.voting.processors.requests.VotingPollVisitor;
 
-
 public class VotingSessionImplTest {
 	VotingSessionImpl subject = new VotingSessionImpl();
 	public VotingSessionImplTest() {
@@ -317,5 +316,4 @@ public class VotingSessionImplTest {
 		request.addParticipant("bart");
 		return request;
 	}
-
 }
